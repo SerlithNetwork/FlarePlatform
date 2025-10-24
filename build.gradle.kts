@@ -1,9 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
     java
-    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0"
+    id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.0"
     id("com.gradleup.shadow") version "9.2.2"
     id("xyz.jpenilla.run-paper") version "3.0.0"
 }
@@ -31,9 +31,9 @@ dependencies {
     implementation("com.github.oshi:oshi-core:6.6.5")
 }
 
-bukkitPluginYaml {
+paperPluginYaml {
     main = "co.technove.flareplugin.FlarePlugin"
-    load = BukkitPluginYaml.PluginLoadOrder.STARTUP
+    bootstrapper = "co.technove.flareplugin.FlarePluginBootstrap"
     apiVersion = "1.21"
     authors.add("PaulBGD, SerlithNetwork")
 /*
@@ -84,9 +84,10 @@ val shadowJar by tasks.existing(ShadowJar::class) {
     archiveClassifier.set(null as String?)
     val prefix = "co.technove.flareplugin.lib"
     listOf(
-        "com.github.oshi",
-        "co.technove.flare",
+        "oshi",
+        "co.technove.flare.",
         "org.jspecify",
+        "one", // included in the flare dep
     ).forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }
