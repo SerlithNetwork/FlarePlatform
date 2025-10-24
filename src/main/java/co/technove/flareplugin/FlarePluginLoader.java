@@ -14,7 +14,7 @@ import java.util.Properties;
 
 @SuppressWarnings("UnstableApiUsage")
 @NullMarked
-public class FlarePluginBootstrap implements PluginLoader {
+public class FlarePluginLoader implements PluginLoader {
 
     @Override
     public void classloader(PluginClasspathBuilder classpathBuilder) {

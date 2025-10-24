@@ -34,9 +34,10 @@ dependencies {
 
 paperPluginYaml {
     main = "co.technove.flareplugin.FlarePlugin"
-    bootstrapper = "co.technove.flareplugin.FlarePluginBootstrap"
+    loader = "co.technove.flareplugin.FlarePluginLoader"
     apiVersion = "1.21"
     authors.add("PaulBGD, SerlithNetwork")
+    foliaSupported = true
 /*
     commands {
         register("flare") {
