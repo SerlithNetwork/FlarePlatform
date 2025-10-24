@@ -1,15 +1,17 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
     java
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.0"
-    id("com.gradleup.shadow") version "9.2.2"
     id("xyz.jpenilla.run-paper") version "3.0.0"
 }
 
 group = "co.technove"
 version = "2.0.0"
+
+val foliaApiVersion = providers.gradleProperty("foliaApiVersion").get()
+val flareVersion = providers.gradleProperty("flareVersion").get()
+val oshiVersion = providers.gradleProperty("oshiVersion").get()
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
@@ -24,11 +26,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jspecify:jspecify:1.0.0")
-    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
-
-    implementation("net.serlith:Flare:4.0.4")
-    compileOnly("com.github.oshi:oshi-core:6.6.5")
+    compileOnly("org.jspecify:jspecify:1.0.0")
+    compileOnly("dev.folia:folia-api:$foliaApiVersion")
+    compileOnly("net.serlith:Flare:$flareVersion")
+    compileOnly("com.github.oshi:oshi-core:$oshiVersion")
 }
 
 paperPluginYaml {
@@ -48,26 +49,16 @@ paperPluginYaml {
 */
 }
 
+runPaper.folia.registerTask() // run folia
+
 tasks {
-    build {
-        dependsOn(shadowJar)
+    runServer {
+        minecraftVersion("1.21.8")
     }
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(21)
-    }
-
-    javadoc {
-        options.encoding = Charsets.UTF_8.name()
-    }
-
-    processResources {
-        filteringCharset = Charsets.UTF_8.name()
-    }
-
-    runServer {
-        minecraftVersion("1.21.10")
     }
 
     jar {
@@ -78,17 +69,15 @@ tasks {
         }
     }
 
-}
-
-val shadowJar by tasks.existing(ShadowJar::class) {
-    archiveClassifier.set(null as String?)
-    val prefix = "co.technove.flareplugin.lib"
-    listOf(
-        "oshi",
-        "co.technove.flare.",
-        "org.jspecify",
-        "one", // included in the flare dep
-    ).forEach { pack ->
-        relocate(pack, "$prefix.$pack")
+    processResources {
+        val flareVersion = flareVersion
+        val oshiVersion = oshiVersion
+        filteringCharset = Charsets.UTF_8.name()
+        filesMatching("**/libraries.properties") {
+            expand(
+                "flareVersion" to flareVersion,
+                "oshiVersion" to oshiVersion,
+            )
+        }
     }
 }
