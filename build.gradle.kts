@@ -1,37 +1,42 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml
+
 plugins {
     java
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-    id("com.github.johnrengelman.shadow") version "7.1.1"
-    id("xyz.jpenilla.run-paper") version "1.0.6"
+    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0"
+    id("com.gradleup.shadow") version "9.2.2"
+    id("xyz.jpenilla.run-paper") version "3.0.0"
 }
 
 group = "co.technove"
-version = "1.0.1"
+version = "2.0.0"
+
+val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 repositories {
     mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven(paperMavenPublicUrl)
     maven("https://jitpack.io")
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:22.0.0")
-    compileOnly("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
+    implementation("org.jspecify:jspecify:1.0.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
 
-    implementation("com.github.TECHNOVE:Flare:34637f3f87")
+    implementation("net.serlith:Flare:4.0.4")
     implementation("com.github.oshi:oshi-core:6.1.2")
 }
 
-bukkit {
+bukkitPluginYaml {
     main = "co.technove.flareplugin.FlarePlugin"
-    apiVersion = "1.16"
-    authors = listOf("PaulBGD")
-    version = rootProject.version as String
-
+    load = BukkitPluginYaml.PluginLoadOrder.STARTUP
+    apiVersion = "1.21"
+    authors.add("PaulBGD, SerlithNetwork")
+/*
     commands {
         register("flare") {
             description = "Flare profiling command"
@@ -40,6 +45,7 @@ bukkit {
             usage = "/flare"
         }
     }
+*/
 }
 
 tasks {
@@ -49,7 +55,7 @@ tasks {
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(16)
+        options.release.set(21)
     }
 
     javadoc {
@@ -61,16 +67,27 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.16.5")
+        minecraftVersion("1.21.10")
     }
 
-    shadowJar {
-        classifier = ""
+    jar {
+        manifest {
+            attributes(
+                "paperweight-mappings-namespace" to "mojang",
+            )
+        }
     }
 
 }
 
-tasks.create<com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation>("relocateShadowJar") {
-    target = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-    prefix = "co.technove.flareplugin.lib"
+val shadowJar by tasks.existing(ShadowJar::class) {
+    archiveClassifier.set(null as String?)
+    val prefix = "co.technove.flareplugin.lib"
+    listOf(
+        "com.github.oshi",
+        "co.technove.flare",
+        "org.jspecify",
+    ).forEach { pack ->
+        relocate(pack, "$prefix.$pack")
+    }
 }
