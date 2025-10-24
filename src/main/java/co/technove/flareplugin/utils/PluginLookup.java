@@ -8,13 +8,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+@NullMarked
 public class PluginLookup implements Listener {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
       .expireAfterAccess(1, TimeUnit.MINUTES)
@@ -30,10 +31,10 @@ public class PluginLookup implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginDisable(final PluginDisableEvent event) {
-        while (classLoaderToPlugin.values().remove(event.getPlugin()));
+        classLoaderToPlugin.values().remove(event.getPlugin());
     }
 
-    public @NotNull Optional<String> getPluginForClass(@NotNull final String name) {
+    public Optional<String> getPluginForClass(final String name) {
         if (name.startsWith("net.minecraft") || name.startsWith("java.") || name.startsWith("com.mojang") ||
           name.startsWith("com.google") || name.startsWith("it.unimi") || name.startsWith("sun")) {
             return Optional.empty();

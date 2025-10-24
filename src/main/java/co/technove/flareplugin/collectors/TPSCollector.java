@@ -4,7 +4,7 @@ import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplugin.CustomCategories;
-import co.technove.flareplugin.utils.NMSHelper;
+import org.bukkit.Bukkit;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -15,19 +15,13 @@ public class TPSCollector extends LiveCollector {
 
     public TPSCollector() {
         super(TPS, MSPT);
-
         this.interval = Duration.ofSeconds(5);
     }
 
     @Override
     public void run() {
-        final long[] times = NMSHelper.getTickTimes5s();
-        final double[] tps = NMSHelper.getTps();
-
-        if (times.length == 0 && tps.length == 0) {
-            return;
-        }
-
+        final double[] tps = Bukkit.getTPS();
+        final long[] times = Bukkit.getTickTimes();
         final double mspt = ((double) Arrays.stream(times).sum() / (double) times.length) * 1.0E-6D;
 
         this.report(TPS, Math.min(20D, Math.round(tps[0] * 100d) / 100d));

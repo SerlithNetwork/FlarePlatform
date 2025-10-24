@@ -24,7 +24,7 @@ import java.util.Properties;
 
 @NullMarked
 public class ServerConfigurations {
-    public static final List<String> configurationFiles = FlarePlugin.getFlareConfig().getList("config-files",
+    public static final List<String> configurationFiles = FlarePlugin.getFlareConfig().getList("flare.server-configs",
         List.of(
             "server.properties",
             "bukkit.yml",
@@ -34,7 +34,7 @@ public class ServerConfigurations {
         ));
     private static final List<World> worldList = new ArrayList<>();
     private static final Map<String, String> configFiles = new HashMap<>(configurationFiles.size());
-    public static final List<String> hiddenConfigs = FlarePlugin.getFlareConfig().getList("hidden-configs",
+    public static final List<String> hiddenConfigs = FlarePlugin.getFlareConfig().getList("flare.hidden-entries",
         List.of(
             "proxies.velocity.secret",
             "web-services.token",
