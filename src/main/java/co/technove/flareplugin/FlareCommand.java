@@ -8,20 +8,22 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Level;
 
+@NullMarked
+// this whole class is going to get replaced anyway
 public class FlareCommand implements CommandExecutor {
 
     private final FlarePlugin plugin;
 
-    public FlareCommand(@NotNull final FlarePlugin plugin) {
+    public FlareCommand(final FlarePlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!command.testPermission(sender)) {
             return true;
         }

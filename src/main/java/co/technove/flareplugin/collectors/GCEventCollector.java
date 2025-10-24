@@ -50,8 +50,7 @@ public class GCEventCollector extends EventCollector implements NotificationList
             NotificationEmitter notificationEmitter = (NotificationEmitter) garbageCollectorBean;
             try {
                 notificationEmitter.removeNotificationListener(this);
-            } catch (ListenerNotFoundException e) {
-            }
+            } catch (ListenerNotFoundException ignored) {}
         }
     }
 

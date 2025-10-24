@@ -11,8 +11,8 @@ import co.technove.flareplugin.collectors.TPSCollector;
 import co.technove.flareplugin.utils.ServerConfigurations;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 // yuck
+@NullMarked
 public class ProfilingManager {
 
     private final FlarePlugin plugin;
@@ -33,7 +34,7 @@ public class ProfilingManager {
     private @Nullable Flare currentFlare;
     private @Nullable BukkitTask currentTask = null;
 
-    public ProfilingManager(@NotNull final FlarePlugin plugin) {
+    public ProfilingManager(final FlarePlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -121,7 +122,7 @@ public class ProfilingManager {
         if (!isProfiling()) {
             return false;
         }
-        if (!currentFlare.isRunning()) {
+        if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null;
             return true;
         }
@@ -134,7 +135,7 @@ public class ProfilingManager {
         currentFlare = null;
 
         try {
-            currentTask.cancel();
+            if (currentTask != null) currentTask.cancel();
         } catch (Throwable t) {
             this.plugin.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }

@@ -2,8 +2,8 @@ package co.technove.flareplugin;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplugin.utils.NMSHelper;
 import co.technove.flareplugin.utils.PluginLookup;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.URI;
@@ -14,16 +14,15 @@ public class FlarePlugin extends JavaPlugin {
 
     private ProfilingManager profilingManager;
     private PluginLookup pluginLookup;
+    private static FlareConfig config;
+    private static FlarePlugin instance;
 
     @Override
     public void onEnable() {
-        this.saveDefaultConfig();
-
         try {
-            NMSHelper.initialize();
-        } catch (ReflectiveOperationException e) {
-            this.getLogger().log(Level.WARNING, "Failed to initialize NMS, you may not be running Spigot.", e);
-        }
+            Class.forName("co.technove.flare.Flare");
+            this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
+        } catch (ReflectiveOperationException ignored) {}
 
         try {
             final List<String> warnings = FlareInitializer.initialize();
@@ -34,12 +33,24 @@ public class FlarePlugin extends JavaPlugin {
             return;
         }
 
+        instance = this;
+        config = new FlareConfig();
+
+        /*
+        this.getLifecycleManager().registerEventHandler(
+                LifecycleEvents.COMMANDS, commands -> {
+                    commands.registrar().register(FlareCommand.createCommand());
+                }
+        );
+        */
+
         this.profilingManager = new ProfilingManager(this);
 
         this.pluginLookup = new PluginLookup();
         this.getServer().getPluginManager().registerEvents(this.pluginLookup, this);
 
-        this.getCommand("flare").setExecutor(new FlareCommand(this));
+        //this.getCommand("flare").setExecutor(new FlareCommand(this)); - migrating to brigadier
+        config.saveConfig();
     }
 
     @Override
@@ -49,12 +60,20 @@ public class FlarePlugin extends JavaPlugin {
         }
     }
 
+    public static FlareConfig getFlareConfig() {
+        return config;
+    }
+
+    public static FlarePlugin getInstance() {
+        return instance;
+    }
+
     public URI getFlareURI() {
-        return URI.create(this.getConfig().getString("flare.url", ""));
+        return URI.create(getFlareConfig().getString("flare.url", "flare.serlith.net"));
     }
 
     public String getAccessToken() {
-        return this.getConfig().getString("flare.token");
+        return getFlareConfig().getString("flare.token", "");
     }
 
     public ProfilingManager getProfilingManager() {
