@@ -20,7 +20,7 @@ public class FlarePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            Class.forName("co.technove.flare.Flare");
+            Class.forName("co.technove.flare.Flare", false, ClassLoader.getSystemClassLoader());
             this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
         } catch (ReflectiveOperationException ignored) {}
 
