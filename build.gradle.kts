@@ -28,7 +28,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
 
     implementation("net.serlith:Flare:4.0.4")
-    implementation("com.github.oshi:oshi-core:6.1.2")
+    implementation("com.github.oshi:oshi-core:6.6.5")
 }
 
 bukkitPluginYaml {
