@@ -15,7 +15,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jspecify.annotations.NullMarked;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 

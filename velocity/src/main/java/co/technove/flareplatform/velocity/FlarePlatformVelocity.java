@@ -13,7 +13,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
