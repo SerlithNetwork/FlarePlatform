@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.velocity.VelocityPluginJson
+import java.util.regex.Pattern
 
 plugins {
     id("xyz.jpenilla.run-velocity") version libs.versions.run.task
@@ -32,10 +33,12 @@ val shadowJar by tasks.existing(ShadowJar::class) {
     archiveClassifier.set(null as String?)
     val prefix = "co.technove.flareplatform.lib"
     listOf(
-        //"oshi",
+        "oshi",
         "co.technove.flare.",
         "one", // included in the flare dep
     ).forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }
+    // we have to rename them to match the new package for some reason (rename, not relocate)
+    rename(Pattern.compile("^oshi.*"), "co.technove.flareplatform.lib.\$0")
 }
