@@ -56,6 +56,10 @@ public class FlarePlatformVelocity {
             instance = this;
             config = new FlareConfig("plugins/" + this.container.getDescription().getName().orElse(
                     "FlarePlatformVelocity"));
+            // generate defaults at startup - if omitted it'll just generate them the first time those values get -
+            // - accessed so no big deal
+            getFlareURI();
+            getAccessToken();
         } catch (InitializationException e) {
             this.logger.log(Level.SEVERE, "Failed to initialize Flare", e);
             server.getEventManager().unregisterListeners(this); // unregister everything

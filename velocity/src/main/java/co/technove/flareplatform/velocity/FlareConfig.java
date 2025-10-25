@@ -36,10 +36,6 @@ public class FlareConfig {
             } else {
                 this.config = loader.createNode();
             }
-
-            setDefault("flare.url", "https://flare.serlith.net");
-            setDefault("flare.token", "");
-
             saveConfig();
         } catch (ConfigurateException e) {
             FlarePlatformVelocity.getInstance().getLogger()
@@ -52,6 +48,7 @@ public class FlareConfig {
         if (node.virtual()) {
             try {
                 node.set(value);
+                saveConfig();
             } catch (SerializationException e) {
                 FlarePlatformVelocity.getInstance().getLogger()
                         .log(Level.SEVERE, "Failed to set default value for " + path, e);
@@ -70,23 +67,28 @@ public class FlareConfig {
     }
 
     public boolean getBoolean(String path, boolean def) {
-        return getNode(path).getBoolean(def);
+        setDefault(path, def);
+        return getNode(path).getBoolean();
     }
 
     public int getInt(String path, int def) {
-        return getNode(path).getInt(def);
+        setDefault(path, def);
+        return getNode(path).getInt();
     }
 
     public double getDouble(String path, double def) {
-        return getNode(path).getDouble(def);
+        setDefault(path, def);
+        return getNode(path).getDouble();
     }
 
     public String getString(String path, String def) {
+        setDefault(path, def);
         return getNode(path).getString(def);
     }
 
     public List<String> getList(String path, List<String> def) {
         try {
+            setDefault(path, def);
             return getNode(path).getList(String.class, def);
         } catch (SerializationException e) {
             FlarePlatformVelocity.getInstance().getLogger()
