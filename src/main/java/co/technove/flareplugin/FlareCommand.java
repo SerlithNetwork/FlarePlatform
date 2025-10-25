@@ -16,7 +16,6 @@ import com.mojang.brigadier.Command;
 import org.bukkit.command.CommandSender;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
@@ -128,9 +127,7 @@ public class FlareCommand {
 
     private static void broadcastPrefixed(Component ...lines) {
         Stream.concat(
-                        Bukkit.getOnlinePlayers().stream(),
-                        Stream.of(Bukkit.getConsoleSender())
-                )
+                Bukkit.getOnlinePlayers().stream(), Stream.of(Bukkit.getConsoleSender()))
                 .filter(s -> s.hasPermission("airplane.flare.profiler"))
                 .forEach(s -> {
                     for (Component line : lines) {
