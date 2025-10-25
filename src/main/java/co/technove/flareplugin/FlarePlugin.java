@@ -3,6 +3,7 @@ package co.technove.flareplugin;
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplugin.utils.PluginLookup;
+import co.technove.flareplugin.utils.ServerConfigurations;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +13,6 @@ import java.util.logging.Level;
 
 public class FlarePlugin extends JavaPlugin {
 
-    private ProfilingManager profilingManager;
     private PluginLookup pluginLookup;
     private static FlareConfig config;
     private static FlarePlugin instance;
@@ -36,27 +36,29 @@ public class FlarePlugin extends JavaPlugin {
         instance = this;
         config = new FlareConfig();
 
-        /*
         this.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS, commands -> {
-                    commands.registrar().register(FlareCommand.createCommand());
+                    commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands");
                 }
         );
-        */
-
-        this.profilingManager = new ProfilingManager(this);
 
         this.pluginLookup = new PluginLookup();
         this.getServer().getPluginManager().registerEvents(this.pluginLookup, this);
 
-        //this.getCommand("flare").setExecutor(new FlareCommand(this)); - migrating to brigadier
+        // dirty hack so those get saved to the config file without starting the profiler
+        this.getServerConfigurations();
+        this.getHiddenEntries();
+        this.getFlareURI();
+        this.getAccessToken();
+        // dirty hack end
+
         config.saveConfig();
     }
 
     @Override
     public void onDisable() {
-        if (this.profilingManager.isProfiling()) {
-            this.profilingManager.stop();
+        if (ProfilingManager.isProfiling()) {
+            ProfilingManager.stop();
         }
     }
 
@@ -69,15 +71,19 @@ public class FlarePlugin extends JavaPlugin {
     }
 
     public URI getFlareURI() {
-        return URI.create(getFlareConfig().getString("flare.url", "flare.serlith.net"));
+        return URI.create(getFlareConfig().getString("flare.url", "https://flare.serlith.net"));
     }
 
     public String getAccessToken() {
         return getFlareConfig().getString("flare.token", "");
     }
 
-    public ProfilingManager getProfilingManager() {
-        return profilingManager;
+    private List<String> getServerConfigurations() {
+        return ServerConfigurations.configurationFiles;
+    }
+
+    private List<String> getHiddenEntries() {
+        return ServerConfigurations.hiddenEntries;
     }
 
     public PluginLookup getPluginLookup() {

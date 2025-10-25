@@ -9,8 +9,10 @@ import co.technove.flareplugin.collectors.GCEventCollector;
 import co.technove.flareplugin.collectors.StatCollector;
 import co.technove.flareplugin.collectors.TPSCollector;
 import co.technove.flareplugin.utils.ServerConfigurations;
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import oshi.SystemInfo;
@@ -22,31 +24,37 @@ import oshi.software.os.OperatingSystem;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 // yuck
 @NullMarked
 public class ProfilingManager {
 
-    private final FlarePlugin plugin;
+    private static final AsyncScheduler scheduler = FlarePlugin.getInstance().getServer().getAsyncScheduler();
 
-    private @Nullable Flare currentFlare;
-    private @Nullable BukkitTask currentTask = null;
+    private @Nullable static Flare currentFlare;
+    public @Nullable static ScheduledTask currentTask;
 
-    public ProfilingManager(final FlarePlugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public synchronized boolean isProfiling() {
+    public static synchronized boolean isProfiling() {
         return currentFlare != null && currentFlare.isRunning();
     }
 
-    public synchronized String getProfilingUri() {
+    public static synchronized String getProfilingUri() {
         return Objects.requireNonNull(currentFlare).getURI().map(URI::toString).orElse("Flare is not running");
     }
 
-    public synchronized boolean start(ProfileType profileType) throws UserReportableException {
+    public static Duration getTimeRan() {
+        Flare flare = currentFlare; // copy reference so no need to sync
+        if (flare == null) {
+            return Duration.ofMillis(0);
+        }
+        return flare.getCurrentDuration();
+    }
+
+    public static synchronized boolean start(ProfileType profileType) throws UserReportableException {
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null; // errored out
         }
@@ -72,15 +80,16 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                     .withProfileType(profileType)
                     .withMemoryProfiling(true)
-                    .withAuth(FlareAuth.fromTokenAndUrl(this.plugin.getAccessToken(), this.plugin.getFlareURI()))
+                    .withAuth(FlareAuth.fromTokenAndUrl(FlarePlugin.getInstance().getAccessToken(), FlarePlugin.getInstance().getFlareURI()))
 
                     .withFiles(ServerConfigurations.getCleanCopies())
-                    .withVersion("Primary Version", Bukkit.getVersion())
+                    .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
                     .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
+                    .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
 
                     .withGraphCategories(CustomCategories.MC_PERF)
                     .withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector())
-                    .withClassIdentifier(this.plugin.getPluginLookup()::getPluginForClass)
+                    .withClassIdentifier(FlarePlugin.getInstance().getPluginLookup()::getPluginForClass)
 
                     .withHardware(new FlareBuilder.HardwareBuilder()
                             .setCoreCount(processor.getPhysicalProcessorCount())
@@ -102,23 +111,29 @@ public class ProfilingManager {
 
             currentFlare = builder.build();
         } catch (IOException e) {
-            this.plugin.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+            FlarePlugin.getInstance().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
             throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
 
         try {
             currentFlare.start();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(FlarePlugin.getInstance(), task -> player.updateCommands(), null);
+            }
         } catch (IllegalStateException e) {
-            this.plugin.getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            FlarePlugin.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = Bukkit.getScheduler().runTaskLater(plugin, this::stop, 20 * 60 * 15);
-        this.plugin.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        currentTask = scheduler.runDelayed(FlarePlugin.getInstance(),
+                task -> ProfilingManager.stop(),
+                15L,
+                TimeUnit.MINUTES);
+        FlarePlugin.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
-    public synchronized boolean stop() {
+    public static synchronized boolean stop() {
         if (!isProfiling()) {
             return false;
         }
@@ -126,20 +141,22 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        this.plugin.getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
+        FlarePlugin.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(FlarePlugin.getInstance(), task -> player.updateCommands(), null);
+            }
         } catch (IllegalStateException e) {
-            this.plugin.getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+            FlarePlugin.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
         try {
             if (currentTask != null) currentTask.cancel();
         } catch (Throwable t) {
-            this.plugin.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+            FlarePlugin.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
-
         currentTask = null;
         return true;
     }

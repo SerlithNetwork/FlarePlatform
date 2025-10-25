@@ -34,7 +34,7 @@ public class ServerConfigurations {
         ));
     private static final List<World> worldList = new ArrayList<>();
     private static final Map<String, String> configFiles = new HashMap<>(configurationFiles.size());
-    public static final List<String> hiddenConfigs = FlarePlugin.getFlareConfig().getList("flare.hidden-entries",
+    public static final List<String> hiddenEntries = FlarePlugin.getFlareConfig().getList("flare.hidden-entries",
         List.of(
             "proxies.velocity.secret",
             "web-services.token",
@@ -52,7 +52,7 @@ public class ServerConfigurations {
             "seed-*"
         ));
 
-        private static final List<Pattern> regexPatterns = hiddenConfigs.stream()
+        private static final List<Pattern> regexPatterns = hiddenEntries.stream()
                 .map(s -> Pattern.compile(s.replace(".", "\\.").replace("*", ".*")))
                 .toList();
 
