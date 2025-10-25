@@ -6,11 +6,6 @@ plugins {
 group = "co.technove"
 version = providers.gradleProperty("version").getOrElse("test-snapshot")
 
-dependencies {
-    implementation(projects.paper)
-    implementation(projects.velocity)
-}
-
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
 allprojects {
@@ -51,9 +46,8 @@ tasks {
     }
     shadowJar {
         archiveClassifier.set("")
-        dependsOn(
-            project(":velocity").tasks.shadowJar,
-            project(":paper").tasks.shadowJar
-        )
+        minimize()
+        from(project(":velocity").tasks.shadowJar.map { zipTree(it.archiveFile) })
+        from(project(":paper").tasks.shadowJar.map { zipTree(it.archiveFile) })
     }
 }

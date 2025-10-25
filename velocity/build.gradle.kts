@@ -30,7 +30,6 @@ velocityPluginJson {
 
 val shadowJar by tasks.existing(ShadowJar::class) {
     minimize()
-    archiveClassifier.set(null as String?)
     val prefix = "co.technove.flareplatform.lib"
     listOf(
         "oshi",
