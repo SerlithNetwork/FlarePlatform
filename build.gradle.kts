@@ -49,5 +49,10 @@ tasks {
         minimize()
         from(project(":velocity").tasks.shadowJar.map { zipTree(it.archiveFile) })
         from(project(":paper").tasks.shadowJar.map { zipTree(it.archiveFile) })
+        manifest {
+            attributes(
+                "paperweight-mappings-namespace" to "mojang",
+            )
+        }
     }
 }
