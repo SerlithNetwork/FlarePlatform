@@ -1,5 +1,5 @@
-package co.technove.flareplatform.paper;
-
+package co.technove.flareplatform.velocity;
+/*
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jspecify.annotations.NullMarked;
@@ -7,7 +7,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @NullMarked
@@ -74,6 +75,7 @@ public class FlareConfig {
     /**
      * @param defKV Default key-value map
      */
+/*
     @Nullable
     public ConfigurationSection getConfigSection(String path, Map<String, Object> defKV) {
         if (config.isConfigurationSection(path))
@@ -84,6 +86,7 @@ public class FlareConfig {
     /**
      * @return List of strings or empty list if list doesn't exist in configuration file
      */
+/*
     public List<String> getList(String path, List<String> def) {
         if (config.isSet(path))
             return config.getStringList(path);
@@ -92,3 +95,4 @@ public class FlareConfig {
     }
 
 }
+*/

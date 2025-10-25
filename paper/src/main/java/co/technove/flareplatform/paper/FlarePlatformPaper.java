@@ -11,11 +11,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 
-public class FlarePlugin extends JavaPlugin {
+public class FlarePlatformPaper extends JavaPlugin {
 
     private PluginLookup pluginLookup;
     private static FlareConfig config;
-    private static FlarePlugin instance;
+    private static FlarePlatformPaper instance;
 
     @Override
     public void onEnable() {
@@ -66,7 +66,7 @@ public class FlarePlugin extends JavaPlugin {
         return config;
     }
 
-    public static FlarePlugin getInstance() {
+    public static FlarePlatformPaper getInstance() {
         return instance;
     }
 

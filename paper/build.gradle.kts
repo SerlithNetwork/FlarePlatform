@@ -25,8 +25,8 @@ runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
     name = "FlarePlatformPaper"
-    main = "co.technove.flareplatform.paper.FlarePlugin"
-    loader = "co.technove.flareplatform.paper.FlarePluginLoader"
+    main = "co.technove.flareplatform.paper.FlarePlatformPaper"
+    loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
     apiVersion = "1.21"
     authors.add("PaulBGD, SerlithNetwork")
     foliaSupported = true

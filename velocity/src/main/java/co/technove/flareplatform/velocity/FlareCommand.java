@@ -1,19 +1,18 @@
-package co.technove.flareplatform.paper;
+package co.technove.flareplatform.velocity;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
+import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import com.mojang.brigadier.Command;
-import org.bukkit.command.CommandSender;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Level;
@@ -32,38 +31,39 @@ public class FlareCommand {
             .append(Component.text(" "))
             .build();
 
-    public static LiteralCommandNode<CommandSourceStack> createCommand() {
-        return Commands.literal("flareprofiler")
-                .requires(css -> css.getSender().hasPermission("airplane.flare.profiler"))
-                .then(Commands.literal("start")
-                        .requires(source -> !ProfilingManager.isProfiling() && source.getSender().hasPermission(
+    public static BrigadierCommand createBrigadierCommand(final ProxyServer proxy) {
+        LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("flareprofiler")
+                .requires(css -> css.hasPermission("airplane.flare.profiler"))
+                .then(BrigadierCommand.literalArgumentBuilder("start")
+                        .requires(source -> !ProfilingManager.isProfiling() && source.hasPermission(
                                 "airplane.flare.profiler.start"))
                         .executes(FlareCommand::executeStart))
-                .then(Commands.literal("stop")
-                        .requires(source -> ProfilingManager.isProfiling() && source.getSender().hasPermission(
+                .then(BrigadierCommand.literalArgumentBuilder("stop")
+                        .requires(source -> ProfilingManager.isProfiling() && source.hasPermission(
                                 "airplane.flare.profiler.stop"))
                         .executes(FlareCommand::executeStop))
-                .then(Commands.literal("status")
-                        .requires(source -> source.getSender().hasPermission("airplane.flare.profiler.status"))
+                .then(BrigadierCommand.literalArgumentBuilder("status")
+                        .requires(source -> source.hasPermission("airplane.flare.profiler.status"))
                         .executes(FlareCommand::executeStatus))
-                .then(Commands.literal("reload")
-                        .requires(source -> !ProfilingManager.isProfiling() && source.getSender().hasPermission("airplane.flare.profiler.reload"))
+                .then(BrigadierCommand.literalArgumentBuilder("reload")
+                        .requires(source -> !ProfilingManager.isProfiling() && source.hasPermission("airplane.flare.profiler.reload"))
                         .executes(FlareCommand::executeReload))
-                .then(Commands.literal("version")
-                        .requires(source -> source.getSender().hasPermission("airplane.flare.profiler.version"))
+                .then(BrigadierCommand.literalArgumentBuilder("version")
+                        .requires(source -> source.hasPermission("airplane.flare.profiler.version"))
                         .executes(FlareCommand::executeVersion))
                 .build();
 
+        return new BrigadierCommand(flareCommand);
     }
 
-    public static int executeStart(CommandContext<CommandSourceStack> ctx) {
-        if (FlarePlatformPaper.getInstance().getFlareURI().getScheme() == null) {
-            sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
+    public static int executeStart(CommandContext<CommandSource> ctx) {
+        if (true /*FlarePlatformVelocity.getFlareURI().getScheme() == null*/) { // todo - config
+            sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             ProfileType profileType = ProfileType.ITIMER;
-            sendPrefixed(ctx.getSource().getSender(),
+            sendPrefixed(ctx.getSource(),
                     Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            FlarePlatformPaper.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatformPaper.getInstance(), task -> {
+            FlarePlatformVelocity.getInstance().getServer().getScheduler().buildTask(FlarePlatformVelocity.getInstance(), task -> {
                 try {
                     if (ProfilingManager.start(profileType)) {
                         broadcastPrefixed(
@@ -76,18 +76,19 @@ public class FlareCommand {
                         );
                     }
                 } catch (UserReportableException e) {
-                    sendPrefixed(ctx.getSource().getSender(),
+                    sendPrefixed(ctx.getSource(),
                             Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                     if (e.getCause() != null) {
-                        FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
+                        FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
                     }
                 }
-            });
+            })
+            .schedule();
         }
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int executeStop(CommandContext<CommandSourceStack> ctx) {
+    public static int executeStop(CommandContext<CommandSource> ctx) {
             String profile = ProfilingManager.getProfilingUri();
             broadcastPrefixed(
                     Component.text("Profiling has been stopped.", MAIN_COLOR),
@@ -96,30 +97,30 @@ public class FlareCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int executeStatus(CommandContext<CommandSourceStack> ctx) {
+    public static int executeStatus(CommandContext<CommandSource> ctx) {
         if (ProfilingManager.isProfiling()) {
-            sendPrefixed(ctx.getSource().getSender(),
+            sendPrefixed(ctx.getSource(),
                     Component.text("Current profile has been ran for " + ProfilingManager.getTimeRan(), HEX));
         } else {
-            sendPrefixed(ctx.getSource().getSender(),
+            sendPrefixed(ctx.getSource(),
                     Component.text("Flare is not running.", HEX));
         }
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int executeReload(CommandContext<CommandSourceStack> ctx) {
-        FlarePlatformPaper.getInstance().reloadConfig();
-        broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
+    public static int executeReload(CommandContext<CommandSource> ctx) {
+        //FlarePlatformVelocity.getInstance().getServer().getPluginManager().getPlugin("flareplatformvelocity").reloadConfig(); - new method
+        //broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int executeVersion(CommandContext<CommandSourceStack> ctx) {
+    public static int executeVersion(CommandContext<CommandSource> ctx) {
         broadcastPrefixed(
-                Component.text("You're running FlarePlatform for Paper, version: " + FlarePlatformPaper.getInstance().getPluginMeta().getVersion(), HEX));
+                Component.text("You're running FlarePlatform for Velocity, version: " + FlarePlatformVelocity.getInstance().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 
-    private static void sendPrefixed(CommandSender sender, Component ...lines) {
+    private static void sendPrefixed(CommandSource sender, Component ...lines) {
         for (Component line : lines) {
             sender.sendMessage(PREFIX.append(line));
         }
@@ -127,7 +128,7 @@ public class FlareCommand {
 
     private static void broadcastPrefixed(Component ...lines) {
         Stream.concat(
-                Bukkit.getOnlinePlayers().stream(), Stream.of(Bukkit.getConsoleSender()))
+                FlarePlatformVelocity.getInstance().getServer().getAllPlayers().stream(), Stream.of(FlarePlatformVelocity.getInstance().getServer().getConsoleCommandSource()))
                 .filter(s -> s.hasPermission("airplane.flare.profiler"))
                 .forEach(s -> {
                     for (Component line : lines) {
