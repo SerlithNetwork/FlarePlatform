@@ -15,6 +15,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jspecify.annotations.NullMarked;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
@@ -57,7 +58,7 @@ public class FlareCommand {
     }
 
     public static int executeStart(CommandContext<CommandSource> ctx) {
-        if (true /*FlarePlatformVelocity.getFlareURI().getScheme() == null*/) { // todo - config
+        if (FlarePlatformVelocity.getInstance().getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             ProfileType profileType = ProfileType.ITIMER;
@@ -109,8 +110,8 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSource> ctx) {
-        //FlarePlatformVelocity.getInstance().getServer().getPluginManager().getPlugin("flareplatformvelocity").reloadConfig(); - new method
-        //broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
+        FlarePlatformVelocity.getFlareConfig().reloadConfig();
+        broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 

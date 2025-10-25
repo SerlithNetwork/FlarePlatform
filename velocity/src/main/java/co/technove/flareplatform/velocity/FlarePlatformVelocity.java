@@ -2,6 +2,7 @@ package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
+import co.technove.flareplatform.velocity.utils.PluginLookup;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
@@ -12,6 +13,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +39,10 @@ public class FlarePlatformVelocity {
     @Inject
     private ProxyServer server;
 
+    private PluginLookup lookup;
+
+    private static FlareConfig config;
+
     @Inject
     public FlarePlatformVelocity() {
         instance = this;
@@ -54,6 +61,10 @@ public class FlarePlatformVelocity {
                     .build();
             BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
             commandManager.register(commandMeta, command);
+            lookup = new PluginLookup(server);
+            instance = this;
+            config = new FlareConfig("plugins/" + this.container.getDescription().getName().orElse(
+                    "FlarePlatformVelocity"));
         } catch (InitializationException e) {
             this.logger.log(Level.SEVERE, "Failed to initialize Flare", e);
             server.getEventManager().unregisterListeners(this); // unregister everything
@@ -81,9 +92,25 @@ public class FlarePlatformVelocity {
         commandManager.unregister(commandManager.metaBuilder("flareprofiler").build());
         CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
                 .aliases("flare", "profiler")
-                .plugin(this)
+                .plugin(FlarePlatformVelocity.getInstance())
                 .build();
         BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
         commandManager.register(commandMeta, command);
+    }
+
+    public PluginLookup getPluginLookup() {
+        return lookup;
+    }
+
+    public static FlareConfig getFlareConfig() {
+        return config;
+    }
+
+    public URI getFlareURI() {
+        return URI.create(getFlareConfig().getString("flare.url", "https://flare.serlith.net"));
+    }
+
+    public String getAccessToken() {
+        return getFlareConfig().getString("flare.token", "");
     }
 }

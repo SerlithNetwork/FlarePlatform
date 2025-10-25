@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
 
 plugins {
     id("xyz.jpenilla.run-velocity") version "3.0.0"
@@ -28,10 +29,11 @@ tasks.runVelocity {
 }
 
 val shadowJar by tasks.existing(ShadowJar::class) {
+    minimize()
     archiveClassifier.set(null as String?)
     val prefix = "co.technove.flareplatform.lib"
     listOf(
-        "oshi",
+        //"oshi",
         "co.technove.flare.",
         "one", // included in the flare dep
     ).forEach { pack ->

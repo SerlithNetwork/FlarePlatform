@@ -1,98 +1,112 @@
 package co.technove.flareplatform.velocity;
-/*
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+
+import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @NullMarked
 public class FlareConfig {
 
-    private final Logger logger;
-    private FileConfiguration config;
-    private final File configPath;
+    private final File configFile;
+    private final YamlConfigurationLoader loader;
+    private @Nullable ConfigurationNode config = null;
 
-    protected FlareConfig() {
-        FlarePlatformPaper plugin = FlarePlatformPaper.getInstance();
-        plugin.reloadConfig();
-        logger = plugin.getLogger();
-        config = plugin.getConfig();
-        configPath = new File(plugin.getDataFolder(), "config.yml");
+    public FlareConfig(String path) {
+        File dataFolder = new File(path);
+        this.configFile = new File(dataFolder, "config.yml");
+        this.loader = YamlConfigurationLoader.builder()
+                .file(configFile)
+                .build();
+
+        reloadConfig();
     }
 
-    protected void saveConfig() {
+    public void reloadConfig() {
         try {
-            config.save(configPath);
-            config = FlarePlatformPaper.getInstance().getConfig();
-        } catch (IOException e) {
-            logger.severe("Failed to save configuration file! - " + e.getLocalizedMessage());
+            if (configFile.exists()) {
+                this.config = loader.load();
+            } else {
+                this.config = loader.createNode();
+            }
+
+            setDefault("flare.url", "https://flare.serlith.net");
+            setDefault("flare.token", "");
+
+            saveConfig();
+        } catch (ConfigurateException e) {
+            FlarePlatformVelocity.getInstance().getLogger()
+                    .log(Level.SEVERE, "Failed to load the config file!", e);
         }
     }
 
-    public boolean getBooleanIfExists(String path, boolean def) {
-        if (config.isSet(path)) {
-            Boolean setting = config.getBoolean(path, def);
-            config.set(path, null);
-            return setting;
+    private void setDefault(String path, Object value) {
+        ConfigurationNode node = getNode(path);
+        if (node.virtual()) {
+            try {
+                node.set(value);
+            } catch (SerializationException e) {
+                FlarePlatformVelocity.getInstance().getLogger()
+                        .log(Level.SEVERE, "Failed to set default value for " + path, e);
+            }
         }
-        return def;
+    }
+
+    public void saveConfig() {
+        try {
+            Preconditions.checkState(config != null, "Config must not be null!");
+            loader.save(config);
+        } catch (ConfigurateException e) {
+            FlarePlatformVelocity.getInstance().getLogger()
+                    .log(Level.SEVERE, "Failed to save the config file!", e);
+        }
     }
 
     public boolean getBoolean(String path, boolean def) {
-        if (config.isSet(path))
-            return config.getBoolean(path, def);
-        config.set(path, def);
-        return def;
-    }
-
-    public String getString(String path, String def) {
-        if (config.isSet(path))
-            return config.getString(path, def);
-        config.set(path, def);
-        return def;
-    }
-
-    public double getDouble(String path, double def) {
-        if (config.isSet(path))
-            return config.getDouble(path, def);
-        config.set(path, def);
-        return def;
+        return getNode(path).getBoolean(def);
     }
 
     public int getInt(String path, int def) {
-        if (config.isSet(path))
-            return config.getInt(path, def);
-        config.set(path, def);
-        return def;
+        return getNode(path).getInt(def);
     }
 
-    /**
-     * @param defKV Default key-value map
-     */
-/*
-    @Nullable
-    public ConfigurationSection getConfigSection(String path, Map<String, Object> defKV) {
-        if (config.isConfigurationSection(path))
-            return config.getConfigurationSection(path);
-        return config.createSection(path, defKV);
+    public double getDouble(String path, double def) {
+        return getNode(path).getDouble(def);
     }
 
-    /**
-     * @return List of strings or empty list if list doesn't exist in configuration file
-     */
-/*
+    public String getString(String path, String def) {
+        return getNode(path).getString(def);
+    }
+
     public List<String> getList(String path, List<String> def) {
-        if (config.isSet(path))
-            return config.getStringList(path);
-        config.set(path, def);
-        return def;
+        try {
+            return getNode(path).getList(String.class, def);
+        } catch (SerializationException e) {
+            FlarePlatformVelocity.getInstance().getLogger()
+                    .log(Level.SEVERE, "Failed to read the config file!", e);
+        }
+        return List.of();
     }
 
+    public void set(String path, Object value) {
+        try {
+            getNode(path).set(value);
+        } catch (SerializationException e) {
+            FlarePlatformVelocity.getInstance().getLogger()
+                    .log(Level.SEVERE, "Failed to update the config file!", e);
+        }
+        saveConfig();
+    }
+
+    public ConfigurationNode getNode(String path) {
+        Preconditions.checkState(config != null, "Config must not be null!");
+        return config.node((Object[]) path.split("\\."));
+    }
 }
-*/
