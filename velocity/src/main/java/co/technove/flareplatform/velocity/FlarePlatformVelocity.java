@@ -9,7 +9,6 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
@@ -18,13 +17,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Plugin(
-        id = "flareplatformvelocity",
-        name = "FlarePlatformVelocity",
-        version = "2.0.0",
-        description = "Profile your proxy with flare",
-        authors = "PaulBGD, SerlithNetwork"
-)
 public class FlarePlatformVelocity {
 
     private static FlarePlatformVelocity instance;

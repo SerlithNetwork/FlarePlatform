@@ -1,9 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
+import xyz.jpenilla.resourcefactory.velocity.VelocityPluginJson
 
 plugins {
     id("xyz.jpenilla.run-velocity") version "3.0.0"
     id("com.gradleup.shadow") version "9.2.2"
+    id("xyz.jpenilla.resource-factory-velocity-convention") version "1.3.0"
 }
 
 val flareVersion = providers.gradleProperty("flareVersion").get()
@@ -21,11 +22,18 @@ dependencies {
     implementation("net.serlith:Flare:$flareVersion")
     implementation("com.github.oshi:oshi-core:$oshiVersion")
     compileOnly("com.velocitypowered:velocity-api:$velocityApiVersion")
-    annotationProcessor("com.velocitypowered:velocity-api:$velocityApiVersion")
 }
 
 tasks.runVelocity {
     velocityVersion("3.4.0-SNAPSHOT")
+}
+
+velocityPluginJson {
+    id = "flareplatformvelocity"
+    name = "FlarePlatformVelocity"
+    description = "Profile your proxy with Flare"
+    main = "co.technove.flareplatform.velocity.FlarePlatformVelocity"
+    authors.add("PaulBGD, SerlithNetwork")
 }
 
 val shadowJar by tasks.existing(ShadowJar::class) {

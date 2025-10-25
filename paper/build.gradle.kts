@@ -27,6 +27,7 @@ paperPluginYaml {
     name = "FlarePlatformPaper"
     main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
+    description = "Profile your server with Flare"
     apiVersion = "1.21"
     authors.add("PaulBGD, SerlithNetwork")
     foliaSupported = true
