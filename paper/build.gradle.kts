@@ -1,14 +1,8 @@
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 plugins {
-    id("xyz.jpenilla.run-paper") version "3.0.0"
-    id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.0"
+    id("xyz.jpenilla.run-paper") version libs.versions.run.task
     alias(libs.plugins.shadow)
-}
-
-val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-
-repositories {
-    maven(paperMavenPublicUrl)
+    id("xyz.jpenilla.resource-factory-paper-convention") version libs.versions.resource.factory
 }
 
 dependencies {

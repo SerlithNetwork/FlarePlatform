@@ -2,15 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.velocity.VelocityPluginJson
 
 plugins {
-    id("xyz.jpenilla.run-velocity") version "3.0.0"
+    id("xyz.jpenilla.run-velocity") version libs.versions.run.task
     alias(libs.plugins.shadow)
-    id("xyz.jpenilla.resource-factory-velocity-convention") version "1.3.0"
-}
-
-val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-
-repositories {
-    maven(paperMavenPublicUrl)
+    id("xyz.jpenilla.resource-factory-velocity-convention") version libs.versions.resource.factory
 }
 
 dependencies {

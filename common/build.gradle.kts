@@ -1,7 +1,3 @@
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
-
 dependencies {
     compileOnly(libs.jspecify)
     compileOnly(libs.flare)

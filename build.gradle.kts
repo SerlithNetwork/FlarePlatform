@@ -4,12 +4,14 @@ plugins {
 }
 
 group = "co.technove"
-version = "2.0.0"
+version = providers.gradleProperty("version").get()
 
 dependencies {
     implementation(projects.paper)
     implementation(projects.velocity)
 }
+
+val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
 allprojects {
     apply(plugin = "java")
@@ -19,23 +21,39 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven(paperMavenPublicUrl)
         maven("https://jitpack.io")
     }
 
-    tasks {
-        compileJava {
-            options.encoding = Charsets.UTF_8.name()
-            options.release.set(21)
+    extensions.configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
+
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = Charsets.UTF_8.name()
+        options.release = 21
+        options.isFork = true
+    }
+    tasks.withType<ProcessResources>().configureEach {
+        filteringCharset = Charsets.UTF_8.name()
+    }
 }
+
 tasks {
     build {
         dependsOn(shadowJar)
     }
     shadowJar {
         archiveClassifier.set("")
-        dependsOn(":velocity:shadowJar")
-        dependsOn(":paper:shadowJar")
+        dependsOn(
+            project(":velocity").tasks.shadowJar,
+            project(":paper").tasks.shadowJar
+        )
     }
 }
