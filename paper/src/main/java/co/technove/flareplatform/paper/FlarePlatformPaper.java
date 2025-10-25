@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 public class FlarePlatformPaper extends JavaPlugin {
@@ -16,34 +17,38 @@ public class FlarePlatformPaper extends JavaPlugin {
     private PluginLookup pluginLookup;
     private static FlareConfig config;
     private static FlarePlatformPaper instance;
+    private static boolean shouldRegister = true;
 
     @Override
     public void onEnable() {
+        // detect unsupported platforms
+        final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+        if (!OS_NAME.contains("linux") && !OS_NAME.contains("mac")) {
+            this.getLogger().log(Level.WARNING, "Flare does not support running on " + OS_NAME + ", will not enable!");
+            shouldRegister = false;
+        }
         try {
             Class.forName("co.technove.flare.Flare", false, ClassLoader.getSystemClassLoader());
             this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
         } catch (ReflectiveOperationException ignored) {}
-
         try {
-            final List<String> warnings = FlareInitializer.initialize();
-            this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
+            if (shouldRegister) {
+                final List<String> warnings = FlareInitializer.initialize();
+                this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
+                this.getLifecycleManager().registerEventHandler(
+                        LifecycleEvents.COMMANDS, commands -> {
+                            commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands");
+                        }
+                );
+                this.pluginLookup = new PluginLookup();
+                this.getServer().getPluginManager().registerEvents(this.pluginLookup, this);
+            }
         } catch (InitializationException e) {
             this.getLogger().log(Level.SEVERE, "Failed to initialize Flare", e);
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
         }
 
         instance = this;
         config = new FlareConfig();
-
-        this.getLifecycleManager().registerEventHandler(
-                LifecycleEvents.COMMANDS, commands -> {
-                    commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands");
-                }
-        );
-
-        this.pluginLookup = new PluginLookup();
-        this.getServer().getPluginManager().registerEvents(this.pluginLookup, this);
 
         // dirty hack so those get saved to the config file without starting the profiler
         this.getServerConfigurations();

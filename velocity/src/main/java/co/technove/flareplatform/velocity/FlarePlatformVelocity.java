@@ -14,6 +14,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +35,8 @@ public class FlarePlatformVelocity {
 
     private static FlareConfig config;
 
+    private static boolean shouldRegister = true;
+
     @Inject
     public FlarePlatformVelocity() {
         instance = this;
@@ -41,29 +44,39 @@ public class FlarePlatformVelocity {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        // detect unsupported platforms
+        final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+        if (!OS_NAME.contains("linux") && !OS_NAME.contains("mac")) {
+            this.getLogger().log(Level.WARNING, "Flare does not support running on " + OS_NAME + ", will not enable!");
+            shouldRegister = false;
+        }
+
         try {
-            final List<String> warnings = FlareInitializer.initialize();
-            this.logger.log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
-            // register commands
-            CommandManager commandManager = server.getCommandManager();
-            CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
-                    .aliases("flare", "profiler")
-                    .plugin(this)
-                    .build();
-            BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
-            commandManager.register(commandMeta, command);
-            lookup = new PluginLookup(server);
-            instance = this;
-            config = new FlareConfig("plugins/" + this.container.getDescription().getName().orElse(
-                    "FlarePlatformVelocity"));
-            // generate defaults at startup - if omitted it'll just generate them the first time those values get -
-            // - accessed so no big deal
-            getFlareURI();
-            getAccessToken();
+            if (shouldRegister) {
+                final List<String> warnings = FlareInitializer.initialize();
+                this.logger.log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
+                // register commands
+                CommandManager commandManager = server.getCommandManager();
+                CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
+                        .aliases("flare", "profiler")
+                        .plugin(this)
+                        .build();
+                BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
+                commandManager.register(commandMeta, command);
+                lookup = new PluginLookup(server);
+            }
         } catch (InitializationException e) {
             this.logger.log(Level.SEVERE, "Failed to initialize Flare", e);
             server.getEventManager().unregisterListeners(this); // unregister everything
         }
+
+        instance = this;
+        config = new FlareConfig("plugins/" + this.container.getDescription().getName().orElse(
+                "FlarePlatformVelocity"));
+        // generate defaults at startup - if omitted it'll just generate them the first time those values get -
+        // - accessed so no big deal
+        getFlareURI();
+        getAccessToken();
     }
 
     public static FlarePlatformVelocity getInstance() {
