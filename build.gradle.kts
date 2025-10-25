@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "co.technove"
-version = providers.gradleProperty("version").get()
+version = providers.gradleProperty("version").getOrElse("test-snapshot")
 
 dependencies {
     implementation(projects.paper)
