@@ -2,6 +2,7 @@ import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 plugins {
     id("xyz.jpenilla.run-paper") version "3.0.0"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.0"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -23,6 +24,7 @@ java {
 runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
+    name = "FlarePlatformPaper"
     main = "co.technove.flareplatform.paper.FlarePlugin"
     loader = "co.technove.flareplatform.paper.FlarePluginLoader"
     apiVersion = "1.21"

@@ -9,6 +9,10 @@ val oshiVersion = providers.gradleProperty("oshiVersion").get()
 
 subprojects {
     apply(plugin = "java")
+
+    group = rootProject.group
+    version = rootProject.version
+
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
