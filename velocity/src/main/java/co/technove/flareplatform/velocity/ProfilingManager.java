@@ -1,6 +1,5 @@
 package co.technove.flareplatform.velocity;
 
-/*
 import co.technove.flare.Flare;
 import co.technove.flare.FlareAuth;
 import co.technove.flare.FlareBuilder;
@@ -9,12 +8,9 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.CustomCategories;
 import co.technove.flareplatform.collectors.GCEventCollector;
 import co.technove.flareplatform.collectors.StatCollector;
-import co.technove.flareplatform.paper.collectors.TPSCollector;
-import co.technove.flareplatform.paper.utils.ServerConfigurations;
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import co.technove.flareplatform.velocity.utils.ServerConfigurations;
+import com.velocitypowered.api.scheduler.ScheduledTask;
+import com.velocitypowered.api.scheduler.Scheduler;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
@@ -35,7 +31,7 @@ import java.util.logging.Level;
 @NullMarked
 public class ProfilingManager {
 
-    private static final AsyncScheduler scheduler = FlarePlatformPaper.getInstance().getServer().getAsyncScheduler();
+    private static final Scheduler scheduler = FlarePlatformVelocity.getInstance().getServer().getScheduler();
 
     private @Nullable static Flare currentFlare;
     public @Nullable static ScheduledTask currentTask;
@@ -63,9 +59,6 @@ public class ProfilingManager {
         if (isProfiling()) {
             return false;
         }
-        if (Bukkit.isPrimaryThread()) {
-            throw new UserReportableException("Profiles should be started off-thread");
-        }
 
         try {
             OperatingSystem os = new SystemInfo().getOperatingSystem();
@@ -82,16 +75,15 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                     .withProfileType(profileType)
                     .withMemoryProfiling(true)
-                    .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatformPaper.getInstance().getAccessToken(), FlarePlatformPaper.getInstance().getFlareURI()))
+                    .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatformVelocity.getInstance().getAccessToken(), FlarePlatformVelocity.getInstance().getFlareURI()))
 
                     .withFiles(ServerConfigurations.getCleanCopies())
-                    .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
-                    .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
-                    .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
+                    .withVersion("Primary Version", FlarePlatformVelocity.getInstance().getServer().getVersion().getName())
+                    .withVersion("Velocity Version", FlarePlatformVelocity.getInstance().getServer().getVersion())
 
                     .withGraphCategories(CustomCategories.PERF)
-                    .withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector())
-                    .withClassIdentifier(FlarePlatformPaper.getInstance().getPluginLookup()::getPluginForClass)
+                    .withCollectors(new GCEventCollector(), new StatCollector())
+                    .withClassIdentifier(FlarePlatformVelocity.getInstance().getPluginLookup()::getPluginForClass)
 
                     .withHardware(new FlareBuilder.HardwareBuilder()
                             .setCoreCount(processor.getPhysicalProcessorCount())
@@ -113,25 +105,21 @@ public class ProfilingManager {
 
             currentFlare = builder.build();
         } catch (IOException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
             throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
 
         try {
             currentFlare.start();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(FlarePlatformPaper.getInstance(), task -> player.updateCommands(), null);
-            }
+            FlarePlatformVelocity.getInstance().refreshCommands();
         } catch (IllegalStateException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = scheduler.runDelayed(FlarePlatformPaper.getInstance(),
-                task -> ProfilingManager.stop(),
-                15L,
-                TimeUnit.MINUTES);
-        FlarePlatformPaper.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        currentTask = scheduler.buildTask(FlarePlatformVelocity.getInstance(),
+                task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
+        FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -143,25 +131,22 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        FlarePlatformPaper.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
+        FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(FlarePlatformPaper.getInstance(), task -> player.updateCommands(), null);
-            }
+            FlarePlatformVelocity.getInstance().refreshCommands();
         } catch (IllegalStateException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
         try {
             if (currentTask != null) currentTask.cancel();
         } catch (Throwable t) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
         return true;
     }
 
 }
-*/

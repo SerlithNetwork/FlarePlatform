@@ -75,4 +75,15 @@ public class FlarePlatformVelocity {
     public Logger getLogger() {
         return logger;
     }
+
+    public void refreshCommands() {
+        CommandManager commandManager = server.getCommandManager();
+        commandManager.unregister(commandManager.metaBuilder("flareprofiler").build());
+        CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
+                .aliases("flare", "profiler")
+                .plugin(this)
+                .build();
+        BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
+        commandManager.register(commandMeta, command);
+    }
 }
