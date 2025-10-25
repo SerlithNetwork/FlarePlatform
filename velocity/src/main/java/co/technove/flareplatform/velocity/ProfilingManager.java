@@ -103,19 +103,21 @@ public class ProfilingManager {
                     );
 
             currentFlare = builder.build();
-            try {
-                currentFlare.start();
-                FlarePlatformVelocity.getInstance().refreshCommands();
-            } catch (IllegalStateException e) {
-                FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
-                throw new UserReportableException("Failed to start Flare, check logs for further details.");
-            }
+        } catch (RuntimeException e) {
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error building the Flare instance:", e);
+            throw new UserReportableException("Failed to build Flare, check logs for further details.");
+        }
+        try {
+            currentFlare.start();
+            FlarePlatformVelocity.getInstance().refreshCommands();
+        } catch (IllegalStateException e) {
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            throw new UserReportableException("Failed to start Flare, check logs for further details.");
+        }
 
-            currentTask = scheduler.buildTask(FlarePlatformVelocity.getInstance(),
-                    task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
-            FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
-            return true;
-        } catch (UserReportableException ignored) {}
+        currentTask = scheduler.buildTask(FlarePlatformVelocity.getInstance(),
+                task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
+        FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
