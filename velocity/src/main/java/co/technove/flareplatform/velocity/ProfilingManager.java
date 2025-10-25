@@ -8,6 +8,7 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.CustomCategories;
 import co.technove.flareplatform.collectors.GCEventCollector;
 import co.technove.flareplatform.collectors.StatCollector;
+import com.google.common.base.Preconditions;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
 import org.jspecify.annotations.NullMarked;
@@ -19,10 +20,8 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -40,7 +39,8 @@ public class ProfilingManager {
     }
 
     public static synchronized String getProfilingUri() {
-        return Objects.requireNonNull(currentFlare).getURI().map(URI::toString).orElse("Flare is not running");
+        Preconditions.checkState(currentFlare != null, "Flare cannot be null!");
+        return currentFlare.getURI().map(URI::toString).orElse("Flare is not running");
     }
 
     public static Duration getTimeRan() {

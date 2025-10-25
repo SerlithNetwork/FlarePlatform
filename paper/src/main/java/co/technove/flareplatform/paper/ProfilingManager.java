@@ -10,6 +10,7 @@ import co.technove.flareplatform.collectors.StatCollector;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import co.technove.flareplatform.CustomCategories;
+import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
@@ -26,7 +27,6 @@ import oshi.software.os.OperatingSystem;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -44,7 +44,8 @@ public class ProfilingManager {
     }
 
     public static synchronized String getProfilingUri() {
-        return Objects.requireNonNull(currentFlare).getURI().map(URI::toString).orElse("Flare is not running");
+        Preconditions.checkState(currentFlare != null, "Flare cannot be null!");
+        return currentFlare.getURI().map(URI::toString).orElse("Flare is not running");
     }
 
     public static Duration getTimeRan() {
