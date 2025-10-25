@@ -3,13 +3,9 @@ import xyz.jpenilla.resourcefactory.velocity.VelocityPluginJson
 
 plugins {
     id("xyz.jpenilla.run-velocity") version "3.0.0"
-    id("com.gradleup.shadow") version "9.2.2"
+    alias(libs.plugins.shadow)
     id("xyz.jpenilla.resource-factory-velocity-convention") version "1.3.0"
 }
-
-val flareVersion = providers.gradleProperty("flareVersion").get()
-val oshiVersion = providers.gradleProperty("oshiVersion").get()
-val velocityApiVersion = providers.gradleProperty("velocityApiVersion").get()
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
@@ -18,14 +14,15 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
-    implementation("net.serlith:Flare:$flareVersion")
-    implementation("com.github.oshi:oshi-core:$oshiVersion")
-    compileOnly("com.velocitypowered:velocity-api:$velocityApiVersion")
+    implementation(projects.common)
+    implementation(libs.flare)
+    implementation(libs.oshi.core)
+    compileOnly(libs.jspecify)
+    compileOnly(libs.velocity.api)
 }
 
 tasks.runVelocity {
-    velocityVersion("3.4.0-SNAPSHOT")
+    velocityVersion(libs.versions.velocity.api.get())
 }
 
 velocityPluginJson {

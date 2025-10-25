@@ -1,17 +1,14 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "9.2.2"
+    alias(libs.plugins.shadow)
 }
 
 group = "co.technove"
 version = "2.0.0"
 
-val flareVersion = providers.gradleProperty("flareVersion").get()
-val oshiVersion = providers.gradleProperty("oshiVersion").get()
-
 dependencies {
-    implementation(project(":paper"))
-    implementation(project(":velocity"))
+    implementation(projects.paper)
+    implementation(projects.velocity)
 }
 
 allprojects {
@@ -23,13 +20,6 @@ allprojects {
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
-    }
-
-    dependencies {
-        compileOnly("org.jspecify:jspecify:1.0.0")
-        compileOnly("net.serlith:Flare:$flareVersion")
-        compileOnly("com.github.oshi:oshi-core:$oshiVersion")
-        compileOnly("com.google.guava:guava:25.1-jre")
     }
 
     tasks {

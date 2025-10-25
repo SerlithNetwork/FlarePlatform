@@ -1,12 +1,9 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://papermc.io/repo/repository/maven-public/")
-    }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 rootProject.name = "FlarePlatform"
+
 // modules
-include("common")
-include("paper")
-include("velocity")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+include("common", "paper", "velocity")

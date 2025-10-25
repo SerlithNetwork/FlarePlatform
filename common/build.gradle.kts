@@ -1,13 +1,17 @@
-val flareVersion = providers.gradleProperty("flareVersion").get()
-val oshiVersion = providers.gradleProperty("oshiVersion").get()
-
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
+dependencies {
+    compileOnly(libs.jspecify)
+    compileOnly(libs.flare)
+    compileOnly(libs.oshi.core)
+    compileOnly(libs.guava)
+}
+
 tasks.processResources {
-    val flareVersion = flareVersion
-    val oshiVersion = oshiVersion
+    val flareVersion = libs.versions.flare
+    val oshiVersion = libs.versions.oshi
     filteringCharset = Charsets.UTF_8.name()
     filesMatching("**/libraries.properties") {
         expand(

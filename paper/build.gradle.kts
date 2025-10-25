@@ -2,19 +2,21 @@ import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 plugins {
     id("xyz.jpenilla.run-paper") version "3.0.0"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.0"
-    id("com.gradleup.shadow") version "9.2.2"
+    alias(libs.plugins.shadow)
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val foliaApiVersion = providers.gradleProperty("foliaApiVersion").get()
 
 repositories {
     maven(paperMavenPublicUrl)
 }
 
 dependencies {
-    compileOnly("dev.folia:folia-api:$foliaApiVersion")
-    implementation(project(":common"))
+    compileOnly(libs.folia.api)
+    compileOnly(libs.jspecify)
+    compileOnly(libs.flare)
+    compileOnly(libs.oshi.core)
+    implementation(projects.common)
 }
 
 java {

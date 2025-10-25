@@ -1,0 +1,18 @@
+[versions]
+jspecify = "1.0.0"
+guava = "25.1-jre" # Matches dependency from Velocity
+oshi = "6.6.5" # Matches dependency from Paper
+flare = "4.0.4"
+folia-api = "1.21.8-R0.1-SNAPSHOT"
+velocity-api = "3.4.0-SNAPSHOT"
+
+[libraries]
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+oshi-core = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
+flare = { module = "net.serlith:Flare", version.ref = "flare" }
+folia-api = { module = "dev.folia:folia-api", version.ref = "folia-api" }
+velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-api" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
