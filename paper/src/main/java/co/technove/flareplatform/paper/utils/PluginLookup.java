@@ -1,4 +1,4 @@
-package co.technove.flareplugin.utils;
+package co.technove.flareplatform.paper.utils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

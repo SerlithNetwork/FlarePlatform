@@ -1,4 +1,4 @@
-package co.technove.flareplugin.collectors;
+package co.technove.flareplatform.collectors;
 
 import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;

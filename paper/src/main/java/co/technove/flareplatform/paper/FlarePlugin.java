@@ -1,9 +1,9 @@
-package co.technove.flareplugin;
+package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplugin.utils.PluginLookup;
-import co.technove.flareplugin.utils.ServerConfigurations;
+import co.technove.flareplatform.paper.utils.PluginLookup;
+import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 

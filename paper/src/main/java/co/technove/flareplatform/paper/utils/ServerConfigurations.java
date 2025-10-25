@@ -1,6 +1,6 @@
-package co.technove.flareplugin.utils;
+package co.technove.flareplatform.paper.utils;
 
-import co.technove.flareplugin.FlarePlugin;
+import co.technove.flareplatform.paper.FlarePlugin;
 import com.google.common.io.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @NullMarked
-public class ServerConfigurations {
+public class ServerConfigurations extends co.technove.flareplatform.utils.ServerConfigurations {
     public static final List<String> configurationFiles = FlarePlugin.getFlareConfig().getList("flare.server-configs",
         List.of(
             "server.properties",
@@ -56,7 +56,8 @@ public class ServerConfigurations {
                 .map(s -> Pattern.compile(s.replace(".", "\\.").replace("*", ".*")))
                 .toList();
 
-        public static Map<String, String> getCleanCopies() throws IOException {
+        @Override
+        public Map<String, String> getCleanCopies() throws IOException {
             for (final String file : configurationFiles) {
                 if (configFiles.containsKey(file)) continue;
                 configFiles.put(file, getCleanCopy(file));

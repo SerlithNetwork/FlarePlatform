@@ -5,4 +5,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = "FlarePlugin"
+rootProject.name = "FlarePlatform"
+// modules
+include("common")
+include("paper")
+include("velocity")

@@ -1,14 +1,15 @@
-package co.technove.flareplugin;
+package co.technove.flareplatform.paper;
 
 import co.technove.flare.Flare;
 import co.technove.flare.FlareAuth;
 import co.technove.flare.FlareBuilder;
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
-import co.technove.flareplugin.collectors.GCEventCollector;
-import co.technove.flareplugin.collectors.StatCollector;
-import co.technove.flareplugin.collectors.TPSCollector;
-import co.technove.flareplugin.utils.ServerConfigurations;
+import co.technove.flareplatform.collectors.GCEventCollector;
+import co.technove.flareplatform.collectors.StatCollector;
+import co.technove.flareplatform.paper.collectors.TPSCollector;
+import co.technove.flareplatform.utils.ServerConfigurations;
+import co.technove.flareplatform.CustomCategories;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
@@ -82,12 +83,12 @@ public class ProfilingManager {
                     .withMemoryProfiling(true)
                     .withAuth(FlareAuth.fromTokenAndUrl(FlarePlugin.getInstance().getAccessToken(), FlarePlugin.getInstance().getFlareURI()))
 
-                    .withFiles(ServerConfigurations.getCleanCopies())
+                    .withFiles(new ServerConfigurations().getCleanCopies())
                     .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
                     .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
                     .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
 
-                    .withGraphCategories(CustomCategories.MC_PERF)
+                    .withGraphCategories(CustomCategories.PERF)
                     .withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector())
                     .withClassIdentifier(FlarePlugin.getInstance().getPluginLookup()::getPluginForClass)
 

@@ -1,4 +1,4 @@
-package co.technove.flareplugin;
+package co.technove.flareplatform.paper;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;

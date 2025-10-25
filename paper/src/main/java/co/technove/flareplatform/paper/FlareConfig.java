@@ -1,4 +1,4 @@
-package co.technove.flareplugin;
+package co.technove.flareplatform.paper;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
