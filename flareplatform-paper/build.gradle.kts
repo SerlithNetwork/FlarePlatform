@@ -31,8 +31,8 @@ paperPluginYaml {
 tasks.withType<ShadowJar>().configureEach {
     manifest {
         attributes(
-            "flare-version" to libs.versions.flare.get(),
-            "oshi-version" to libs.versions.oshi.get(),
+            "flare-version" to libs.versions.flare,
+            "oshi-version" to libs.versions.oshi,
             "paperweight-mappings-namespace" to "mojang",
         )
     }
