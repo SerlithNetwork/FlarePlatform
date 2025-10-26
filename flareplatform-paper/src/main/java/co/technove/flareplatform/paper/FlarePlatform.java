@@ -6,20 +6,43 @@ import co.technove.flareplatform.common.FlarePlatformConfig;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class FlarePlatform extends JavaPlugin {
 
-    private PluginLookup pluginLookup;
+    public static final boolean IS_FOLIA = detectFolia();
     private static FlarePlatformConfig config;
     private static FlarePlatform instance;
     private static boolean shouldRegister = true;
-    public static final boolean IS_FOLIA = detectFolia();
+    private PluginLookup pluginLookup;
+
+    public static FlarePlatformConfig getFlareConfig() {
+        return config;
+    }
+
+    public static FlarePlatform getInstance() {
+        return instance;
+    }
+
+    /**
+     * internal
+     */
+    private static boolean detectFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static boolean isFolia() {
+        return IS_FOLIA;
+    }
 
     @Override
     public void onEnable() {
@@ -33,18 +56,21 @@ public class FlarePlatform extends JavaPlugin {
         try {
             Class.forName("co.technove.flare.Flare", false, ClassLoader.getSystemClassLoader());
             this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
 
         try {
             if (shouldRegister) {
-                if (IS_FOLIA) this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported");
+                if (IS_FOLIA) {
+                    this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported");
+                }
                 final List<String> warnings = FlareInitializer.initialize();
                 this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
                 this.getLifecycleManager().registerEventHandler(
-                        LifecycleEvents.COMMANDS, commands -> {
-                            commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
-                                    List.of("flare", "profiler"));
-                        }
+                    LifecycleEvents.COMMANDS, commands -> {
+                        commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
+                            List.of("flare", "profiler"));
+                    }
                 );
                 this.pluginLookup = new PluginLookup();
             }
@@ -70,14 +96,6 @@ public class FlarePlatform extends JavaPlugin {
         }
     }
 
-    public static FlarePlatformConfig getFlareConfig() {
-        return config;
-    }
-
-    public static FlarePlatform getInstance() {
-        return instance;
-    }
-
     public URI getFlareURI() {
         return URI.create(getFlareConfig().getString("flare.url", "https://flare.serlith.net"));
     }
@@ -96,18 +114,5 @@ public class FlarePlatform extends JavaPlugin {
 
     public PluginLookup getPluginLookup() {
         return pluginLookup;
-    }
-
-    /** internal */
-    private static boolean detectFolia() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-    public static boolean isFolia() {
-        return IS_FOLIA;
     }
 }

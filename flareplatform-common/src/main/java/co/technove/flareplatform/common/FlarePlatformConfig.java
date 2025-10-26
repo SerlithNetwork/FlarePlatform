@@ -1,18 +1,17 @@
 package co.technove.flareplatform.common;
 
 import com.google.common.base.Preconditions;
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @NullMarked
 public class FlarePlatformConfig {
@@ -27,8 +26,8 @@ public class FlarePlatformConfig {
         this.logger = logger;
         this.configFile = new File(dataFolder, "config.yml");
         this.loader = YamlConfigurationLoader.builder()
-                .file(configFile)
-                .build();
+            .file(configFile)
+            .build();
         reloadConfig();
     }
 

@@ -5,18 +5,18 @@ import co.technove.flare.FlareAuth;
 import co.technove.flare.FlareBuilder;
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
+import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
-import co.technove.flareplatform.common.CustomCategories;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.jspecify.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
@@ -35,9 +35,10 @@ import java.util.logging.Level;
 public class ProfilingManager {
 
     private static final AsyncScheduler scheduler = FlarePlatform.getInstance().getServer().getAsyncScheduler();
-
-    private @Nullable static Flare currentFlare;
-    public @Nullable static ScheduledTask currentTask;
+    public @Nullable
+    static ScheduledTask currentTask;
+    private @Nullable
+    static Flare currentFlare;
 
     public static synchronized boolean isProfiling() {
         return currentFlare != null && currentFlare.isRunning();
@@ -155,7 +156,9 @@ public class ProfilingManager {
         currentFlare = null;
 
         try {
-            if (currentTask != null) currentTask.cancel();
+            if (currentTask != null) {
+                currentTask.cancel();
+            }
         } catch (Throwable t) {
             FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }

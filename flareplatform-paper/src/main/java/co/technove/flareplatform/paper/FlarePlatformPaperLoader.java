@@ -4,11 +4,11 @@ import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
 import io.papermc.paper.util.JarManifests;
+import java.util.jar.Manifest;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.jspecify.annotations.NullMarked;
-import java.util.jar.Manifest;
 
 @SuppressWarnings("UnstableApiUsage")
 @NullMarked
@@ -26,9 +26,9 @@ public class FlarePlatformPaperLoader implements PluginLoader {
         resolver.addDependency(new Dependency(new DefaultArtifact("com.github.oshi:oshi-core:" + oshiVersion), null));
 
         resolver.addRepository(new RemoteRepository.Builder("central", "default",
-                MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build()); // oshi
+            MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build()); // oshi
         resolver.addRepository(new RemoteRepository.Builder("jitpack", "default",
-                "https://jitpack.io").build()); // flare
+            "https://jitpack.io").build()); // flare
 
         classpathBuilder.addLibrary(resolver);
     }

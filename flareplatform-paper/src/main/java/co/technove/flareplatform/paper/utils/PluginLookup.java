@@ -2,21 +2,20 @@ package co.technove.flareplatform.paper.utils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NullMarked;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class PluginLookup {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
-      .expireAfterAccess(1, TimeUnit.MINUTES)
-      .maximumSize(1024)
-      .build();
+        .expireAfterAccess(1, TimeUnit.MINUTES)
+        .maximumSize(1024)
+        .build();
 
     private final Map<ClassLoader, Plugin> classLoaderToPlugin = new ConcurrentHashMap<>();
 
@@ -28,7 +27,7 @@ public class PluginLookup {
 
     public Optional<String> getPluginForClass(final String name) {
         if (name.startsWith("net.minecraft") || name.startsWith("java.") || name.startsWith("com.mojang") ||
-          name.startsWith("com.google") || name.startsWith("it.unimi") || name.startsWith("sun")) {
+            name.startsWith("com.google") || name.startsWith("it.unimi") || name.startsWith("sun")) {
             return Optional.empty();
         }
 

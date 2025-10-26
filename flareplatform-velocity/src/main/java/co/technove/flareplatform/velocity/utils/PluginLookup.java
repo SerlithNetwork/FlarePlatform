@@ -4,19 +4,18 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
-import org.jspecify.annotations.NullMarked;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class PluginLookup {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
-      .expireAfterAccess(1, TimeUnit.MINUTES)
-      .maximumSize(1024)
-      .build();
+        .expireAfterAccess(1, TimeUnit.MINUTES)
+        .maximumSize(1024)
+        .build();
 
     private final Map<ClassLoader, PluginContainer> classLoaderToPlugin = new ConcurrentHashMap<>();
 

@@ -5,11 +5,10 @@ import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.category.GraphCategory;
 import co.technove.flare.live.formatter.DataFormatter;
 import com.sun.management.OperatingSystemMXBean;
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 
 public class StatCollector extends LiveCollector {
 

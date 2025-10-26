@@ -11,6 +11,10 @@ import co.technove.flareplatform.common.collectors.StatCollector;
 import com.google.common.base.Preconditions;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
+import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
@@ -20,19 +24,15 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
 // yuck
 @NullMarked
 public class ProfilingManager {
 
     private static final Scheduler scheduler = FlarePlatform.getInstance().getServer().getScheduler();
-
-    private @Nullable static Flare currentFlare;
-    public @Nullable static ScheduledTask currentTask;
+    public @Nullable
+    static ScheduledTask currentTask;
+    private @Nullable
+    static Flare currentFlare;
 
     public static synchronized boolean isProfiling() {
         return currentFlare != null && currentFlare.isRunning();
@@ -72,40 +72,40 @@ public class ProfilingManager {
             VirtualMemory virtualMemory = memory.getVirtualMemory();
 
             FlareBuilder builder = new FlareBuilder()
-                    .withProfileType(profileType)
-                    .withMemoryProfiling(true)
-                    .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(),
-                            FlarePlatform.getInstance().getFlareURI()))
+                .withProfileType(profileType)
+                .withMemoryProfiling(true)
+                .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(),
+                    FlarePlatform.getInstance().getFlareURI()))
 
-                    // dirty hacks for our flare viewer
-                    .withVersion("Primary Version",
-                            FlarePlatform.getInstance().getServer().getVersion().getName() + " | " + FlarePlatform.getInstance().getServer().getVersion().getVendor())
-                    .withVersion("Bukkit Version",
-                            FlarePlatform.getInstance().getServer().getVersion().getName() + " " + FlarePlatform.getInstance().getServer().getVersion().getVersion())
-                    .withVersion("Minecraft Version",
-                            FlarePlatform.getInstance().getServer().getVersion().getVersion())
+                // dirty hacks for our flare viewer
+                .withVersion("Primary Version",
+                    FlarePlatform.getInstance().getServer().getVersion().getName() + " | " + FlarePlatform.getInstance().getServer().getVersion().getVendor())
+                .withVersion("Bukkit Version",
+                    FlarePlatform.getInstance().getServer().getVersion().getName() + " " + FlarePlatform.getInstance().getServer().getVersion().getVersion())
+                .withVersion("Minecraft Version",
+                    FlarePlatform.getInstance().getServer().getVersion().getVersion())
 
-                    .withGraphCategories(CustomCategories.PERF)
-                    .withCollectors(new GCEventCollector(), new StatCollector())
-                    .withClassIdentifier(FlarePlatform.getInstance().getPluginLookup()::getPluginForClass)
+                .withGraphCategories(CustomCategories.PERF)
+                .withCollectors(new GCEventCollector(), new StatCollector())
+                .withClassIdentifier(FlarePlatform.getInstance().getPluginLookup()::getPluginForClass)
 
-                    .withHardware(new FlareBuilder.HardwareBuilder()
-                            .setCoreCount(processor.getPhysicalProcessorCount())
-                            .setThreadCount(processor.getLogicalProcessorCount())
-                            .setCpuModel(processorIdentifier.getName())
-                            .setCpuFrequency(processor.getMaxFreq())
+                .withHardware(new FlareBuilder.HardwareBuilder()
+                    .setCoreCount(processor.getPhysicalProcessorCount())
+                    .setThreadCount(processor.getLogicalProcessorCount())
+                    .setCpuModel(processorIdentifier.getName())
+                    .setCpuFrequency(processor.getMaxFreq())
 
-                            .setTotalMemory(memory.getTotal())
-                            .setTotalSwap(virtualMemory.getSwapTotal())
-                            .setTotalVirtual(virtualMemory.getVirtualMax())
-                    )
+                    .setTotalMemory(memory.getTotal())
+                    .setTotalSwap(virtualMemory.getSwapTotal())
+                    .setTotalVirtual(virtualMemory.getVirtualMax())
+                )
 
-                    .withOperatingSystem(new FlareBuilder.OperatingSystemBuilder()
-                            .setManufacturer(os.getManufacturer())
-                            .setFamily(os.getFamily())
-                            .setVersion(os.getVersionInfo().toString())
-                            .setBitness(os.getBitness())
-                    );
+                .withOperatingSystem(new FlareBuilder.OperatingSystemBuilder()
+                    .setManufacturer(os.getManufacturer())
+                    .setFamily(os.getFamily())
+                    .setVersion(os.getVersionInfo().toString())
+                    .setBitness(os.getBitness())
+                );
 
             currentFlare = builder.build();
         } catch (RuntimeException e) {
@@ -121,7 +121,7 @@ public class ProfilingManager {
         }
 
         currentTask = scheduler.buildTask(FlarePlatform.getInstance(),
-                task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
+            task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
         FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
@@ -144,7 +144,9 @@ public class ProfilingManager {
         currentFlare = null;
 
         try {
-            if (currentTask != null) currentTask.cancel();
+            if (currentTask != null) {
+                currentTask.cancel();
+            }
         } catch (Throwable t) {
             FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }

@@ -21,7 +21,9 @@ public class TPSCollector extends LiveCollector {
 
     @Override
     public void run() {
-        if (FlarePlatform.isFolia()) return;
+        if (FlarePlatform.isFolia()) {
+            return;
+        }
         final double[] tps = Bukkit.getTPS();
         final long[] times = Bukkit.getTickTimes();
         final double mspt = ((double) Arrays.stream(times).sum() / (double) times.length) * 1.0E-6D;

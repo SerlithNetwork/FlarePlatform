@@ -13,7 +13,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
@@ -23,25 +22,27 @@ import java.util.logging.Logger;
 public class FlarePlatform {
 
     private static FlarePlatform instance;
-
+    private static FlarePlatformConfig config;
+    private static boolean shouldRegister = true;
     @Inject
     private PluginContainer container;
-
     @Inject
     private Logger logger;
-
     @Inject
     private ProxyServer server;
-
     private PluginLookup lookup;
-
-    private static FlarePlatformConfig config;
-
-    private static boolean shouldRegister = true;
 
     @Inject
     public FlarePlatform() {
         instance = this;
+    }
+
+    public static FlarePlatform getInstance() {
+        return instance;
+    }
+
+    public static FlarePlatformConfig getFlareConfig() {
+        return config;
     }
 
     @Subscribe
@@ -60,9 +61,9 @@ public class FlarePlatform {
                 // register commands
                 CommandManager commandManager = server.getCommandManager();
                 CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
-                        .aliases("flare", "profiler")
-                        .plugin(this)
-                        .build();
+                    .aliases("flare", "profiler")
+                    .plugin(this)
+                    .build();
                 BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
                 commandManager.register(commandMeta, command);
                 lookup = new PluginLookup(server);
@@ -74,7 +75,7 @@ public class FlarePlatform {
 
         instance = this;
         config = new FlarePlatformConfig("plugins/" + this.container.getDescription().getName().orElse(
-                "FlarePlatform"), this.getLogger());
+            "FlarePlatform"), this.getLogger());
         // generate defaults at startup - if omitted it'll just generate them the first time those values get -
         // - accessed so no big deal
         getFlareURI();
@@ -86,10 +87,6 @@ public class FlarePlatform {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
-    }
-
-    public static FlarePlatform getInstance() {
-        return instance;
     }
 
     public ProxyServer getServer() {
@@ -108,19 +105,15 @@ public class FlarePlatform {
         CommandManager commandManager = server.getCommandManager();
         commandManager.unregister(commandManager.metaBuilder("flareprofiler").build());
         CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
-                .aliases("flare", "profiler")
-                .plugin(FlarePlatform.getInstance())
-                .build();
+            .aliases("flare", "profiler")
+            .plugin(FlarePlatform.getInstance())
+            .build();
         BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
         commandManager.register(commandMeta, command);
     }
 
     public PluginLookup getPluginLookup() {
         return lookup;
-    }
-
-    public static FlarePlatformConfig getFlareConfig() {
-        return config;
     }
 
     public URI getFlareURI() {
