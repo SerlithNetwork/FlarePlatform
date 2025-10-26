@@ -1,76 +1,47 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.file.DuplicatesStrategy
+
 plugins {
     java
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-    id("com.github.johnrengelman.shadow") version "7.1.1"
-    id("xyz.jpenilla.run-paper") version "1.0.6"
+    alias(libs.plugins.shadow)
 }
 
-group = "co.technove"
-version = "1.0.1"
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "com.gradleup.shadow")
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(16))
-}
+    val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven("https://jitpack.io")
-}
+    repositories {
+        mavenCentral()
+        maven(paperMavenPublicUrl)
+        maven("https://jitpack.io")
+    }
 
-dependencies {
-    compileOnly("org.jetbrains:annotations:22.0.0")
-    compileOnly("org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT")
-
-    implementation("com.github.TECHNOVE:Flare:34637f3f87")
-    implementation("com.github.oshi:oshi-core:6.1.2")
-}
-
-bukkit {
-    main = "co.technove.flareplugin.FlarePlugin"
-    apiVersion = "1.16"
-    authors = listOf("PaulBGD")
-    version = rootProject.version as String
-
-    commands {
-        register("flare") {
-            description = "Flare profiling command"
-            aliases = listOf("profiler", "sampler")
-            permission = "flareplugin.command"
-            usage = "/flare"
+    extensions.configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
-}
 
-tasks {
-    build {
-        dependsOn(shadowJar)
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
     }
-
-    compileJava {
+    tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(16)
+        options.release = 21
+        options.isFork = true
     }
-
-    javadoc {
-        options.encoding = Charsets.UTF_8.name()
-    }
-
-    processResources {
+    tasks.withType<ProcessResources>().configureEach {
         filteringCharset = Charsets.UTF_8.name()
     }
-
-    runServer {
-        minecraftVersion("1.16.5")
+    tasks.withType<ShadowJar>().configureEach {
+        minimize()
+        mergeServiceFiles()
+        duplicatesStrategy = DuplicatesStrategy.FAIL
+        filesMatching("META-INF/**") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
     }
-
-    shadowJar {
-        classifier = ""
-    }
-
-}
-
-tasks.create<com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation>("relocateShadowJar") {
-    target = tasks["shadowJar"] as com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-    prefix = "co.technove.flareplugin.lib"
 }
