@@ -88,11 +88,13 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSourceStack> ctx) {
-            String profile = ProfilingManager.getProfilingUri();
-            broadcastPrefixed(
-                    Component.text("Profiling has been stopped.", MAIN_COLOR),
-                    Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
-            );
+        String profile = ProfilingManager.getProfilingUri();
+            if (ProfilingManager.stop()) {
+                broadcastPrefixed(
+                        Component.text("Profiling has been stopped.", MAIN_COLOR),
+                        Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
+                );
+            }
         return Command.SINGLE_SUCCESS;
     }
 

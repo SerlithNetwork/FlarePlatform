@@ -19,6 +19,7 @@ public class FlarePlatform extends JavaPlugin {
     private static FlarePlatformConfig config;
     private static FlarePlatform instance;
     private static boolean shouldRegister = true;
+    public static final boolean IS_FOLIA = detectFolia();
 
     @Override
     public void onEnable() {
@@ -28,12 +29,15 @@ public class FlarePlatform extends JavaPlugin {
             this.getLogger().log(Level.WARNING, "Flare does not support running on " + OS_NAME + ", will not enable!");
             shouldRegister = false;
         }
+
         try {
             Class.forName("co.technove.flare.Flare", false, ClassLoader.getSystemClassLoader());
             this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
-        } catch (ReflectiveOperationException ignored) {}
+        } catch (ClassNotFoundException ignored) {}
+
         try {
             if (shouldRegister) {
+                if (IS_FOLIA) this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported");
                 final List<String> warnings = FlareInitializer.initialize();
                 this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
                 this.getLifecycleManager().registerEventHandler(
@@ -92,5 +96,18 @@ public class FlarePlatform extends JavaPlugin {
 
     public PluginLookup getPluginLookup() {
         return pluginLookup;
+    }
+
+    /** internal */
+    private static boolean detectFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+    public static boolean isFolia() {
+        return IS_FOLIA;
     }
 }

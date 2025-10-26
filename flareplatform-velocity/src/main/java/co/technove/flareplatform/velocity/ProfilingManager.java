@@ -121,13 +121,13 @@ public class ProfilingManager {
         return true;
     }
 
-    public static synchronized void stop() {
+    public static synchronized boolean stop() {
         if (!isProfiling()) {
-            return;
+            return false;
         }
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null;
-            return;
+            return true;
         }
         FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
@@ -144,6 +144,8 @@ public class ProfilingManager {
             FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
+
+        return true;
     }
 
 }
