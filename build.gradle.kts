@@ -3,9 +3,6 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-group = "co.technove"
-version = providers.gradleProperty("version").getOrElse("test-snapshot")
-
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
 allprojects {

@@ -2,6 +2,7 @@ package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
+import co.technove.flareplatform.FlarePlatformConfig;
 import co.technove.flareplatform.velocity.utils.PluginLookup;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.BrigadierCommand;
@@ -18,9 +19,9 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FlarePlatformVelocity {
+public class FlarePlatform {
 
-    private static FlarePlatformVelocity instance;
+    private static FlarePlatform instance;
 
     @Inject
     private PluginContainer container;
@@ -33,12 +34,12 @@ public class FlarePlatformVelocity {
 
     private PluginLookup lookup;
 
-    private static FlareConfig config;
+    private static FlarePlatformConfig config;
 
     private static boolean shouldRegister = true;
 
     @Inject
-    public FlarePlatformVelocity() {
+    public FlarePlatform() {
         instance = this;
     }
 
@@ -71,15 +72,15 @@ public class FlarePlatformVelocity {
         }
 
         instance = this;
-        config = new FlareConfig("plugins/" + this.container.getDescription().getName().orElse(
-                "FlarePlatformVelocity"));
+        config = new FlarePlatformConfig("plugins/" + this.container.getDescription().getName().orElse(
+                "FlarePlatform"), this.getLogger());
         // generate defaults at startup - if omitted it'll just generate them the first time those values get -
         // - accessed so no big deal
         getFlareURI();
         getAccessToken();
     }
 
-    public static FlarePlatformVelocity getInstance() {
+    public static FlarePlatform getInstance() {
         return instance;
     }
 
@@ -100,7 +101,7 @@ public class FlarePlatformVelocity {
         commandManager.unregister(commandManager.metaBuilder("flareprofiler").build());
         CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
                 .aliases("flare", "profiler")
-                .plugin(FlarePlatformVelocity.getInstance())
+                .plugin(FlarePlatform.getInstance())
                 .build();
         BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
         commandManager.register(commandMeta, command);
@@ -110,7 +111,7 @@ public class FlarePlatformVelocity {
         return lookup;
     }
 
-    public static FlareConfig getFlareConfig() {
+    public static FlarePlatformConfig getFlareConfig() {
         return config;
     }
 

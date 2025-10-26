@@ -20,10 +20,10 @@ java {
 runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
-    name = "FlarePlatformPaper"
-    main = "co.technove.flareplatform.paper.FlarePlatformPaper"
+    name = "FlarePlatform"
+    main = "co.technove.flareplatform.paper.FlarePlatform"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
-    description = "Profile your server with Flare"
+    description = "Profile your server with Flare!"
     apiVersion = "1.21"
     authors.add("PaulBGD, SerlithNetwork")
     foliaSupported = true

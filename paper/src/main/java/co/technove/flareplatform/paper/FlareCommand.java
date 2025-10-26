@@ -57,13 +57,13 @@ public class FlareCommand {
     }
 
     public static int executeStart(CommandContext<CommandSourceStack> ctx) {
-        if (FlarePlatformPaper.getInstance().getFlareURI().getScheme() == null) {
+        if (FlarePlatform.getInstance().getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             ProfileType profileType = ProfileType.ITIMER;
             sendPrefixed(ctx.getSource().getSender(),
                     Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            FlarePlatformPaper.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatformPaper.getInstance(), task -> {
+            FlarePlatform.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatform.getInstance(), task -> {
                 try {
                     if (ProfilingManager.start(profileType)) {
                         broadcastPrefixed(
@@ -79,7 +79,7 @@ public class FlareCommand {
                     sendPrefixed(ctx.getSource().getSender(),
                             Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                     if (e.getCause() != null) {
-                        FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
+                        FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
                     }
                 }
             });
@@ -108,14 +108,14 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
-        FlarePlatformPaper.getInstance().reloadConfig();
+        FlarePlatform.getInstance().reloadConfig();
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
     public static int executeVersion(CommandContext<CommandSourceStack> ctx) {
         broadcastPrefixed(
-                Component.text("You're running FlarePlatform for Paper, version: " + FlarePlatformPaper.getInstance().getPluginMeta().getVersion(), HEX));
+                Component.text("You're running FlarePlatform for Paper, version: " + FlarePlatform.getInstance().getPluginMeta().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 

@@ -57,13 +57,13 @@ public class FlareCommand {
     }
 
     public static int executeStart(CommandContext<CommandSource> ctx) {
-        if (FlarePlatformVelocity.getInstance().getFlareURI().getScheme() == null) {
+        if (FlarePlatform.getInstance().getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             ProfileType profileType = ProfileType.ITIMER;
             sendPrefixed(ctx.getSource(),
                     Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            FlarePlatformVelocity.getInstance().getServer().getScheduler().buildTask(FlarePlatformVelocity.getInstance(), task -> {
+            FlarePlatform.getInstance().getServer().getScheduler().buildTask(FlarePlatform.getInstance(), task -> {
                 try {
                     if (ProfilingManager.start(profileType)) {
                         broadcastPrefixed(
@@ -79,7 +79,7 @@ public class FlareCommand {
                     sendPrefixed(ctx.getSource(),
                             Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                     if (e.getCause() != null) {
-                        FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
+                        FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
                     }
                 }
             })
@@ -109,14 +109,14 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSource> ctx) {
-        FlarePlatformVelocity.getFlareConfig().reloadConfig();
+        FlarePlatform.getFlareConfig().reloadConfig();
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
     public static int executeVersion(CommandContext<CommandSource> ctx) {
         broadcastPrefixed(
-                Component.text("You're running FlarePlatform for Velocity, version: " + FlarePlatformVelocity.getInstance().getVersion(), HEX));
+                Component.text("You're running FlarePlatform for Velocity, version: " + FlarePlatform.getInstance().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -128,7 +128,7 @@ public class FlareCommand {
 
     private static void broadcastPrefixed(Component ...lines) {
         Stream.concat(
-                FlarePlatformVelocity.getInstance().getServer().getAllPlayers().stream(), Stream.of(FlarePlatformVelocity.getInstance().getServer().getConsoleCommandSource()))
+                FlarePlatform.getInstance().getServer().getAllPlayers().stream(), Stream.of(FlarePlatform.getInstance().getServer().getConsoleCommandSource()))
                 .filter(s -> s.hasPermission("airplane.flare.profiler"))
                 .forEach(s -> {
                     for (Component line : lines) {

@@ -21,10 +21,10 @@ tasks.runVelocity {
 }
 
 velocityPluginJson {
-    id = "flareplatformvelocity"
-    name = "FlarePlatformVelocity"
-    description = "Profile your proxy with Flare"
-    main = "co.technove.flareplatform.velocity.FlarePlatformVelocity"
+    id = "flareplatform"
+    name = "FlarePlatform"
+    description = "Profile your proxy with Flare!"
+    main = "co.technove.flareplatform.velocity.FlarePlatform"
     authors.add("PaulBGD, SerlithNetwork")
 }
 

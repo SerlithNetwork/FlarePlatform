@@ -1,6 +1,6 @@
 package co.technove.flareplatform.paper.utils;
 
-import co.technove.flareplatform.paper.FlarePlatformPaper;
+import co.technove.flareplatform.paper.FlarePlatform;
 import com.google.common.io.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -23,7 +23,7 @@ import java.util.Properties;
 
 @NullMarked
 public class ServerConfigurations {
-    public static final List<String> configurationFiles = FlarePlatformPaper.getFlareConfig().getList("flare.server-configs",
+    public static final List<String> configurationFiles = FlarePlatform.getFlareConfig().getList("flare.server-configs",
         List.of(
             "server.properties",
             "bukkit.yml",
@@ -33,7 +33,7 @@ public class ServerConfigurations {
         ));
     private static final List<World> worldList = new ArrayList<>();
     private static final Map<String, String> configFiles = new HashMap<>(configurationFiles.size());
-    public static final List<String> hiddenEntries = FlarePlatformPaper.getFlareConfig().getList("flare.hidden-entries",
+    public static final List<String> hiddenEntries = FlarePlatform.getFlareConfig().getList("flare.hidden-entries",
         List.of(
             "proxies.velocity.secret",
             "web-services.token",

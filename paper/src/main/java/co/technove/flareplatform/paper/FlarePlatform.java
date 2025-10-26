@@ -2,6 +2,7 @@ package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
+import co.technove.flareplatform.FlarePlatformConfig;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -12,11 +13,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
-public class FlarePlatformPaper extends JavaPlugin {
+public class FlarePlatform extends JavaPlugin {
 
     private PluginLookup pluginLookup;
-    private static FlareConfig config;
-    private static FlarePlatformPaper instance;
+    private static FlarePlatformConfig config;
+    private static FlarePlatform instance;
     private static boolean shouldRegister = true;
 
     @Override
@@ -48,16 +49,14 @@ public class FlarePlatformPaper extends JavaPlugin {
         }
 
         instance = this;
-        config = new FlareConfig();
+        config = new FlarePlatformConfig("plugins/" + this.getPluginMeta().getName(), this.getLogger());
 
         // dirty hack so those get saved to the config file without starting the profiler
-        this.getServerConfigurations();
-        this.getHiddenEntries();
         this.getFlareURI();
         this.getAccessToken();
+        this.getServerConfigurations();
+        this.getHiddenEntries();
         // dirty hack end
-
-        config.saveConfig();
     }
 
     @Override
@@ -67,11 +66,11 @@ public class FlarePlatformPaper extends JavaPlugin {
         }
     }
 
-    public static FlareConfig getFlareConfig() {
+    public static FlarePlatformConfig getFlareConfig() {
         return config;
     }
 
-    public static FlarePlatformPaper getInstance() {
+    public static FlarePlatform getInstance() {
         return instance;
     }
 

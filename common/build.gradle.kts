@@ -3,6 +3,7 @@ dependencies {
     compileOnly(libs.flare)
     compileOnly(libs.oshi.core)
     compileOnly(libs.guava)
+    compileOnly(libs.configurate4.yaml)
 }
 
 tasks.processResources {
