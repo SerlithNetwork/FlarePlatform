@@ -2,11 +2,7 @@ package co.technove.flareplatform.paper.utils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NullMarked;
 
@@ -16,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @NullMarked
-public class PluginLookup implements Listener {
+public class PluginLookup {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
       .expireAfterAccess(1, TimeUnit.MINUTES)
       .maximumSize(1024)
@@ -24,14 +20,10 @@ public class PluginLookup implements Listener {
 
     private final Map<ClassLoader, Plugin> classLoaderToPlugin = new ConcurrentHashMap<>();
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginLoad(final PluginEnableEvent event) {
-        classLoaderToPlugin.put(event.getPlugin().getClass().getClassLoader(), event.getPlugin());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(final PluginDisableEvent event) {
-        classLoaderToPlugin.values().remove(event.getPlugin());
+    public PluginLookup() {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            classLoaderToPlugin.put(plugin.getClass().getClassLoader(), plugin);
+        }
     }
 
     public Optional<String> getPluginForClass(final String name) {

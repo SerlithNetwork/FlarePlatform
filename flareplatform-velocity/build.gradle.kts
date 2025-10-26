@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import xyz.jpenilla.resourcefactory.velocity.VelocityPluginJson
 import java.util.regex.Pattern
 
 plugins {
@@ -23,8 +22,9 @@ velocityPluginJson {
     id = "flareplatform"
     name = "FlarePlatform"
     description = "Profile your proxy with Flare!"
-    main = "co.technove.flareplatform.velocity.FlarePlatform"
+    url = "https://serlith.net"
     authors.add("PaulBGD, SerlithNetwork")
+    main = "co.technove.flareplatform.velocity.FlarePlatform"
 }
 
 tasks.withType<ShadowJar>().configureEach {

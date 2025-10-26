@@ -47,7 +47,6 @@ public class FlarePlatform extends JavaPlugin {
                         }
                 );
                 this.pluginLookup = new PluginLookup();
-                this.getServer().getPluginManager().registerEvents(this.pluginLookup, this);
             }
         } catch (InitializationException e) {
             this.getLogger().log(Level.SEVERE, "Failed to initialize Flare", e);

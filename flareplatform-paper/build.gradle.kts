@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
+import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
+
 plugins {
     id("xyz.jpenilla.run-paper") version libs.versions.run.task
     id("xyz.jpenilla.resource-factory-paper-convention") version libs.versions.resource.factory
@@ -16,13 +17,15 @@ dependencies {
 runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
+    apiVersion = "1.21"
     name = "FlarePlatform"
     main = "co.technove.flareplatform.paper.FlarePlatform"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
     description = "Profile your server with Flare!"
-    apiVersion = "1.21"
+    load = PluginLoadOrder.POSTWORLD
     authors.add("PaulBGD, SerlithNetwork")
     foliaSupported = true
+    website = "https://serlith.net"
 }
 
 tasks.withType<ShadowJar>().configureEach {
