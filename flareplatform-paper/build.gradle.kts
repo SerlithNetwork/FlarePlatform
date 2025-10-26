@@ -1,7 +1,6 @@
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 plugins {
     id("xyz.jpenilla.run-paper") version libs.versions.run.task
-    alias(libs.plugins.shadow)
     id("xyz.jpenilla.resource-factory-paper-convention") version libs.versions.resource.factory
 }
 
@@ -31,12 +30,4 @@ paperPluginYaml {
 
 tasks.runServer {
     minecraftVersion("1.21.8")
-}
-
-tasks.jar {
-    manifest {
-        attributes(
-            "paperweight-mappings-namespace" to "mojang",
-        )
-    }
 }
