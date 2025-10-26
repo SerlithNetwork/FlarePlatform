@@ -2,7 +2,7 @@ package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplatform.FlarePlatformConfig;
+import co.technove.flareplatform.common.FlarePlatformConfig;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;

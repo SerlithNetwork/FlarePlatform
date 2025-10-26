@@ -2,7 +2,7 @@ package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplatform.FlarePlatformConfig;
+import co.technove.flareplatform.common.FlarePlatformConfig;
 import co.technove.flareplatform.velocity.utils.PluginLookup;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.BrigadierCommand;

@@ -1,19 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.file.DuplicatesStrategy
-import java.util.regex.Pattern
 
 plugins {
     java
     alias(libs.plugins.shadow)
 }
 
-dependencies {
-    implementation(projects.common)
-    implementation(projects.flareplatformPaper)
-    implementation(projects.flareplatformVelocity)
-}
-
-allprojects {
+subprojects {
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
 
@@ -46,36 +39,9 @@ allprojects {
     tasks.withType<ShadowJar>().configureEach {
         minimize()
         mergeServiceFiles()
-        configureStandard()
         duplicatesStrategy = DuplicatesStrategy.FAIL
         filesMatching("META-INF/**") {
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
-    }
-}
-
-tasks.build {
-    dependsOn(tasks.shadowJar)
-}
-
-tasks.shadowJar {
-    archiveClassifier.set("")
-}
-
-fun ShadowJar.configureStandard() {
-    val prefix = "co.technove.flareplatform.lib"
-    listOf(
-        "oshi",
-        "co.technove.flare.",
-        "one", // included in the flare dep
-    ).forEach { pack ->
-        relocate(pack, "$prefix.$pack")
-    }
-    // we have to rename them to match the new package for some reason (rename, not relocate)
-    rename(Pattern.compile("^oshi.*"), "co.technove.flareplatform.lib.\$0")
-    manifest {
-        attributes(
-            "paperweight-mappings-namespace" to "mojang",
-        )
     }
 }

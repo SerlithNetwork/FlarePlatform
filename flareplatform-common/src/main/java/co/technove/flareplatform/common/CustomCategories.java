@@ -1,4 +1,4 @@
-package co.technove.flareplatform;
+package co.technove.flareplatform.common;
 
 import co.technove.flare.live.category.GraphCategory;
 

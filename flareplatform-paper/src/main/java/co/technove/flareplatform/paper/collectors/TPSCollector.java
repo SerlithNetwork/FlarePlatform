@@ -3,7 +3,7 @@ package co.technove.flareplatform.paper.collectors;
 import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
-import co.technove.flareplatform.CustomCategories;
+import co.technove.flareplatform.common.CustomCategories;
 import org.bukkit.Bukkit;
 
 import java.time.Duration;

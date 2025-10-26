@@ -1,4 +1,4 @@
-package co.technove.flareplatform;
+package co.technove.flareplatform.common;
 
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NullMarked;

@@ -6,4 +6,4 @@ rootProject.name = "FlarePlatform"
 
 // modules
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-include("common", "flareplatform-paper", "flareplatform-velocity")
+include("flareplatform-common", "flareplatform-paper", "flareplatform-velocity")
