@@ -77,8 +77,13 @@ public class ProfilingManager {
                     .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(),
                             FlarePlatform.getInstance().getFlareURI()))
 
-                    .withVersion("Primary Version", FlarePlatform.getInstance().getServer().getVersion().getName())
-                    .withVersion("Velocity Version", FlarePlatform.getInstance().getServer().getVersion().toString() + "|" + FlarePlatform.getInstance().getServer().getVersion().getVendor())
+                    // dirty hacks for our flare viewer
+                    .withVersion("Primary Version",
+                            FlarePlatform.getInstance().getServer().getVersion().getName() + " | " + FlarePlatform.getInstance().getServer().getVersion().getVendor())
+                    .withVersion("Bukkit Version",
+                            FlarePlatform.getInstance().getServer().getVersion().getName() + " " + FlarePlatform.getInstance().getServer().getVersion().getVersion())
+                    .withVersion("Minecraft Version",
+                            FlarePlatform.getInstance().getServer().getVersion().getVersion())
 
                     .withGraphCategories(CustomCategories.PERF)
                     .withCollectors(new GCEventCollector(), new StatCollector())

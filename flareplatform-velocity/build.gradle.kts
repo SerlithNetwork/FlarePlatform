@@ -35,8 +35,8 @@ fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.lib"
     listOf(
         "oshi",
-        "co.technove.flare.",
-        "one", // included in the flare dep
+        //"co.technove.flare.", we cant relocate flare nor async profiler
+        //"one", // included in the flare dep
     ).forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }

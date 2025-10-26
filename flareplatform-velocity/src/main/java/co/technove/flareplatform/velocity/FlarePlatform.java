@@ -10,6 +10,7 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
@@ -78,6 +79,13 @@ public class FlarePlatform {
         // - accessed so no big deal
         getFlareURI();
         getAccessToken();
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (ProfilingManager.isProfiling()) {
+            ProfilingManager.stop();
+        }
     }
 
     public static FlarePlatform getInstance() {
