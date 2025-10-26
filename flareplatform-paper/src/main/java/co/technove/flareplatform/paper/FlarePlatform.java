@@ -42,7 +42,8 @@ public class FlarePlatform extends JavaPlugin {
                 this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
                 this.getLifecycleManager().registerEventHandler(
                         LifecycleEvents.COMMANDS, commands -> {
-                            commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands");
+                            commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
+                                    List.of("flare", "profiler"));
                         }
                 );
                 this.pluginLookup = new PluginLookup();
