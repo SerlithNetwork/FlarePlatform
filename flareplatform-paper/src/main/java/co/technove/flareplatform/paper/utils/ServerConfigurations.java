@@ -22,7 +22,7 @@ import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class ServerConfigurations {
-    public static final List<String> configurationFiles = FlarePlatform.getFlareConfig().getList("flare.server-configs",
+    public static List<String> configurationFiles = FlarePlatform.getFlareConfig().getList("flare.server-configs",
         List.of(
             "server.properties",
             "bukkit.yml",
@@ -30,7 +30,7 @@ public class ServerConfigurations {
             "config/paper-global.yml",
             "config/paper-world-defaults.yml"
         ));
-    public static final List<String> hiddenEntries = FlarePlatform.getFlareConfig().getList("flare.hidden-entries",
+    public static List<String> hiddenEntries = FlarePlatform.getFlareConfig().getList("flare.hidden-entries",
         List.of(
             "proxies.velocity.secret",
             "web-services.token",
