@@ -32,7 +32,7 @@ public class FlarePlatformConfig {
         reloadConfig();
     }
 
-    public void reloadConfig() {
+    public synchronized void reloadConfig() {
         try {
             if (configFile.exists()) {
                 this.config = loader.load();
@@ -55,7 +55,7 @@ public class FlarePlatformConfig {
         }
     }
 
-    public void saveConfig() {
+    public synchronized void saveConfig() {
         try {
             Preconditions.checkState(config != null, "Config must not be null!");
             loader.save(config);
@@ -65,44 +65,49 @@ public class FlarePlatformConfig {
     }
 
     public boolean getBoolean(String path, boolean def) {
-        if (!getNode(path).isNull()) {
-            return getNode(path).getBoolean();
+        ConfigurationNode node = getNode(path);
+        if (!node.isNull()) {
+            return node.getBoolean();
         }
         setDefault(path, def);
-        return getNode(path).getBoolean(def);
+        return node.getBoolean(def);
     }
 
     public int getInt(String path, int def) {
-        if (!getNode(path).isNull()) {
-            return getNode(path).getInt();
+        ConfigurationNode node = getNode(path);
+        if (!node.isNull()) {
+            return node.getInt();
         }
         setDefault(path, def);
-        return getNode(path).getInt(def);
+        return node.getInt(def);
     }
 
     public double getDouble(String path, double def) {
-        if (!getNode(path).isNull()) {
-            return getNode(path).getDouble();
+        ConfigurationNode node = getNode(path);
+        if (!node.isNull()) {
+            return node.getDouble();
         }
         setDefault(path, def);
-        return getNode(path).getDouble(def);
+        return node.getDouble(def);
     }
 
     public String getString(String path, String def) {
-        if (!getNode(path).isNull()) {
-            return Objects.requireNonNullElse(getNode(path).getString(), "");
+        ConfigurationNode node = getNode(path);
+        if (!node.isNull()) {
+            return Objects.requireNonNullElse(node.getString(), "");
         }
         setDefault(path, def);
-        return getNode(path).getString(def);
+        return node.getString(def);
     }
 
     public List<String> getList(String path, List<String> def) {
+        ConfigurationNode node = getNode(path);
         try {
-            if (!getNode(path).isNull()) {
-                return Objects.requireNonNullElse(getNode(path).getList(String.class), List.of());
+            if (!node.isNull()) {
+                return Objects.requireNonNullElse(node.getList(String.class), List.of());
             }
             setDefault(path, def);
-            return getNode(path).getList(String.class, def);
+            return node.getList(String.class, def);
         } catch (SerializationException e) {
             logger.log(Level.WARNING, "Failed to retrieve a list from the config file!");
             return List.of();
