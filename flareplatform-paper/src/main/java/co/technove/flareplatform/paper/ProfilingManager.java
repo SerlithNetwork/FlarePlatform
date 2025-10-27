@@ -13,6 +13,11 @@ import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import java.io.IOException;
+import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
@@ -23,12 +28,6 @@ import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
-
-import java.io.IOException;
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 // yuck
 @NullMarked
@@ -81,36 +80,36 @@ public class ProfilingManager {
             VirtualMemory virtualMemory = memory.getVirtualMemory();
 
             FlareBuilder builder = new FlareBuilder()
-                    .withProfileType(profileType)
-                    .withMemoryProfiling(true)
-                    .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(), FlarePlatform.getInstance().getFlareURI()))
+                .withProfileType(profileType)
+                .withMemoryProfiling(true)
+                .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(), FlarePlatform.getInstance().getFlareURI()))
 
-                    .withFiles(ServerConfigurations.getCleanCopies())
-                    .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
-                    .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
-                    .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
+                .withFiles(ServerConfigurations.getCleanCopies())
+                .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
+                .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
+                .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
 
-                    .withGraphCategories(CustomCategories.PERF)
-                    .withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector())
-                    .withClassIdentifier(FlarePlatform.getInstance().getPluginLookup()::getPluginForClass)
+                .withGraphCategories(CustomCategories.PERF)
+                .withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector())
+                .withClassIdentifier(FlarePlatform.getInstance().getPluginLookup()::getPluginForClass)
 
-                    .withHardware(new FlareBuilder.HardwareBuilder()
-                            .setCoreCount(processor.getPhysicalProcessorCount())
-                            .setThreadCount(processor.getLogicalProcessorCount())
-                            .setCpuModel(processorIdentifier.getName())
-                            .setCpuFrequency(processor.getMaxFreq())
+                .withHardware(new FlareBuilder.HardwareBuilder()
+                    .setCoreCount(processor.getPhysicalProcessorCount())
+                    .setThreadCount(processor.getLogicalProcessorCount())
+                    .setCpuModel(processorIdentifier.getName())
+                    .setCpuFrequency(processor.getMaxFreq())
 
-                            .setTotalMemory(memory.getTotal())
-                            .setTotalSwap(virtualMemory.getSwapTotal())
-                            .setTotalVirtual(virtualMemory.getVirtualMax())
-                    )
+                    .setTotalMemory(memory.getTotal())
+                    .setTotalSwap(virtualMemory.getSwapTotal())
+                    .setTotalVirtual(virtualMemory.getVirtualMax())
+                )
 
-                    .withOperatingSystem(new FlareBuilder.OperatingSystemBuilder()
-                            .setManufacturer(os.getManufacturer())
-                            .setFamily(os.getFamily())
-                            .setVersion(os.getVersionInfo().toString())
-                            .setBitness(os.getBitness())
-                    );
+                .withOperatingSystem(new FlareBuilder.OperatingSystemBuilder()
+                    .setManufacturer(os.getManufacturer())
+                    .setFamily(os.getFamily())
+                    .setVersion(os.getVersionInfo().toString())
+                    .setBitness(os.getBitness())
+                );
 
             currentFlare = builder.build();
         } catch (IOException e) {
@@ -129,9 +128,9 @@ public class ProfilingManager {
         }
 
         currentTask = scheduler.runDelayed(FlarePlatform.getInstance(),
-                task -> ProfilingManager.stop(),
-                15L,
-                TimeUnit.MINUTES);
+            task -> ProfilingManager.stop(),
+            15L,
+            TimeUnit.MINUTES);
         FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
@@ -147,8 +146,10 @@ public class ProfilingManager {
         FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(FlarePlatform.getInstance(), task -> player.updateCommands(), null);
+            if (!FlarePlatform.getInstance().getServer().isStopping()) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.getScheduler().run(FlarePlatform.getInstance(), task -> player.updateCommands(), null);
+                }
             }
         } catch (IllegalStateException e) {
             FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);

@@ -137,7 +137,9 @@ public class ProfilingManager {
         FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
-            FlarePlatform.getInstance().refreshCommands();
+            if (!FlarePlatform.getInstance().getServer().isShuttingDown()) {
+                FlarePlatform.getInstance().refreshCommands();
+            }
         } catch (IllegalStateException e) {
             FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
