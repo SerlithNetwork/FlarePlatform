@@ -4,7 +4,7 @@ import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.common.CustomCategories;
-import co.technove.flareplatform.paper.FlarePlatform;
+import co.technove.flareplatform.paper.FlarePlatformPaper;
 import org.bukkit.Bukkit;
 
 import java.time.Duration;
@@ -21,9 +21,6 @@ public class TPSCollector extends LiveCollector {
 
     @Override
     public void run() {
-        if (FlarePlatform.isFolia()) {
-            return;
-        }
         final double[] tps = Bukkit.getTPS();
         final long[] times = Bukkit.getTickTimes();
         final double mspt = ((double) Arrays.stream(times).sum() / (double) times.length) * 1.0E-6D;

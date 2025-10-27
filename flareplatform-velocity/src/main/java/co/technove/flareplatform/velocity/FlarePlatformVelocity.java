@@ -19,9 +19,9 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FlarePlatform {
+public class FlarePlatformVelocity {
 
-    private static FlarePlatform instance;
+    private static FlarePlatformVelocity instance;
     private static FlarePlatformConfig config;
     private static boolean shouldRegister = true;
     @Inject
@@ -33,11 +33,11 @@ public class FlarePlatform {
     private PluginLookup lookup;
 
     @Inject
-    public FlarePlatform() {
+    public FlarePlatformVelocity() {
         instance = this;
     }
 
-    public static FlarePlatform getInstance() {
+    public static FlarePlatformVelocity getInstance() {
         return instance;
     }
 
@@ -99,17 +99,6 @@ public class FlarePlatform {
 
     public Logger getLogger() {
         return logger;
-    }
-
-    public void refreshCommands() {
-        CommandManager commandManager = server.getCommandManager();
-        commandManager.unregister(commandManager.metaBuilder("flareprofiler").build());
-        CommandMeta commandMeta = commandManager.metaBuilder("flareprofiler")
-            .aliases("flare", "profiler")
-            .plugin(FlarePlatform.getInstance())
-            .build();
-        BrigadierCommand command = FlareCommand.createBrigadierCommand(server);
-        commandManager.register(commandMeta, command);
     }
 
     public PluginLookup getPluginLookup() {

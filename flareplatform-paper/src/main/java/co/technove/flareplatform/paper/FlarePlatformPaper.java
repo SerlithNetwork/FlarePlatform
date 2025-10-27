@@ -12,11 +12,11 @@ import java.util.Locale;
 import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class FlarePlatform extends JavaPlugin {
+public class FlarePlatformPaper extends JavaPlugin {
 
     public static final boolean IS_FOLIA = detectFolia();
     private static FlarePlatformConfig config;
-    private static FlarePlatform instance;
+    private static FlarePlatformPaper instance;
     private static boolean shouldRegister = true;
     private PluginLookup pluginLookup;
 
@@ -24,7 +24,7 @@ public class FlarePlatform extends JavaPlugin {
         return config;
     }
 
-    public static FlarePlatform getInstance() {
+    public static FlarePlatformPaper getInstance() {
         return instance;
     }
 
@@ -62,7 +62,7 @@ public class FlarePlatform extends JavaPlugin {
         try {
             if (shouldRegister) {
                 if (IS_FOLIA) {
-                    this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported");
+                    this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported.");
                 }
                 final List<String> warnings = FlareInitializer.initialize();
                 this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));

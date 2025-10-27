@@ -83,12 +83,12 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSourceStack> ctx, final ProfileType type) {
-        if (FlarePlatform.getInstance().getFlareURI().getScheme() == null) {
+        if (FlarePlatformPaper.getInstance().getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource().getSender(),
                 Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            FlarePlatform.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatform.getInstance(), task -> {
+            FlarePlatformPaper.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatformPaper.getInstance(), task -> {
                 try {
                     if (ProfilingManager.start(type)) {
                         broadcastPrefixed(
@@ -104,7 +104,7 @@ public class FlareCommand {
                     sendPrefixed(ctx.getSource().getSender(),
                         Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                     if (e.getCause() != null) {
-                        FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
+                        FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
                     }
                 }
             });
@@ -134,14 +134,14 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
-        FlarePlatform.getInstance().reloadConfig();
+        FlarePlatformPaper.getInstance().reloadConfig();
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
     public static int executeVersion(CommandContext<CommandSourceStack> ctx) {
         broadcastPrefixed(
-            Component.text("You're running FlarePlatform for Paper, version: " + FlarePlatform.getInstance().getPluginMeta().getVersion(), HEX));
+            Component.text("You're running FlarePlatform for Paper, version " + FlarePlatformPaper.getInstance().getPluginMeta().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 

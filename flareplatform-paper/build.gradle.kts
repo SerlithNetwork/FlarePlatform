@@ -19,7 +19,7 @@ runPaper.folia.registerTask() // run folia
 paperPluginYaml {
     apiVersion = "1.21"
     name = "FlarePlatform"
-    main = "co.technove.flareplatform.paper.FlarePlatform"
+    main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
     description = "Profile your server with Flare!"
     load = PluginLoadOrder.POSTWORLD

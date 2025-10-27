@@ -28,7 +28,7 @@ import oshi.software.os.OperatingSystem;
 @NullMarked
 public class ProfilingManager {
 
-    private static final Scheduler scheduler = FlarePlatform.getInstance().getServer().getScheduler();
+    private static final Scheduler scheduler = FlarePlatformVelocity.getInstance().getServer().getScheduler();
     public @Nullable
     static ScheduledTask currentTask;
     private @Nullable
@@ -74,20 +74,20 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatform.getInstance().getAccessToken(),
-                    FlarePlatform.getInstance().getFlareURI()))
+                .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatformVelocity.getInstance().getAccessToken(),
+                    FlarePlatformVelocity.getInstance().getFlareURI()))
 
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",
-                    FlarePlatform.getInstance().getServer().getVersion().getName() + " | " + FlarePlatform.getInstance().getServer().getVersion().getVendor())
+                    FlarePlatformVelocity.getInstance().getServer().getVersion().getName() + " | " + FlarePlatformVelocity.getInstance().getServer().getVersion().getVendor())
                 .withVersion("Bukkit Version",
-                    FlarePlatform.getInstance().getServer().getVersion().getName() + " " + FlarePlatform.getInstance().getServer().getVersion().getVersion())
+                    FlarePlatformVelocity.getInstance().getServer().getVersion().getName() + " " + FlarePlatformVelocity.getInstance().getServer().getVersion().getVersion())
                 .withVersion("Minecraft Version",
-                    FlarePlatform.getInstance().getServer().getVersion().getVersion())
+                    FlarePlatformVelocity.getInstance().getServer().getVersion().getVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
                 .withCollectors(new GCEventCollector(), new StatCollector())
-                .withClassIdentifier(FlarePlatform.getInstance().getPluginLookup()::getPluginForClass)
+                .withClassIdentifier(FlarePlatformVelocity.getInstance().getPluginLookup()::getPluginForClass)
 
                 .withHardware(new FlareBuilder.HardwareBuilder()
                     .setCoreCount(processor.getPhysicalProcessorCount())
@@ -109,20 +109,19 @@ public class ProfilingManager {
 
             currentFlare = builder.build();
         } catch (RuntimeException e) {
-            FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error building the Flare instance:", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error building the Flare instance:", e);
             throw new UserReportableException("Failed to build Flare, check logs for further details.");
         }
         try {
             currentFlare.start();
-            FlarePlatform.getInstance().refreshCommands();
         } catch (IllegalStateException e) {
-            FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = scheduler.buildTask(FlarePlatform.getInstance(),
+        currentTask = scheduler.buildTask(FlarePlatformVelocity.getInstance(),
             task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
-        FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -134,14 +133,11 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        FlarePlatform.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
+        FlarePlatformVelocity.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
-            if (!FlarePlatform.getInstance().getServer().isShuttingDown()) {
-                FlarePlatform.getInstance().refreshCommands();
-            }
         } catch (IllegalStateException e) {
-            FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
@@ -150,7 +146,7 @@ public class ProfilingManager {
                 currentTask.cancel();
             }
         } catch (Throwable t) {
-            FlarePlatform.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+            FlarePlatformVelocity.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
 

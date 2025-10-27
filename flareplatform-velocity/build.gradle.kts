@@ -19,12 +19,12 @@ tasks.runVelocity {
 }
 
 velocityPluginJson {
-    id = "flareplatform"
+    id = "flareplatformvelocity"
     name = "FlarePlatform"
     description = "Profile your proxy with Flare!"
     url = "https://serlith.net"
     authors.add("PaulBGD, SerlithNetwork")
-    main = "co.technove.flareplatform.velocity.FlarePlatform"
+    main = "co.technove.flareplatform.velocity.FlarePlatformVelocity"
 }
 
 tasks.withType<ShadowJar>().configureEach {
