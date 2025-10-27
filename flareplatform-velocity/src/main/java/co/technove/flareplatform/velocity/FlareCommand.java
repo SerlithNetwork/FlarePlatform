@@ -36,7 +36,35 @@ public class FlareCommand {
             .then(BrigadierCommand.literalArgumentBuilder("start")
                 .requires(source -> !ProfilingManager.isProfiling() && source.hasPermission(
                     "airplane.flare.profiler.start"))
-                .executes(FlareCommand::executeStart))
+                .executes(ctx -> {
+                    FlareCommand.execute(ctx, ProfileType.ITIMER);
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(BrigadierCommand.literalArgumentBuilder("alloc")
+                    .executes(ctx -> {
+                        FlareCommand.execute(ctx, ProfileType.ALLOC);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+                .then(BrigadierCommand.literalArgumentBuilder("lock")
+                    .executes(ctx -> {
+                        FlareCommand.execute(ctx, ProfileType.LOCK);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+                .then(BrigadierCommand.literalArgumentBuilder("wall")
+                    .executes(ctx -> {
+                        FlareCommand.execute(ctx, ProfileType.WALL);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+                .then(BrigadierCommand.literalArgumentBuilder("itimer")
+                    .executes(ctx -> {
+                        FlareCommand.execute(ctx, ProfileType.ITIMER);
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+            )
             .then(BrigadierCommand.literalArgumentBuilder("stop")
                 .requires(source -> ProfilingManager.isProfiling() && source.hasPermission(
                     "airplane.flare.profiler.stop"))
@@ -55,16 +83,15 @@ public class FlareCommand {
         return new BrigadierCommand(flareCommand);
     }
 
-    public static int executeStart(CommandContext<CommandSource> ctx) {
+    public static void execute(CommandContext<CommandSource> ctx, final ProfileType type) {
         if (FlarePlatform.getInstance().getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
-            ProfileType profileType = ProfileType.ITIMER;
             sendPrefixed(ctx.getSource(),
                 Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
             FlarePlatform.getInstance().getServer().getScheduler().buildTask(FlarePlatform.getInstance(), task -> {
                     try {
-                        if (ProfilingManager.start(profileType)) {
+                        if (ProfilingManager.start(type)) {
                             broadcastPrefixed(
                                 Component.text("Flare has been started!", MAIN_COLOR),
                                 Component.text("It will run in the background for 15 minutes", NamedTextColor.GRAY),
@@ -84,7 +111,6 @@ public class FlareCommand {
                 })
                 .schedule();
         }
-        return Command.SINGLE_SUCCESS;
     }
 
     public static int executeStop(CommandContext<CommandSource> ctx) {
