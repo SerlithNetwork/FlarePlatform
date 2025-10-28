@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import java.util.logging.Level;
 import java.util.stream.Stream;
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,6 +22,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class FlareCommand {
 
+    private static final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();
     private static final TextColor HEX = TextColor.color(227, 234, 234);
     private static final TextColor MAIN_COLOR = TextColor.color(106, 126, 218);
     private static final Component PREFIX = Component.text()
@@ -83,12 +85,12 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSourceStack> ctx, final ProfileType type) {
-        if (FlarePlatformPaper.getInstance().getFlareURI().getScheme() == null) {
+        if (platform.getFlareURI().getScheme() == null) {
             sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource().getSender(),
                 Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            FlarePlatformPaper.getInstance().getServer().getAsyncScheduler().runNow(FlarePlatformPaper.getInstance(), task -> {
+            platform.getServer().getAsyncScheduler().runNow(platform, task -> {
                 try {
                     if (ProfilingManager.start(type)) {
                         broadcastPrefixed(
@@ -104,7 +106,7 @@ public class FlareCommand {
                     sendPrefixed(ctx.getSource().getSender(),
                         Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                     if (e.getCause() != null) {
-                        FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Flare failed to start", e);
+                        platform.getLogger().log(Level.WARNING, "Flare failed to start", e);
                     }
                 }
             });
@@ -112,13 +114,15 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSourceStack> ctx) {
-        String profile = ProfilingManager.getProfilingUri();
-        if (ProfilingManager.stop()) {
-            broadcastPrefixed(
-                Component.text("Profiling has been stopped.", MAIN_COLOR),
-                Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
-            );
-        }
+        platform.getServer().getAsyncScheduler().runNow(platform, task -> {
+            String profile = ProfilingManager.getProfilingUri();
+            if (ProfilingManager.stop()) {
+                broadcastPrefixed(
+                    Component.text("Profiling has been stopped.", MAIN_COLOR),
+                    Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
+                );
+            }
+        });
         return Command.SINGLE_SUCCESS;
     }
 
@@ -134,14 +138,14 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
-        FlarePlatformPaper.getInstance().reloadConfig();
+        platform.reloadConfig();
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
     public static int executeVersion(CommandContext<CommandSourceStack> ctx) {
         broadcastPrefixed(
-            Component.text("You're running FlarePlatform for Paper, version " + FlarePlatformPaper.getInstance().getPluginMeta().getVersion(), HEX));
+            Component.text("You're running FlarePlatform for Paper, version " + platform.getPluginMeta().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 

@@ -33,7 +33,8 @@ import oshi.software.os.OperatingSystem;
 @NullMarked
 public class ProfilingManager {
 
-    private static final AsyncScheduler scheduler = FlarePlatformPaper.getInstance().getServer().getAsyncScheduler();
+    private static final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();
+    private static final AsyncScheduler scheduler = platform.getServer().getAsyncScheduler();
     public @Nullable
     static ScheduledTask currentTask;
     private @Nullable
@@ -82,7 +83,7 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(FlarePlatformPaper.getInstance().getAccessToken(), FlarePlatformPaper.getInstance().getFlareURI()))
+                .withAuth(FlareAuth.fromTokenAndUrl(platform.getAccessToken(), platform.getFlareURI()))
 
                 .withFiles(ServerConfigurations.getCleanCopies())
                 .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
@@ -90,7 +91,7 @@ public class ProfilingManager {
                 .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
-                .withClassIdentifier(FlarePlatformPaper.getInstance().getPluginLookup()::getPluginForClass)
+                .withClassIdentifier(platform.getPluginLookup()::getPluginForClass)
 
                 .withHardware(new FlareBuilder.HardwareBuilder()
                     .setCoreCount(processor.getPhysicalProcessorCount())
@@ -118,25 +119,25 @@ public class ProfilingManager {
 
             currentFlare = builder.build();
         } catch (IOException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+            platform.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
             throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
 
         try {
             currentFlare.start();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(FlarePlatformPaper.getInstance(), task -> player.updateCommands(), null);
+                player.getScheduler().run(platform, task -> player.updateCommands(), null);
             }
         } catch (IllegalStateException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            platform.getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = scheduler.runDelayed(FlarePlatformPaper.getInstance(),
+        currentTask = scheduler.runDelayed(platform,
             task -> ProfilingManager.stop(),
             15L,
             TimeUnit.MINUTES);
-        FlarePlatformPaper.getInstance().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -148,16 +149,16 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        FlarePlatformPaper.getInstance().getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
+        platform.getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
         try {
             currentFlare.stop();
-            if (!FlarePlatformPaper.getInstance().getServer().isStopping()) {
+            if (!platform.getServer().isStopping()) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.getScheduler().run(FlarePlatformPaper.getInstance(), task -> player.updateCommands(), null);
+                    player.getScheduler().run(platform, task -> player.updateCommands(), null);
                 }
             }
         } catch (IllegalStateException e) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
@@ -166,7 +167,7 @@ public class ProfilingManager {
                 currentTask.cancel();
             }
         } catch (Throwable t) {
-            FlarePlatformPaper.getInstance().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
 
