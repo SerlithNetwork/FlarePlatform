@@ -15,7 +15,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -25,7 +24,6 @@ import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
 // yuck
-@NullMarked
 public class ProfilingManager {
 
     private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();

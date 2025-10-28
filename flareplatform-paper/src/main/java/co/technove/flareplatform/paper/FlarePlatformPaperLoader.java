@@ -8,10 +8,8 @@ import java.util.jar.Manifest;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.jspecify.annotations.NullMarked;
 
 @SuppressWarnings("UnstableApiUsage")
-@NullMarked
 public class FlarePlatformPaperLoader implements PluginLoader {
 
     @Override

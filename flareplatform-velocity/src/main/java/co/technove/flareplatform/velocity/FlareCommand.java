@@ -15,9 +15,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public class FlareCommand {
 
     private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();

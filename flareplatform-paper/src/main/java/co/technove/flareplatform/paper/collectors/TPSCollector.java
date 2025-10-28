@@ -4,7 +4,6 @@ import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.common.CustomCategories;
-import co.technove.flareplatform.paper.FlarePlatformPaper;
 import org.bukkit.Bukkit;
 
 import java.time.Duration;

@@ -18,9 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public class ServerConfigurations {
     public static List<String> configurationFiles = FlarePlatformPaper.getFlareConfig().getList("flare.server-configs",
         List.of(

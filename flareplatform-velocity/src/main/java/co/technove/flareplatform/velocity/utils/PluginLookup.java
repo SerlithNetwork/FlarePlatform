@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public class PluginLookup {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)

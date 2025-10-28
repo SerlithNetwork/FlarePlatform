@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -30,7 +29,6 @@ import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
 // yuck
-@NullMarked
 public class ProfilingManager {
 
     private static final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();

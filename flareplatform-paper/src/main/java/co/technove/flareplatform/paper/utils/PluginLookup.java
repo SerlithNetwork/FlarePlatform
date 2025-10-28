@@ -8,9 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public class PluginLookup {
     private final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)

@@ -5,20 +5,24 @@ import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.common.FlarePlatformConfig;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
+import com.google.common.base.Preconditions;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.Nullable;
 
 public class FlarePlatformPaper extends JavaPlugin {
 
     public static final boolean IS_FOLIA = detectFolia();
-    private static FlarePlatformConfig config;
-    private static FlarePlatformPaper instance;
+    private @Nullable
+    static FlarePlatformConfig config;
+    private @Nullable
+    static FlarePlatformPaper instance;
     private static boolean shouldRegister = true;
-    private PluginLookup pluginLookup;
+    private @Nullable PluginLookup pluginLookup;
 
     public static FlarePlatformConfig getFlareConfig() {
         return config;
@@ -113,6 +117,7 @@ public class FlarePlatformPaper extends JavaPlugin {
     }
 
     public PluginLookup getPluginLookup() {
+        Preconditions.checkState(pluginLookup != null, "Plugin lookup cannot be null!");
         return pluginLookup;
     }
 }
