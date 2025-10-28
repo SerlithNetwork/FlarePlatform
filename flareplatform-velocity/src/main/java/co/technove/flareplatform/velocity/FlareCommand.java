@@ -105,7 +105,9 @@ public class FlareCommand {
                                 Component.text("Can't start a new profiler while another profiler is already active!", NamedTextColor.RED),
                                 Component.text("Please stop it using: ", NamedTextColor.RED).append(Component.text(
                                     "/flareprofiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("flareprofiler stop"))),
-                                Component.text("before starting a new instance.", NamedTextColor.RED)
+                                Component.text("before starting a new instance.", NamedTextColor.RED),
+                                Component.text("You can follow the current profiler's progress here:", NamedTextColor.GRAY),
+                                Component.text(ProfilingManager.getProfilingUri(), HEX).clickEvent(ClickEvent.openUrl(ProfilingManager.getProfilingUri()))
                             );
                         }
                     } catch (UserReportableException e) {
@@ -121,7 +123,7 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSource> ctx) {
-        String profile = ProfilingManager.getProfilingUri();
+        String profile = ProfilingManager.isProfiling() ? ProfilingManager.getProfilingUri() : null;
         if (ProfilingManager.stop()) {
             broadcastPrefixed(
                 Component.text("Profiling has been stopped.", MAIN_COLOR),
