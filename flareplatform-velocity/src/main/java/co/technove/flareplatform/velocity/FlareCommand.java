@@ -123,16 +123,18 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSource> ctx) {
-        String profile = ProfilingManager.isProfiling() ? ProfilingManager.getProfilingUri() : null;
-        if (ProfilingManager.stop()) {
-            broadcastPrefixed(
-                Component.text("Profiling has been stopped.", MAIN_COLOR),
-                Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
-            );
-        } else {
+        if (!ProfilingManager.isProfiling()) {
             broadcastPrefixed(
                 Component.text("There is no active profiler to disable!", NamedTextColor.RED)
             );
+        } else {
+            String profile = ProfilingManager.getProfilingUri();
+            if (ProfilingManager.stop()) {
+                broadcastPrefixed(
+                    Component.text("Profiling has been stopped.", MAIN_COLOR),
+                    Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
+                );
+            }
         }
         return Command.SINGLE_SUCCESS;
     }
