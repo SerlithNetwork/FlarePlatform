@@ -29,6 +29,7 @@ public class FlareCommand {
         .append(Component.text("]", NamedTextColor.DARK_GRAY))
         .append(Component.text(" "))
         .build();
+    private static String PROFILING_URI = "";
 
     public static LiteralCommandNode<CommandSourceStack> createCommand() {
         return Commands.literal("flareprofiler")
@@ -90,13 +91,14 @@ public class FlareCommand {
             platform.getServer().getAsyncScheduler().runNow(platform, task -> {
                 try {
                     if (ProfilingManager.start(type)) {
+                        PROFILING_URI = ProfilingManager.getProfilingUri();
                         broadcastPrefixed(
                             Component.text("Flare has been started!", MAIN_COLOR),
                             Component.text("It will run in the background for 15 minutes", NamedTextColor.GRAY),
                             Component.text("or until manually stopped using:", NamedTextColor.GRAY),
                             Component.text("  ").append(Component.text("/flareprofiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("flareprofiler stop"))),
                             Component.text("Follow its progress here:", NamedTextColor.GRAY),
-                            Component.text(ProfilingManager.getProfilingUri(), HEX).clickEvent(ClickEvent.openUrl(ProfilingManager.getProfilingUri()))
+                            Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
                         );
                     }
                 } catch (UserReportableException e) {
@@ -112,11 +114,10 @@ public class FlareCommand {
 
     public static int executeStop(CommandContext<CommandSourceStack> ctx) {
         platform.getServer().getAsyncScheduler().runNow(platform, task -> {
-            String profile = ProfilingManager.getProfilingUri();
             if (ProfilingManager.stop()) {
                 broadcastPrefixed(
                     Component.text("Profiling has been stopped.", MAIN_COLOR),
-                    Component.text(profile, HEX).clickEvent(ClickEvent.openUrl(profile))
+                    Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
                 );
             }
         });
