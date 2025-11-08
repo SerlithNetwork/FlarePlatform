@@ -4,10 +4,9 @@ import co.technove.flare.live.CollectorData;
 import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.common.CustomCategories;
-import org.bukkit.Bukkit;
+import co.technove.flareplatform.paper.utils.ServerListener;
 
 import java.time.Duration;
-import java.util.Arrays;
 
 public class TPSCollector extends LiveCollector {
     private static final CollectorData TPS = new CollectorData("airplane:tps", "TPS", "Ticks per second, or how fast the server updates. For a smooth server this should be a constant 20TPS.", SuffixFormatter.of("TPS"), CustomCategories.PERF);
@@ -20,11 +19,9 @@ public class TPSCollector extends LiveCollector {
 
     @Override
     public void run() {
-        final double[] tps = Bukkit.getTPS();
-        final long[] times = Bukkit.getTickTimes();
-        final double mspt = ((double) Arrays.stream(times).sum() / (double) times.length) * 1.0E-6D;
-
-        this.report(TPS, Math.min(20D, Math.round(tps[0] * 100d) / 100d));
-        this.report(MSPT, (double) Math.round(mspt * 100d) / 100d);
+        double tps = Math.max(Math.min(ServerListener.TPS_AVERAGE.getAverage(), 20.0), 0.0);
+        double mspt = Math.max(0.0, ServerListener.MSPT_AVERAGE.getAverage());
+        this.report(TPS, Math.round(tps * 100d) / 100d);
+        this.report(MSPT, Math.round(mspt * 100d) / 100d);
     }
 }

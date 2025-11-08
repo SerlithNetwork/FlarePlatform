@@ -5,6 +5,7 @@ import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.common.FlarePlatformConfig;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
+import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.net.URI;
@@ -25,10 +26,12 @@ public class FlarePlatformPaper extends JavaPlugin {
     private @Nullable PluginLookup pluginLookup;
 
     public static FlarePlatformConfig getFlareConfig() {
+        Preconditions.checkState(config != null, "Config cannot be null!");
         return config;
     }
 
     public static FlarePlatformPaper getInstance() {
+        Preconditions.checkState(instance != null, "Instance cannot be null!");
         return instance;
     }
 
@@ -76,6 +79,7 @@ public class FlarePlatformPaper extends JavaPlugin {
                             List.of("flare", "profiler"));
                     }
                 );
+                new ServerListener(this);
                 this.pluginLookup = new PluginLookup();
             }
         } catch (InitializationException e) {
