@@ -107,7 +107,11 @@ public class ProfilingManager {
                     .setFamily(os.getFamily())
                     .setVersion(os.getVersionInfo().toString())
                     .setBitness(os.getBitness())
-                );
+                )
+
+                .withExceptionRunnable(() -> {
+                    FlareCommand.broadcastException();
+                });
 
             if (!FlarePlatformPaper.isFolia()) {
                 builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector());

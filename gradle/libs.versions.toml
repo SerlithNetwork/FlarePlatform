@@ -2,7 +2,7 @@
 jspecify = "1.0.0"
 guava = "25.1-jre" # Matches dependency from Velocity
 oshi = "6.6.5" # Matches dependency from Paper
-flare = "4.0.6"
+flare = "4.0.9"
 folia-api = "1.21.8-R0.1-SNAPSHOT"
 velocity-api = "3.4.0-SNAPSHOT"
 run-task = "3.0.2"
