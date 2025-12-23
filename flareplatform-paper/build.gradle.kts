@@ -2,8 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
 
 plugins {
-    id("xyz.jpenilla.run-paper") version libs.versions.run.task
-    id("xyz.jpenilla.resource-factory-paper-convention") version libs.versions.resource.factory
+    alias(libs.plugins.runPaper)
+    alias(libs.plugins.resourceFactoryPaper)
+    alias(libs.plugins.blossom)
 }
 
 dependencies {
@@ -31,13 +32,18 @@ paperPluginYaml {
 tasks.withType<ShadowJar>().configureEach {
     manifest {
         attributes(
-            "flare-version" to libs.versions.flare,
-            "oshi-version" to libs.versions.oshi,
             "paperweight-mappings-namespace" to "mojang",
         )
     }
 }
 
 tasks.runServer {
-    minecraftVersion("1.21.8")
+    minecraftVersion("1.21.11")
+}
+
+sourceSets.main {
+    blossom.javaSources {
+        property("flare", libs.versions.flare.get())
+        property("oshi", libs.versions.oshi.get())
+    }
 }

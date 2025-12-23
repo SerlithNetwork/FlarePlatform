@@ -2,8 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.regex.Pattern
 
 plugins {
-    id("xyz.jpenilla.run-velocity") version libs.versions.run.task
-    id("xyz.jpenilla.resource-factory-velocity-convention") version libs.versions.resource.factory
+    alias(libs.plugins.runVelocity)
+    alias(libs.plugins.resourceFactoryVelocity)
 }
 
 dependencies {

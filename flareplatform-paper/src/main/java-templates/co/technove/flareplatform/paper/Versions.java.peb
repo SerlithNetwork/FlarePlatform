@@ -1,0 +1,6 @@
+package co.technove.flareplatform.paper;
+
+interface Versions {
+    String FLARE_VERSION = "{{ flare }}";
+    String OSHI_VERSION = "{{ oshi }}";
+}
