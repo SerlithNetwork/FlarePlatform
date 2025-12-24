@@ -2,8 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.regex.Pattern
 
 plugins {
-    alias(libs.plugins.runVelocity)
-    alias(libs.plugins.resourceFactoryVelocity)
+    alias(libs.plugins.run.velocity)
+    alias(libs.plugins.resource.factory.velocity)
 }
 
 dependencies {

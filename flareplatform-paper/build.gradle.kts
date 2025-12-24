@@ -2,8 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
 
 plugins {
-    alias(libs.plugins.runPaper)
-    alias(libs.plugins.resourceFactoryPaper)
+    alias(libs.plugins.run.paper)
+    alias(libs.plugins.resource.factory.paper)
     alias(libs.plugins.blossom)
 }
 
