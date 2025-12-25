@@ -37,6 +37,10 @@ tasks.withType<ShadowJar>().configureEach {
     }
 }
 
+tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
+    jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
+}
+
 tasks.runServer {
     minecraftVersion("1.21.11")
 }

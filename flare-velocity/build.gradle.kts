@@ -31,6 +31,10 @@ tasks.withType<ShadowJar>().configureEach {
     configureRelocation()
 }
 
+tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
+    jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
+}
+
 fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.libs"
     listOf(
