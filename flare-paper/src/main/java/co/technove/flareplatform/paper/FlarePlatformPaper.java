@@ -12,6 +12,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 import java.util.Locale;
 import lombok.Getter;
+import lombok.Setter;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
 import net.kyori.adventure.text.Component;
@@ -33,6 +34,7 @@ public class FlarePlatformPaper extends JavaPlugin {
     @Getter
     private final ConfigHandler configHandler = new AdventureConfigHandler(this.getLogger(), FlarePlatformPaper.getPrefix());
 
+    @Setter
     private @Nullable PluginLookup pluginLookup;
 
 
@@ -79,7 +81,9 @@ public class FlarePlatformPaper extends JavaPlugin {
                 this.getSLF4JLogger().info("You're running a Folia based platform. TPS information won't be reported.");
             }
             final List<String> warnings = FlareInitializer.initialize();
-            this.getSLF4JLogger().warn("Warnings while initializing Flare: {}", String.join(", ", warnings));
+            if (!warnings.isEmpty()) {
+                this.getSLF4JLogger().warn("Warnings while initializing Flare: {}", String.join(", ", warnings));
+            }
             this.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS, commands -> {
                     commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
@@ -87,7 +91,6 @@ public class FlarePlatformPaper extends JavaPlugin {
                 }
             );
             new ServerListener(this);
-            this.pluginLookup = new PluginLookup();
         } catch (InitializationException e) {
             this.getSLF4JLogger().error("Failed to initialize Flare", e);
         }

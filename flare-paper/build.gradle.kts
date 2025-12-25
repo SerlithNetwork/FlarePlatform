@@ -23,7 +23,7 @@ paperPluginYaml {
     main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
     description = "Profile your server with Flare!"
-    load = PluginLoadOrder.POSTWORLD
+    load = PluginLoadOrder.STARTUP
     authors.add("PaulBGD, SerlithNetwork")
     foliaSupported = true
     website = "https://serlith.net"

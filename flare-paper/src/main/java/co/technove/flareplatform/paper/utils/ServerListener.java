@@ -8,6 +8,7 @@ import co.technove.flareplatform.common.util.TpsRollingAverage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,8 +28,11 @@ public class ServerListener implements Listener {
     private int tick = 0;
     private long last = 0;
 
-    public ServerListener(FlarePlatformPaper platform) {
-        platform.getServer().getPluginManager().registerEvents(this, platform);
+    private final FlarePlatformPaper plugin;
+
+    public ServerListener(FlarePlatformPaper plugin) {
+        this.plugin = plugin;
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @SuppressWarnings("unused")
@@ -57,6 +61,11 @@ public class ServerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onTickEnd(ServerTickEndEvent event) {
         MSPT_AVERAGE.add(new BigDecimal(event.getTickDuration()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onServerLoad(ServerLoadEvent event) {
+        this.plugin.setPluginLookup(new PluginLookup());
     }
 
 }

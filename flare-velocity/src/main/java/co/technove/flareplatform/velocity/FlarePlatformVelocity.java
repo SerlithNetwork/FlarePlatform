@@ -83,7 +83,9 @@ public class FlarePlatformVelocity {
 
         try {
             final List<String> warnings = FlareInitializer.initialize();
-            this.logger.log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
+            if (!warnings.isEmpty()) {
+                this.logger.log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
+            }
             // register commands
             CommandManager commandManager = this.getServer().getCommandManager();
             CommandMeta commandMeta = commandManager.metaBuilder("vflareprofiler")
