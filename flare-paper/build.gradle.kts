@@ -5,13 +5,13 @@ plugins {
     alias(libs.plugins.run.paper)
     alias(libs.plugins.resource.factory.paper)
     alias(libs.plugins.blossom)
+    alias(libs.plugins.lombok)
 }
 
 dependencies {
     implementation(projects.flareCommon)
     compileOnly(libs.folia.api)
     compileOnly(libs.jspecify)
-    compileOnly(libs.flare)
     compileOnly(libs.oshi.core)
 }
 

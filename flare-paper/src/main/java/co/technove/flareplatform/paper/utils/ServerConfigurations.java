@@ -1,6 +1,6 @@
 package co.technove.flareplatform.paper.utils;
 
-import co.technove.flareplatform.paper.FlarePlatformPaper;
+import co.technove.flareplatform.common.config.FlareConfig;
 import com.google.common.io.Files;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,39 +20,12 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ServerConfigurations {
-    public static List<String> configurationFiles = FlarePlatformPaper.getFlareConfig().getList("flare.server-configs",
-        List.of(
-            "server.properties",
-            "bukkit.yml",
-            "spigot.yml",
-            "config/paper-global.yml",
-            "config/paper-world-defaults.yml"
-        ));
-    public static List<String> hiddenEntries = FlarePlatformPaper.getFlareConfig().getList("flare.hidden-entries",
-        List.of(
-            "proxies.velocity.secret",
-            "web-services.token",
-            "misc.sentry-dsn",
-            "database",
-            "server-ip",
-            "motd",
-            "resource-pack",
-            "level-seed",
-            "rcon.password",
-            "rcon.ip",
-            "feature-seeds",
-            "world-settings.*.feature-seeds",
-            "world-settings.*.seed-*",
-            "seed-*"
-        ));
+
     private static final List<World> worldList = new ArrayList<>();
-    private static final Map<String, String> configFiles = new HashMap<>(configurationFiles.size());
-    private static final List<Pattern> regexPatterns = hiddenEntries.stream()
-        .map(s -> Pattern.compile(s.replace(".", "\\.").replace("*", ".*")))
-        .toList();
+    private static final Map<String, String> configFiles = new HashMap<>();
 
     public static Map<String, String> getCleanCopies() throws IOException {
-        for (final String file : configurationFiles) {
+        for (final String file : FlareConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
             if (configFiles.containsKey(file)) {
                 continue;
             }
@@ -75,7 +48,7 @@ public class ServerConfigurations {
     }
 
     public static boolean matchesRegex(String key) {
-        for (final Pattern pattern : regexPatterns) {
+        for (final Pattern pattern : FlareConfig.CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS) {
             if (pattern.matcher(key).matches()) {
                 return true;
             }

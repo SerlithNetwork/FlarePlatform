@@ -2,38 +2,39 @@ package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplatform.common.FlarePlatformConfig;
+import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.paper.command.FlareCommand;
+import co.technove.flareplatform.paper.manager.ProfilingManager;
 import co.technove.flareplatform.paper.utils.PluginLookup;
-import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import java.net.URI;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
+import lombok.Getter;
+import net.j4c0b3y.api.config.ConfigHandler;
+import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
 public class FlarePlatformPaper extends JavaPlugin {
 
+    @Getter
+    private static FlarePlatformPaper instance;
+    @Getter
+    private static final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
+
     public static final boolean IS_FOLIA = detectFolia();
-    private @Nullable
-    static FlarePlatformConfig config;
-    private @Nullable
-    static FlarePlatformPaper instance;
+
     private static boolean shouldRegister = true;
+
+    @Getter
+    private final ConfigHandler configHandler = new AdventureConfigHandler(this.getLogger(), FlarePlatformPaper.getPrefix());
+
     private @Nullable PluginLookup pluginLookup;
 
-    public static FlarePlatformConfig getFlareConfig() {
-        Preconditions.checkState(config != null, "Config cannot be null!");
-        return config;
-    }
-
-    public static FlarePlatformPaper getInstance() {
-        Preconditions.checkState(instance != null, "Instance cannot be null!");
-        return instance;
-    }
 
     /**
      * internal
@@ -47,54 +48,50 @@ public class FlarePlatformPaper extends JavaPlugin {
         }
     }
 
-    public static boolean isFolia() {
-        return IS_FOLIA;
+    @Override
+    public void onLoad() {
+        instance = this;
     }
 
     @Override
     public void onEnable() {
+        new FlareConfig(this.getDataPath(), this.getConfigHandler()).load();
+
         // detect unsupported platforms
         final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);
         if (!OS_NAME.contains("linux") && !OS_NAME.contains("mac")) {
-            this.getLogger().log(Level.WARNING, "Flare does not support running on " + OS_NAME + ", will not enable!");
+            this.getSLF4JLogger().warn("Flare does not support running on {}, will not enable!", OS_NAME);
             shouldRegister = false;
+        }
+
+        if (!shouldRegister) {
+            return;
         }
 
         try {
             Class.forName("co.technove.flare.Flare", false, ClassLoader.getSystemClassLoader());
-            this.getLogger().log(Level.WARNING, "Your platform already bundles flare on its classpath!");
+            this.getSLF4JLogger().warn("Your platform already bundles flare on its classpath!");
         } catch (ClassNotFoundException ignored) {
         }
 
         try {
-            if (shouldRegister) {
-                if (IS_FOLIA) {
-                    this.getLogger().log(Level.INFO, "You're running a Folia based platform. TPS information won't be reported.");
-                }
-                final List<String> warnings = FlareInitializer.initialize();
-                this.getLogger().log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
-                this.getLifecycleManager().registerEventHandler(
-                    LifecycleEvents.COMMANDS, commands -> {
-                        commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
-                            List.of("flare", "profiler"));
-                    }
-                );
-                new ServerListener(this);
-                this.pluginLookup = new PluginLookup();
+            if (IS_FOLIA) {
+                this.getSLF4JLogger().info("You're running a Folia based platform. TPS information won't be reported.");
             }
+            final List<String> warnings = FlareInitializer.initialize();
+            this.getSLF4JLogger().warn("Warnings while initializing Flare: {}", String.join(", ", warnings));
+            this.getLifecycleManager().registerEventHandler(
+                LifecycleEvents.COMMANDS, commands -> {
+                    commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
+                        List.of("flare", "profiler"));
+                }
+            );
+            new ServerListener(this);
+            this.pluginLookup = new PluginLookup();
         } catch (InitializationException e) {
-            this.getLogger().log(Level.SEVERE, "Failed to initialize Flare", e);
+            this.getSLF4JLogger().error("Failed to initialize Flare", e);
         }
 
-        instance = this;
-        config = new FlarePlatformConfig("plugins/" + this.getPluginMeta().getName(), this.getLogger());
-
-        // dirty hack so those get saved to the config file without starting the profiler
-        this.getFlareURI();
-        this.getAccessToken();
-        this.getServerConfigurations();
-        this.getHiddenEntries();
-        // dirty hack end
     }
 
     @Override
@@ -102,22 +99,6 @@ public class FlarePlatformPaper extends JavaPlugin {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
-    }
-
-    public URI getFlareURI() {
-        return URI.create(getFlareConfig().getString("flare.url", "https://flare.serlith.net"));
-    }
-
-    public String getAccessToken() {
-        return getFlareConfig().getString("flare.token", "");
-    }
-
-    private List<String> getServerConfigurations() {
-        return ServerConfigurations.configurationFiles;
-    }
-
-    private List<String> getHiddenEntries() {
-        return ServerConfigurations.hiddenEntries;
     }
 
     public PluginLookup getPluginLookup() {

@@ -1,13 +1,17 @@
-package co.technove.flareplatform.velocity;
+package co.technove.flareplatform.velocity.command;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
+import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.velocity.FlarePlatformVelocity;
+import co.technove.flareplatform.velocity.manager.ProfilingManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 import net.kyori.adventure.text.Component;
@@ -84,7 +88,7 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSource> ctx, final ProfileType type) {
-        if (platform.getFlareURI().getScheme() == null) {
+        if (FlareConfig.PROFILING.BACKEND_URL == null) {
             sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource(),
@@ -154,17 +158,21 @@ public class FlareCommand {
 
     public static int executeReload(CommandContext<CommandSource> ctx) {
         if (ProfilingManager.isProfiling()) {
-            broadcastPrefixed(Component.text("Can't reload configuration while profiling!", NamedTextColor.RED));
+            ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_DENIED.getComponent());
         } else {
-            FlarePlatformVelocity.getFlareConfig().reloadConfig();
-            broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
+            try {
+                FlareConfig.INSTANCE.load();
+                ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
+            } catch (Exception e) {
+                ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
+            }
         }
         return Command.SINGLE_SUCCESS;
     }
 
     public static int executeVersion(CommandContext<CommandSource> ctx) {
         broadcastPrefixed(
-            Component.text("You're running FlarePlatform for Velocity, version " + platform.getVersion(), HEX));
+            Component.text("You're running FlarePlatform for Velocity, version " + platform.getContainer().getDescription().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -186,7 +194,7 @@ public class FlareCommand {
 
     }
 
-    protected static void broadcastException() {
+    public static void broadcastException() {
         broadcastPrefixed(
             Component.text("An exception happened and profiling has stopped", MAIN_COLOR),
             Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))

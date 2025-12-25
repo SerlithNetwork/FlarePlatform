@@ -1,4 +1,4 @@
-package co.technove.flareplatform.velocity;
+package co.technove.flareplatform.velocity.manager;
 
 import co.technove.flare.Flare;
 import co.technove.flare.FlareAuth;
@@ -8,6 +8,9 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
+import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.velocity.FlarePlatformVelocity;
+import co.technove.flareplatform.velocity.command.FlareCommand;
 import com.google.common.base.Preconditions;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
@@ -28,10 +31,9 @@ public class ProfilingManager {
 
     private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();
     private static final Scheduler scheduler = platform.getServer().getScheduler();
-    public @Nullable
-    static ScheduledTask currentTask;
-    private @Nullable
-    static Flare currentFlare;
+
+    public static @Nullable ScheduledTask currentTask;
+    private static @Nullable Flare currentFlare;
 
     public static synchronized boolean isProfiling() {
         return currentFlare != null && currentFlare.isRunning();
@@ -73,8 +75,8 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(platform.getAccessToken(),
-                    platform.getFlareURI()))
+                .withAuth(FlareAuth.fromTokenAndUrl(FlareConfig.PROFILING.TOKEN,
+                    FlareConfig.PROFILING.BACKEND_URL))
 
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",
@@ -106,9 +108,7 @@ public class ProfilingManager {
                     .setBitness(os.getBitness())
                 )
 
-                .withExceptionRunnable(() -> {
-                    FlareCommand.broadcastException();
-                });
+                .withExceptionRunnable(FlareCommand::broadcastException);
 
             currentFlare = builder.build();
         } catch (RuntimeException e) {

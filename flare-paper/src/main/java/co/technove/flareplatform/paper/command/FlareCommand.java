@@ -1,7 +1,10 @@
-package co.technove.flareplatform.paper;
+package co.technove.flareplatform.paper.command;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
+import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.paper.FlarePlatformPaper;
+import co.technove.flareplatform.paper.manager.ProfilingManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -83,7 +86,7 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSourceStack> ctx, final ProfileType type) {
-        if (platform.getFlareURI().getScheme() == null) {
+        if (FlareConfig.PROFILING.BACKEND_URL.getScheme() == null) {
             sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource().getSender(),
@@ -136,7 +139,13 @@ public class FlareCommand {
     }
 
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
-        platform.reloadConfig();
+        try {
+            platform.reloadConfig();
+            ctx.getSource().getSender().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
+        } catch (Exception e) {
+            ctx.getSource().getSender().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
+            platform.getSLF4JLogger().error(e.getMessage(), e);
+        }
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
@@ -165,7 +174,7 @@ public class FlareCommand {
 
     }
 
-    protected static void broadcastException() {
+    public static void broadcastException() {
         broadcastPrefixed(
             Component.text("An exception happened and profiling has stopped", MAIN_COLOR),
             Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))

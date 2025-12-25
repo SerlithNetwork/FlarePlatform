@@ -1,4 +1,4 @@
-package co.technove.flareplatform.paper;
+package co.technove.flareplatform.paper.manager;
 
 import co.technove.flare.Flare;
 import co.technove.flare.FlareAuth;
@@ -8,7 +8,10 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
+import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.paper.FlarePlatformPaper;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
+import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -44,7 +47,15 @@ public class ProfilingManager {
 
     public static synchronized String getProfilingUri() {
         Preconditions.checkState(currentFlare != null, "Flare cannot be null!");
-        return currentFlare.getURI().map(URI::toString).orElse("Flare is not running");
+        return currentFlare.getURI()
+            .map(URI::toString)
+            .map(s -> {
+                if (!FlareConfig.PROFILING.FRONTEND_URL.isBlank()) {
+                    return s.replace(FlareConfig.PROFILING.BACKEND_URL.toString(), FlareConfig.PROFILING.FRONTEND_URL);
+                }
+                return s;
+            })
+            .orElse("Flare is not running");
     }
 
     public static Duration getTimeRan() {
@@ -81,7 +92,7 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(platform.getAccessToken(), platform.getFlareURI()))
+                .withAuth(FlareAuth.fromTokenAndUrl(FlareConfig.PROFILING.TOKEN, FlareConfig.PROFILING.BACKEND_URL))
 
                 .withFiles(ServerConfigurations.getCleanCopies())
                 .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())
@@ -109,11 +120,9 @@ public class ProfilingManager {
                     .setBitness(os.getBitness())
                 )
 
-                .withExceptionRunnable(() -> {
-                    FlareCommand.broadcastException();
-                });
+                .withExceptionRunnable(FlareCommand::broadcastException);
 
-            if (!FlarePlatformPaper.isFolia()) {
+            if (!FlarePlatformPaper.IS_FOLIA) {
                 builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector());
             } else {
                 builder.withCollectors(new GCEventCollector(), new StatCollector());
