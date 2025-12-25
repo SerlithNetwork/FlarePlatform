@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.flareplatformCommon)
+    implementation(projects.flareCommon)
     compileOnly(libs.folia.api)
     compileOnly(libs.jspecify)
     compileOnly(libs.flare)
@@ -19,7 +19,7 @@ runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
     apiVersion = "1.21"
-    name = "FlarePlatform"
+    name = "Flare"
     main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
     description = "Profile your server with Flare!"

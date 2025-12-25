@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.flareplatformCommon)
+    implementation(projects.flareCommon)
     implementation(libs.flare)
     implementation(libs.oshi.core)
     compileOnly(libs.jspecify)
@@ -20,7 +20,7 @@ tasks.runVelocity {
 
 velocityPluginJson {
     id = "flareplatformvelocity"
-    name = "FlarePlatform"
+    name = "Flare"
     description = "Profile your proxy with Flare!"
     url = "https://serlith.net"
     authors.add("PaulBGD, SerlithNetwork")
