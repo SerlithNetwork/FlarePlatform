@@ -34,7 +34,7 @@ Historically, Flare was a paid product and thus subscriptions or other means of 
 This is no longer the case and you can use Flare for free, given you have access to a Flare server with or without a token, depending on its auth setup.
 Such a server can be set up yourself, using both the frontend [flare-viewer](https://github.com/SerlithNetwork/flare-viewer) and backend [Jet](https://github.com/SerlithNetwork/Jet) open-source implementations.
 
-Once you have set up or got access to a server, it's required to configure the plugin to use them.
+Once you have set up or got access to a server, it's required to configure the plugin to use it.
 For how to do that, you can refer to this example configuration under `plugins/Flare/config.yml`:
 
 ```yaml
