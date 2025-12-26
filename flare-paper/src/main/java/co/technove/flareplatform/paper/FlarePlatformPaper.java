@@ -20,6 +20,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
+import static org.bukkit.event.HandlerList.unregisterAll;
+
 public class FlarePlatformPaper extends JavaPlugin {
 
     @Getter
@@ -93,6 +95,7 @@ public class FlarePlatformPaper extends JavaPlugin {
             new ServerListener(this);
         } catch (InitializationException e) {
             this.getSLF4JLogger().error("Failed to initialize Flare", e);
+            unregisterAll(this);
         }
 
     }
