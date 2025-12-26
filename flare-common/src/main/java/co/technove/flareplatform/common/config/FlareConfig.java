@@ -52,7 +52,10 @@ public class FlareConfig extends StaticConfig {
     @Priority(3)
     public static class CONFIGURATIONS {
 
-        @Comment("Configuration files to include on the profiler")
+        @Comment({
+            "Configuration files to include on the profiler",
+            "paper-world.yml files are included automatically for every world"
+        })
         public static List<String> CONFIGURATION_FILES = List.of(
             "server.properties",
             "bukkit.yml",
@@ -87,6 +90,7 @@ public class FlareConfig extends StaticConfig {
     public static class MESSAGES {
         public static PrefixedComponent PLUGIN_RELOAD_SUCCESS = new PrefixedComponent("<green>Flare config reloaded successfully!");
         public static PrefixedComponent PLUGIN_RELOAD_FAILED = new PrefixedComponent("<red>Failed to reload Flare config, check your logs!");
+        @Comment("Used only if running the plugin on Velocity")
         public static PrefixedComponent PLUGIN_RELOAD_DENIED = new PrefixedComponent("<red>You cannot reload Flare while profiling!");
     }
 
