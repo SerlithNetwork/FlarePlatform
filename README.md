@@ -1,6 +1,7 @@
 # Flare
-This project's main goal is to bring the [Flare profiler](https://blog.airplane.gg/flare/), known from some [Airplane](https://github.com/Technove/Airplane) forks to platforms,
-which don't include it by default.
+
+Flare, also known as the [Airplane](https://github.com/Technove/Airplane) profiler. \
+Our goal is to re-vitalize the [Flare profiler](https://blog.airplane.gg/flare/) and bring it to platforms that don't include it as a patch.
 
 Downloads can be found under releases.
 
@@ -25,17 +26,30 @@ You can test with the following command:
 gdb $JAVA_HOME/lib/server/libjvm.so -ex 'info address UseG1GC'
 ```
 
-If the UseG1GC symbol is found, then the debug symbols are present and you can use memory profiling.
+If the UseG1GC symbol is found, then the debug symbols are present, and you can use memory profiling.
 
 
 ### 3. Configure the profiler
 
-Historically, Flare was a paid product and thus subscriptions or other means of paid access were required in order to get a token and use it.
-This is no longer the case and you can use Flare for free, given you have access to a Flare server with or without a token, depending on its auth setup.
-Such a server can be set up yourself, using both the frontend [flare-viewer](https://github.com/SerlithNetwork/flare-viewer) and backend [Jet](https://github.com/SerlithNetwork/Jet) open-source implementations.
+Compared to the original [Flare Plugin](https://github.com/Technove/FlarePlugin), this implementation provides an additional field besides the two base ones.
+1. Token
+2. Backend URL
+3. Frontend URL `⭐ New`
+
+---
+
+Due to Flare being designed to be closed, the `token` will provide backwards compatibility with said viewer instances. \
+Should you want to self-host your own instance, you can use both the frontend [flare-viewer](https://github.com/SerlithNetwork/flare-viewer) and backend [Jet](https://github.com/SerlithNetwork/Jet) open-source implementations. \
+Given the open-source nature of these implementations, the token can be used to access protected instances, or be completely ignored if you're using a public instance.
+
+The URLs will be the endpoints to access the Flare viewer. \
+Legacy instances only require a `backend-url` to both submit data and view the report. \
+Self-hosted instances might require a `frontend-url` if your setup doesn't allow to forward requests given a single URL.
+
+---
 
 Once you have set up or got access to a server, it's required to configure the plugin to use it.
-For how to do that, you can refer to this example configuration under `plugins/Flare/config.yml`:
+You can refer to this example configuration under `plugins/Flare/config.yml`:
 
 ```yaml
 profiling:
@@ -49,7 +63,7 @@ profiling:
 
     # If provided, it will replace the backend URI before handling it to you
     # Useful if your backend and frontend do not share the same path
-    frontend-url: "https://flare-frontend.airplane.gg"
+    frontend-url: "https://flare-viewer.airplane.gg"
 ```
 
 Additionally, it is advised not to delete the below section of the config file, as it is **VERY IMPORTANT** to have some filtering in order to prevent leaking sensitive information to malicious backends.
