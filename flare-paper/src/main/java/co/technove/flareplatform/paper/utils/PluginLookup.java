@@ -2,14 +2,13 @@ package co.technove.flareplatform.paper.utils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.Nullable;
@@ -22,20 +21,6 @@ public class PluginLookup {
     private final Cache<Boolean, Map<Plugin, ClassLoader>> classLoaderCache = CacheBuilder.newBuilder() // Yes, boolean key, trust
         .expireAfterAccess(2, TimeUnit.MINUTES)
         .build();
-
-    private final Class<?> classLoaderClass;
-    private final Method classLoaderLoadClass;
-
-    public PluginLookup() {
-        try {
-            this.classLoaderClass = Class.forName("io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader");
-            this.classLoaderLoadClass = this.classLoaderClass.getDeclaredMethod("loadClass", String.class, boolean.class, boolean.class, boolean.class);
-            this.classLoaderLoadClass.setAccessible(true);
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            throw new IllegalStateException(e);
-        }
-
-    }
 
     public Optional<String> getPluginForClass(final String name) {
         if (name.endsWith(".so")
@@ -71,20 +56,17 @@ public class PluginLookup {
         return Optional.ofNullable(pluginName.isEmpty() ? null : pluginName);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private @Nullable Plugin matchPlugin(Map<Plugin, ClassLoader> classLoaders, String className) {
         for (Map.Entry<Plugin, ClassLoader> entry : classLoaders.entrySet()) {
             boolean matchesPluginClassLoader = false;
             boolean matchesServerClassLoader = true;
 
-            ClassLoader loader = entry.getValue();
-            if (this.classLoaderClass.isInstance(loader)) {
+            if (entry.getValue() instanceof ConfiguredPluginClassLoader classLoader) {
                 try {
-                    this.classLoaderLoadClass.invoke(loader, className, true, false, true);
+                    classLoader.loadClass(className, true, false, true);
                     matchesPluginClassLoader = true;
-                } catch (InvocationTargetException ignore) {
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException(e);
-                }
+                } catch (ClassNotFoundException ignore) {}
             }
             try {
                 Class.forName(className);
