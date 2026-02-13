@@ -92,7 +92,7 @@ public class FlarePlatformVelocity {
                 .aliases("vflare", "vprofiler")
                 .plugin(this)
                 .build();
-            BrigadierCommand command = FlareCommand.createBrigadierCommand(this.getServer());
+            BrigadierCommand command = FlareCommand.createBrigadierCommand();
             commandManager.register(commandMeta, command);
             lookup = new PluginLookup(this.getServer());
         } catch (InitializationException e) {

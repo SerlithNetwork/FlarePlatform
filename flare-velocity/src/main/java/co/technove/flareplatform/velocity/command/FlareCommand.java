@@ -10,7 +10,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 import net.kyori.adventure.text.Component;
@@ -21,7 +20,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 
 public class FlareCommand {
 
-    private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();
+    private static final FlarePlatformVelocity PLATFORM = FlarePlatformVelocity.getInstance();
     private static final TextColor HEX = TextColor.color(227, 234, 234);
     private static final TextColor MAIN_COLOR = TextColor.color(106, 126, 218);
     private static final Component PREFIX = Component.text()
@@ -33,53 +32,54 @@ public class FlareCommand {
         .build();
     private static String PROFILING_URI = "";
 
-    public static BrigadierCommand createBrigadierCommand(final ProxyServer proxy) {
-        LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("vflareprofiler")
-            .requires(css -> css.hasPermission("airplane.flare.profiler"))
-            .then(BrigadierCommand.literalArgumentBuilder("start")
-                .requires(source -> source.hasPermission(
-                    "airplane.flare.profiler.start"))
-                .executes(ctx -> {
-                    FlareCommand.execute(ctx, ProfileType.ITIMER);
-                    return Command.SINGLE_SUCCESS;
-                })
-                .then(BrigadierCommand.literalArgumentBuilder("alloc")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.ALLOC);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(BrigadierCommand.literalArgumentBuilder("lock")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.LOCK);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(BrigadierCommand.literalArgumentBuilder("wall")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.WALL);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(BrigadierCommand.literalArgumentBuilder("itimer")
+    public static BrigadierCommand createBrigadierCommand() {
+        LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("vflarep")
+            .requires(css -> css.hasPermission("airplane.flare"))
+            .then(BrigadierCommand.literalArgumentBuilder("profiler")
+                .then(BrigadierCommand.literalArgumentBuilder("start")
+                    .then(BrigadierCommand.literalArgumentBuilder("--cpu")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.ITIMER);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(BrigadierCommand.literalArgumentBuilder("--alloc")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.ALLOC);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(BrigadierCommand.literalArgumentBuilder("--lock")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.LOCK);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(BrigadierCommand.literalArgumentBuilder("--wall")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.WALL);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(BrigadierCommand.literalArgumentBuilder("--ctimer")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.CTIMER);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
                     .executes(ctx -> {
                         FlareCommand.execute(ctx, ProfileType.ITIMER);
                         return Command.SINGLE_SUCCESS;
                     })
                 )
+                .then(BrigadierCommand.literalArgumentBuilder("stop")
+                    .executes(FlareCommand::executeStop))
+                .then(BrigadierCommand.literalArgumentBuilder("status")
+                    .executes(FlareCommand::executeStatus))
             )
-            .then(BrigadierCommand.literalArgumentBuilder("stop")
-                .requires(source -> source.hasPermission(
-                    "airplane.flare.profiler.stop"))
-                .executes(FlareCommand::executeStop))
-            .then(BrigadierCommand.literalArgumentBuilder("status")
-                .requires(source -> source.hasPermission("airplane.flare.profiler.status"))
-                .executes(FlareCommand::executeStatus))
             .then(BrigadierCommand.literalArgumentBuilder("reload")
-                .requires(source -> source.hasPermission("airplane.flare.profiler.reload"))
                 .executes(FlareCommand::executeReload))
             .then(BrigadierCommand.literalArgumentBuilder("version")
-                .requires(source -> source.hasPermission("airplane.flare.profiler.version"))
                 .executes(FlareCommand::executeVersion))
             .build();
 
@@ -92,7 +92,7 @@ public class FlareCommand {
         } else {
             sendPrefixed(ctx.getSource(),
                 Component.text("Starting a new flare, please wait...", NamedTextColor.GRAY));
-            platform.getServer().getScheduler().buildTask(platform, task -> {
+            PLATFORM.getServer().getScheduler().buildTask(PLATFORM, task -> {
                     try {
                         if (ProfilingManager.start(type)) {
                             PROFILING_URI = ProfilingManager.getProfilingUri();
@@ -118,7 +118,7 @@ public class FlareCommand {
                         sendPrefixed(ctx.getSource(),
                             Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
                         if (e.getCause() != null) {
-                            platform.getLogger().log(Level.WARNING, "Flare failed to start", e);
+                            PLATFORM.getLogger().log(Level.WARNING, "Flare failed to start", e);
                         }
                     }
                 })
@@ -127,7 +127,7 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSource> ctx) {
-        platform.getServer().getScheduler().buildTask(platform, task -> {
+        PLATFORM.getServer().getScheduler().buildTask(PLATFORM, task -> {
             if (!ProfilingManager.isProfiling()) {
                 broadcastPrefixed(
                     Component.text("There is no active profiler to disable!", NamedTextColor.RED)
@@ -171,7 +171,7 @@ public class FlareCommand {
 
     public static int executeVersion(CommandContext<CommandSource> ctx) {
         broadcastPrefixed(
-            Component.text("You're running FlarePlatform for Velocity, version " + platform.getContainer().getDescription().getVersion(), HEX));
+            Component.text("You're running FlarePlatform for Velocity, version " + PLATFORM.getContainer().getDescription().getVersion(), HEX));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -183,7 +183,7 @@ public class FlareCommand {
 
     private static void broadcastPrefixed(Component... lines) {
         Stream.concat(
-                platform.getServer().getAllPlayers().stream(), Stream.of(platform.getServer().getConsoleCommandSource()))
+                PLATFORM.getServer().getAllPlayers().stream(), Stream.of(PLATFORM.getServer().getConsoleCommandSource()))
             .filter(s -> s.hasPermission("airplane.flare.profiler"))
             .forEach(s -> {
                 for (Component line : lines) {

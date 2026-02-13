@@ -35,52 +35,53 @@ public class FlareCommand {
     private static String PROFILING_URI = "";
 
     public static LiteralCommandNode<CommandSourceStack> createCommand() {
-        return Commands.literal("flareprofiler")
-            .requires(css -> css.getSender().hasPermission("airplane.flare.profiler"))
-            .then(Commands.literal("start")
-                .requires(source -> !ProfilingManager.isProfiling() && source.getSender().hasPermission(
-                    "airplane.flare.profiler.start"))
-                .executes(ctx -> {
-                    FlareCommand.execute(ctx, ProfileType.ITIMER);
-                    return Command.SINGLE_SUCCESS;
-                })
-                .then(Commands.literal("alloc")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.ALLOC);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(Commands.literal("lock")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.LOCK);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(Commands.literal("wall")
-                    .executes(ctx -> {
-                        FlareCommand.execute(ctx, ProfileType.WALL);
-                        return Command.SINGLE_SUCCESS;
-                    })
-                )
-                .then(Commands.literal("itimer")
+        return Commands.literal("flarep")
+            .requires(css -> css.getSender().hasPermission("airplane.flare"))
+            .then(Commands.literal("profiler")
+                .then(Commands.literal("start")
+                    .then(Commands.literal("--cpu")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.CPU);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(Commands.literal("--alloc")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.ALLOC);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(Commands.literal("--lock")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.LOCK);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(Commands.literal("--wall")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.WALL);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
+                    .then(Commands.literal("--ctimer")
+                        .executes(ctx -> {
+                            FlareCommand.execute(ctx, ProfileType.CTIMER);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
                     .executes(ctx -> {
                         FlareCommand.execute(ctx, ProfileType.ITIMER);
                         return Command.SINGLE_SUCCESS;
                     })
                 )
+                .then(Commands.literal("stop")
+                    .executes(FlareCommand::executeStop))
+                .then(Commands.literal("status")
+                    .executes(FlareCommand::executeStatus))
             )
-            .then(Commands.literal("stop")
-                .requires(source -> ProfilingManager.isProfiling() && source.getSender().hasPermission(
-                    "airplane.flare.profiler.stop"))
-                .executes(FlareCommand::executeStop))
-            .then(Commands.literal("status")
-                .requires(source -> source.getSender().hasPermission("airplane.flare.profiler.status"))
-                .executes(FlareCommand::executeStatus))
             .then(Commands.literal("reload")
-                .requires(source -> !ProfilingManager.isProfiling() && source.getSender().hasPermission("airplane.flare.profiler.reload"))
                 .executes(FlareCommand::executeReload))
             .then(Commands.literal("version")
-                .requires(source -> source.getSender().hasPermission("airplane.flare.profiler.version"))
                 .executes(FlareCommand::executeVersion))
             .build();
     }
@@ -165,7 +166,7 @@ public class FlareCommand {
     private static void broadcastPrefixed(Component... lines) {
         Stream.concat(
                 Bukkit.getOnlinePlayers().stream(), Stream.of(Bukkit.getConsoleSender()))
-            .filter(s -> s.hasPermission("airplane.flare.profiler"))
+            .filter(s -> s.hasPermission("airplane.flare"))
             .forEach(s -> {
                 for (Component line : lines) {
                     s.sendMessage(PREFIX.append(line));

@@ -89,7 +89,7 @@ public class FlarePlatformPaper extends JavaPlugin {
             this.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS, commands -> {
                     commands.registrar().register(FlareCommand.createCommand(), "Flare profiling commands",
-                        List.of("flare", "profiler"));
+                        List.of("flare"));
                 }
             );
             new ServerListener(this);
