@@ -2,8 +2,8 @@ package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.velocity.command.FlareCommand;
+import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
 import co.technove.flareplatform.velocity.manager.ProfilingManager;
 import co.technove.flareplatform.velocity.utils.PluginLookup;
 import com.google.common.base.Preconditions;
@@ -68,7 +68,7 @@ public class FlarePlatformVelocity {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        new FlareConfig(dataDirectory, this.configHandler).load();
+        new FlareVelocityConfig(dataDirectory, this.configHandler).load();
 
         // detect unsupported platforms
         final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);

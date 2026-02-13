@@ -8,10 +8,10 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
 import co.technove.flareplatform.paper.command.FlareCommand;
+import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -50,8 +50,8 @@ public class ProfilingManager {
         return currentFlare.getURI()
             .map(URI::toString)
             .map(s -> {
-                if (!FlareConfig.PROFILING.FRONTEND_URL.isBlank()) {
-                    return s.replace(FlareConfig.PROFILING.BACKEND_URL.toString(), FlareConfig.PROFILING.FRONTEND_URL);
+                if (!FlarePaperConfig.PROFILING.FRONTEND_URL.isBlank()) {
+                    return s.replace(FlarePaperConfig.PROFILING.BACKEND_URL.toString(), FlarePaperConfig.PROFILING.FRONTEND_URL);
                 }
                 return s;
             })
@@ -92,7 +92,7 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(FlareConfig.PROFILING.TOKEN, FlareConfig.PROFILING.BACKEND_URL))
+                .withAuth(FlareAuth.fromTokenAndUrl(FlarePaperConfig.PROFILING.TOKEN, FlarePaperConfig.PROFILING.BACKEND_URL))
 
                 .withFiles(ServerConfigurations.getCleanCopies())
                 .withVersion("Primary Version", Bukkit.getName() + " | " + Bukkit.getVersion())

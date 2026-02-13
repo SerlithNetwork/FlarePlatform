@@ -5,13 +5,11 @@ import net.j4c0b3y.api.config.StaticConfig;
 import net.j4c0b3y.api.config.platform.adventure.types.PrefixedComponent;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @StaticConfig.Header({
     "Flare main configuration file"
 })
-public class FlareConfig extends StaticConfig {
+public abstract class FlareConfig extends StaticConfig {
 
     @Ignore
     public static FlareConfig INSTANCE;
@@ -22,6 +20,7 @@ public class FlareConfig extends StaticConfig {
     }
 
     @Priority(1)
+    @SuppressWarnings("unused")
     public static class INFO {
         public static final String VERSION = "1.0";
     }
@@ -49,42 +48,7 @@ public class FlareConfig extends StaticConfig {
 
     }
 
-    @Priority(3)
-    public static class CONFIGURATIONS {
 
-        @Comment({
-            "Configuration files to include on the profiler",
-            "paper-world.yml files are included automatically for every world"
-        })
-        public static List<String> CONFIGURATION_FILES = List.of(
-            "server.properties",
-            "bukkit.yml",
-            "spigot.yml",
-            "config/paper-global.yml",
-            "config/paper-world-defaults.yml"
-        );
-
-        @Comment("Fields to ignore in the above configurations")
-        public static List<String> HIDDEN_ENTRIES = List.of(
-            "proxies.velocity.secret",
-            "web-services.token",
-            "misc.sentry-dsn",
-            "database",
-            "server-ip",
-            "motd",
-            "resource-pack",
-            "level-seed",
-            "rcon.password",
-            "rcon.ip",
-            "feature-seeds",
-            "world-settings.*.feature-seeds",
-            "world-settings.*.seed-*",
-            "seed-*"
-        );
-        @Ignore
-        public static List<Pattern> HIDDEN_ENTRIES_PATTERNS;
-
-    }
 
     @Priority(4)
     public static class MESSAGES {
@@ -92,13 +56,6 @@ public class FlareConfig extends StaticConfig {
         public static PrefixedComponent PLUGIN_RELOAD_FAILED = new PrefixedComponent("<red>Failed to reload Flare config, check your logs!");
         @Comment("Used only if running the plugin on Velocity")
         public static PrefixedComponent PLUGIN_RELOAD_DENIED = new PrefixedComponent("<red>You cannot reload Flare while profiling!");
-    }
-
-    @Override
-    public void afterLoad() {
-        CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS = CONFIGURATIONS.HIDDEN_ENTRIES.stream()
-            .map(s -> Pattern.compile(s.replace(".", "\\.").replace("*", ".*")))
-            .toList();
     }
 
 }

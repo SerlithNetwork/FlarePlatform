@@ -2,8 +2,8 @@ package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
 import co.technove.flare.internal.profiling.InitializationException;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.paper.command.FlareCommand;
+import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.manager.ProfilingManager;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
@@ -59,7 +59,7 @@ public class FlarePlatformPaper extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new FlareConfig(this.getDataPath(), this.getConfigHandler()).load();
+        new FlarePaperConfig(this.getDataPath(), this.getConfigHandler()).load();
 
         // detect unsupported platforms
         final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ROOT);

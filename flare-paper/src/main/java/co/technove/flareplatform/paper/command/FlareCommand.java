@@ -2,8 +2,8 @@ package co.technove.flareplatform.paper.command;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
+import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.manager.ProfilingManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -86,7 +86,7 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSourceStack> ctx, final ProfileType type) {
-        if (FlareConfig.PROFILING.BACKEND_URL.getScheme() == null) {
+        if (FlarePaperConfig.PROFILING.BACKEND_URL.getScheme() == null) {
             sendPrefixed(ctx.getSource().getSender(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource().getSender(),
@@ -141,9 +141,9 @@ public class FlareCommand {
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
         try {
             platform.reloadConfig();
-            ctx.getSource().getSender().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
+            ctx.getSource().getSender().sendMessage(FlarePaperConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
         } catch (Exception e) {
-            ctx.getSource().getSender().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
+            ctx.getSource().getSender().sendMessage(FlarePaperConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
             platform.getSLF4JLogger().error(e.getMessage(), e);
         }
         broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));

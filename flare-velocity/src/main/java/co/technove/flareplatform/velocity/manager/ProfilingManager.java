@@ -8,9 +8,9 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.velocity.FlarePlatformVelocity;
 import co.technove.flareplatform.velocity.command.FlareCommand;
+import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
 import com.google.common.base.Preconditions;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
@@ -75,8 +75,8 @@ public class ProfilingManager {
             FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
-                .withAuth(FlareAuth.fromTokenAndUrl(FlareConfig.PROFILING.TOKEN,
-                    FlareConfig.PROFILING.BACKEND_URL))
+                .withAuth(FlareAuth.fromTokenAndUrl(FlareVelocityConfig.PROFILING.TOKEN,
+                    FlareVelocityConfig.PROFILING.BACKEND_URL))
 
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",

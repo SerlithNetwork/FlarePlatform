@@ -2,8 +2,8 @@ package co.technove.flareplatform.velocity.command;
 
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
-import co.technove.flareplatform.common.config.FlareConfig;
 import co.technove.flareplatform.velocity.FlarePlatformVelocity;
+import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
 import co.technove.flareplatform.velocity.manager.ProfilingManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -11,7 +11,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 import net.kyori.adventure.text.Component;
@@ -88,7 +87,7 @@ public class FlareCommand {
     }
 
     public static void execute(CommandContext<CommandSource> ctx, final ProfileType type) {
-        if (FlareConfig.PROFILING.BACKEND_URL == null) {
+        if (FlareVelocityConfig.PROFILING.BACKEND_URL == null) {
             sendPrefixed(ctx.getSource(), Component.text("Invalid URL for Flare, check your config.", NamedTextColor.RED));
         } else {
             sendPrefixed(ctx.getSource(),
@@ -158,13 +157,13 @@ public class FlareCommand {
 
     public static int executeReload(CommandContext<CommandSource> ctx) {
         if (ProfilingManager.isProfiling()) {
-            ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_DENIED.getComponent());
+            ctx.getSource().sendMessage(FlareVelocityConfig.MESSAGES.PLUGIN_RELOAD_DENIED.getComponent());
         } else {
             try {
-                FlareConfig.INSTANCE.load();
-                ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
+                FlareVelocityConfig.INSTANCE.load();
+                ctx.getSource().sendMessage(FlareVelocityConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
             } catch (Exception e) {
-                ctx.getSource().sendMessage(FlareConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
+                ctx.getSource().sendMessage(FlareVelocityConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
             }
         }
         return Command.SINGLE_SUCCESS;

@@ -1,6 +1,6 @@
 package co.technove.flareplatform.paper.utils;
 
-import co.technove.flareplatform.common.config.FlareConfig;
+import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import com.google.common.io.Files;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +25,7 @@ public class ServerConfigurations {
     private static final Map<String, String> configFiles = new HashMap<>();
 
     public static Map<String, String> getCleanCopies() throws IOException {
-        for (final String file : FlareConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
+        for (final String file : FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
             if (configFiles.containsKey(file)) {
                 continue;
             }
@@ -48,7 +48,7 @@ public class ServerConfigurations {
     }
 
     public static boolean matchesRegex(String key) {
-        for (final Pattern pattern : FlareConfig.CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS) {
+        for (final Pattern pattern : FlarePaperConfig.CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS) {
             if (pattern.matcher(key).matches()) {
                 return true;
             }
