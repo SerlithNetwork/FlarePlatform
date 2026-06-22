@@ -10,6 +10,7 @@ import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
+import co.technove.flareplatform.paper.collectors.WorldCountCollector;
 import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
@@ -123,9 +124,9 @@ public class ProfilingManager {
                 .withExceptionRunnable(FlareCommand::broadcastException);
 
             if (!FlarePlatformPaper.IS_FOLIA) {
-                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector());
+                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector());
             } else {
-                builder.withCollectors(new GCEventCollector(), new StatCollector());
+                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector());
             }
 
             currentFlare = builder.build();

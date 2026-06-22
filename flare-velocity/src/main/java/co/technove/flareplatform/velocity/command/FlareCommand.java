@@ -100,7 +100,7 @@ public class FlareCommand {
                                 Component.text("Flare has been started!", MAIN_COLOR),
                                 Component.text("It will run in the background for 15 minutes", NamedTextColor.GRAY),
                                 Component.text("or until manually stopped using:", NamedTextColor.GRAY),
-                                Component.text("  ").append(Component.text("/vflareprofiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("vflareprofiler stop"))),
+                                Component.text("  ").append(Component.text("/vflarep profiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("vflarep profiler stop"))),
                                 Component.text("Follow its progress here:", NamedTextColor.GRAY),
                                 Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
                             );
