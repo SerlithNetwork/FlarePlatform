@@ -53,7 +53,6 @@ tasks {
 
 sourceSets.main {
     blossom.javaSources {
-        property("flare", libs.versions.flare.get())
         property("oshi", libs.versions.oshi.get())
     }
 }
@@ -61,7 +60,7 @@ sourceSets.main {
 fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.libs"
     mapOf(
-        "co.technove.flare" to "flare",
+        "co.technove.flare." to "flare",
     ).forEach { pack ->
         relocate(pack.key, "$prefix.${pack.value}")
     }
