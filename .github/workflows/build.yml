@@ -53,7 +53,7 @@ jobs:
               uses: softprops/action-gh-release@master
               with:
                 name: "✈️ Flare Flatform (Build ${{ env.BUILD_NUMBER }})"
-                tag_name: "flare-2.0"
+                tag_name: "flareplatform-2.0.0"
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
