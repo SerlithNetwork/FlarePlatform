@@ -7,9 +7,11 @@ plugins {
 }
 
 subprojects {
-    apply(plugin = "java")
-    apply(plugin = "java-library")
-    apply(plugin = "com.gradleup.shadow")
+    apply {
+        plugin("java")
+        plugin("java-library")
+        plugin("com.gradleup.shadow")
+    }
 
     val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
