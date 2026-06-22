@@ -8,11 +8,16 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
+import co.technove.flareplatform.common.collectors.ThreadCollector;
+import co.technove.flareplatform.common.scheduler.IScheduler;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
 import co.technove.flareplatform.paper.collectors.WorldCountCollector;
 import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
+import co.technove.flareplatform.paper.scheduler.BukkitSchedulerImpl;
+import co.technove.flareplatform.paper.scheduler.FoliaSchedulerImpl;
+import co.technove.flareplatform.paper.scheduler.NoOpSchedulerImpl;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -123,10 +128,22 @@ public class ProfilingManager {
 
                 .withExceptionRunnable(FlareCommand::broadcastException);
 
+            IScheduler bukkitScheduler, foliaScheduler;
+            try {
+                bukkitScheduler = new BukkitSchedulerImpl();
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                bukkitScheduler = new NoOpSchedulerImpl();
+            }
+            try {
+                foliaScheduler = new FoliaSchedulerImpl();
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                foliaScheduler = new NoOpSchedulerImpl();
+            }
+
             if (!FlarePlatformPaper.IS_FOLIA) {
-                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector());
+                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new ThreadCollector(bukkitScheduler, foliaScheduler));
             } else {
-                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector());
+                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new ThreadCollector(bukkitScheduler, foliaScheduler));
             }
 
             currentFlare = builder.build();
