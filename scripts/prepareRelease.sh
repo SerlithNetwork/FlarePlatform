@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CURRENT_TAG="flare-2.0"
+CURRENT_TAG="flareplatform-2.0.0"
 RELEASE_NOTES="RELEASE.md"
 
 # Branch name
