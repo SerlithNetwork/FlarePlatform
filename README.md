@@ -1,4 +1,4 @@
-# Flare
+# Flare Platform
 
 Flare, also known as the [Airplane](https://github.com/Technove/Airplane) profiler. \
 Our goal is to re-vitalize the [Flare profiler](https://blog.airplane.gg/flare/) and bring it to platforms that don't include it as a patch.
