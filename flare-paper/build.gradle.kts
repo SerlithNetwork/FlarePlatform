@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
+import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.run.paper)
@@ -29,20 +30,21 @@ paperPluginYaml {
     website = "https://serlith.net"
 }
 
-tasks.withType<ShadowJar>().configureEach {
-    manifest {
-        attributes(
-            "paperweight-mappings-namespace" to "mojang",
-        )
+tasks {
+    runServer {
+        minecraftVersion("1.21.11")
     }
-}
-
-tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
-    jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
-}
-
-tasks.runServer {
-    minecraftVersion("1.21.11")
+    shadowJar {
+        manifest {
+            attributes(
+                "paperweight-mappings-namespace" to "mojang",
+            )
+        }
+        configureRelocation()
+    }
+    withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
+        jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
+    }
 }
 
 sourceSets.main {
@@ -50,4 +52,16 @@ sourceSets.main {
         property("flare", libs.versions.flare.get())
         property("oshi", libs.versions.oshi.get())
     }
+}
+
+fun ShadowJar.configureRelocation() {
+    val prefix = "co.technove.flareplatform.libs"
+    mapOf(
+        "oshi" to "oshi",
+        "co.technove.flare" to "flare",
+    ).forEach { pack ->
+        relocate(pack.key, "$prefix.${pack.value}")
+    }
+    // we have to rename them to match the new package for some reason (rename, not relocate)
+    rename(Pattern.compile("^oshi.*"), $$"$$prefix.$0")
 }

@@ -14,10 +14,6 @@ dependencies {
     compileOnly(libs.velocity.api)
 }
 
-tasks.runVelocity {
-    velocityVersion(libs.versions.velocity.api.get())
-}
-
 velocityPluginJson {
     id = "flare"
     name = "Flare"
@@ -27,21 +23,25 @@ velocityPluginJson {
     main = "co.technove.flareplatform.velocity.FlarePlatformVelocity"
 }
 
-tasks.withType<ShadowJar>().configureEach {
-    configureRelocation()
-}
-
-tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
-    jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
+tasks {
+    runVelocity {
+        velocityVersion(libs.versions.velocity.api.get())
+    }
+    shadowJar {
+        configureRelocation()
+    }
+    withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
+        jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
+    }
 }
 
 fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.libs"
-    listOf(
-        "oshi",
-        "co.technove.flare.",
+    mapOf(
+        "oshi" to "oshi",
+        "co.technove.flare" to "flare",
     ).forEach { pack ->
-        relocate(pack, "$prefix.$pack")
+        relocate(pack.key, "$prefix.${pack.value}")
     }
     // we have to rename them to match the new package for some reason (rename, not relocate)
     rename(Pattern.compile("^oshi.*"), $$"$$prefix.$0")
