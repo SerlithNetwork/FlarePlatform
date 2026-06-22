@@ -19,7 +19,8 @@ These two flags will ensure that you are getting the most accurate data in your 
 
 ### 2. Use a JVM with debug symbols
 
-Most JDK distributions include debug symbols for Java 16+, but some distributions do not.
+Most JDK distributions include debug symbols for Java 16+, but some distributions do not. Mainly JDKs distributed via your
+package manager (apt, yum, pacman, etc) have debug symbols separated into its own package. \
 You can test with the following command:
 
 ```bash
