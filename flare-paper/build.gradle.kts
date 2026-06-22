@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
-import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.run.paper)
@@ -19,7 +18,7 @@ dependencies {
 runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
-    apiVersion = "1.19"
+    apiVersion = "1.21.6"
     name = "Flare"
     main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
