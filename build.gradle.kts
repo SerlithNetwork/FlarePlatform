@@ -7,8 +7,11 @@ plugins {
 }
 
 subprojects {
-    apply(plugin = "java")
-    apply(plugin = "com.gradleup.shadow")
+    apply {
+        plugin("java")
+        plugin("java-library")
+        plugin("com.gradleup.shadow")
+    }
 
     val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 
@@ -37,11 +40,18 @@ subprojects {
         filteringCharset = Charsets.UTF_8.name()
     }
     tasks.withType<ShadowJar>().configureEach {
-        minimize()
         mergeServiceFiles()
         duplicatesStrategy = DuplicatesStrategy.FAIL
         filesMatching("META-INF/**") {
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
+
+        mapOf(
+            "dev.dejvokep.boostedyaml" to "boostedyaml",
+            "net.j4c0b3y.api.config" to "config",
+        ).forEach {
+            relocate(it.key, "co.technove.flareplatform.libs.${it.value}")
+        }
+
     }
 }
