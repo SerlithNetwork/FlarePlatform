@@ -6,6 +6,7 @@ on:
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository }}
+    BUILD_NUMBER: ${{ github.run_number }}
 
 jobs:
     build:
@@ -31,6 +32,15 @@ jobs:
             - name: Build Flare
               run: ./gradlew build
 
+            - name: Prepare release notes and artifacts
+              run: |
+                  chmod +x ./scripts/prepareRelease.sh
+                  ./scripts/prepareRelease.sh
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_REPO: ${{ github.repository }}
+                  BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
+
             - name: Upload Flare
               uses: actions/upload-artifact@v4
               with:
@@ -47,6 +57,7 @@ jobs:
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
+                body_path: "./RELEASE.md"
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 target_commitish: "${{ github.sha }}"
                 draft: false
