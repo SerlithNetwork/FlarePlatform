@@ -8,6 +8,7 @@ import co.technove.flareplatform.paper.manager.ProfilingManager;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
+import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,7 +31,7 @@ public class FlarePlatformPaper extends JavaPlugin {
     @Getter
     private static final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
 
-    public static final boolean IS_FOLIA = detectFolia();
+    public static final boolean IS_FOLIA = ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
 
     private static boolean shouldRegister = true;
 
@@ -38,19 +40,6 @@ public class FlarePlatformPaper extends JavaPlugin {
 
     @Setter
     private @Nullable PluginLookup pluginLookup;
-
-
-    /**
-     * internal
-     */
-    private static boolean detectFolia() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
 
     @Override
     public void onLoad() {
