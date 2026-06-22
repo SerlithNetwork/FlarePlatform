@@ -40,7 +40,6 @@ fun ShadowJar.configureRelocation() {
     listOf(
         "oshi",
         "co.technove.flare.",
-        "one", // async-profiler classes, included in the flare dep
     ).forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }

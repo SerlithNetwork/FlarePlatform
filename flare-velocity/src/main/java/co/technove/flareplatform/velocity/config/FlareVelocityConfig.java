@@ -1,15 +1,53 @@
 package co.technove.flareplatform.velocity.config;
 
-import co.technove.flareplatform.common.config.FlareConfig;
 import net.j4c0b3y.api.config.ConfigHandler;
+import net.j4c0b3y.api.config.StaticConfig;
+import net.j4c0b3y.api.config.platform.adventure.types.PrefixedComponent;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class FlareVelocityConfig extends FlareConfig {
+@StaticConfig.Header({
+    "Flare main configuration file"
+})
+public class FlareVelocityConfig extends StaticConfig {
+
+    @Ignore
+    public static FlareVelocityConfig INSTANCE;
 
     public FlareVelocityConfig(Path directory, ConfigHandler handler) {
-        super(directory, handler);
+        super(directory.resolve("config.yml"), handler);
+        INSTANCE = this;
+    }
+
+    @Priority(1)
+    @SuppressWarnings("unused")
+    public static class INFO {
+        public static final String VERSION = "1.0";
+    }
+
+    @Priority(2)
+    public static class PROFILING {
+
+        @Comment({
+            "Your Flare authorization token",
+            "If your viewer is public, you can input anything here"
+        })
+        public static String TOKEN = "";
+
+        @Comment({
+            "URI to upload the profiler samples",
+            "It will be used for both the backend and viewer"
+        })
+        public static URI BACKEND_URL = URI.create("https://flare.airplane.gg");
+
+        @Comment({
+            "If provided, it will replace the backend URI before handling it to you",
+            "Useful if your backend and frontend do not share the same path"
+        })
+        public static String FRONTEND_URL = "";
+
     }
 
     @Priority(3)
@@ -30,6 +68,14 @@ public class FlareVelocityConfig extends FlareConfig {
         @Ignore
         public static List<Pattern> HIDDEN_ENTRIES_PATTERNS;
 
+    }
+
+    @Priority(4)
+    public static class MESSAGES {
+        public static PrefixedComponent PLUGIN_RELOAD_SUCCESS = new PrefixedComponent("<green>Flare config reloaded successfully!");
+        public static PrefixedComponent PLUGIN_RELOAD_FAILED = new PrefixedComponent("<red>Failed to reload Flare config, check your logs!");
+        @Comment("Used only if running the plugin on Velocity")
+        public static PrefixedComponent PLUGIN_RELOAD_DENIED = new PrefixedComponent("<red>You cannot reload Flare while profiling!");
     }
 
     @Override
