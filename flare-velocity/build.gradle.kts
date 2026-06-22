@@ -27,7 +27,11 @@ tasks {
     runVelocity {
         velocityVersion(libs.versions.velocity.api.get())
     }
+    jar {
+        archiveClassifier.set("dev")
+    }
     shadowJar {
+        archiveClassifier.set("")
         configureRelocation()
     }
     withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {

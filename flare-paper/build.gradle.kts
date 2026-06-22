@@ -34,7 +34,11 @@ tasks {
     runServer {
         minecraftVersion("1.21.11")
     }
+    jar {
+        archiveClassifier.set("dev")
+    }
     shadowJar {
+        archiveClassifier.set("")
         manifest {
             attributes(
                 "paperweight-mappings-namespace" to "mojang",
