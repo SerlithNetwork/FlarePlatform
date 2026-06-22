@@ -19,7 +19,7 @@ public class TPSCollector extends LiveCollector {
 
     @Override
     public void run() {
-        double tps = Math.max(Math.min(ServerListener.TPS_AVERAGE.getAverage(), 20.0), 0.0);
+        double tps = Math.clamp(ServerListener.TPS_AVERAGE.getAverage(), 0.0, 20.0);
         double mspt = Math.max(0.0, ServerListener.MSPT_AVERAGE.getAverage());
         this.report(TPS, Math.round(tps * 100d) / 100d);
         this.report(MSPT, Math.round(mspt * 100d) / 100d);
