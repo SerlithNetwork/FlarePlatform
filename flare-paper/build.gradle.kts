@@ -61,11 +61,8 @@ sourceSets.main {
 fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.libs"
     mapOf(
-        "oshi" to "oshi",
         "co.technove.flare" to "flare",
     ).forEach { pack ->
         relocate(pack.key, "$prefix.${pack.value}")
     }
-    // we have to rename them to match the new package for some reason (rename, not relocate)
-    rename(Pattern.compile("^oshi.*"), $$"$$prefix.$0")
 }
