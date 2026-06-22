@@ -43,7 +43,7 @@ fun ShadowJar.configureRelocation() {
     val prefix = "co.technove.flareplatform.libs"
     mapOf(
         "oshi" to "oshi",
-        "co.technove.flare" to "flare",
+        "co.technove.flare." to "flare",
     ).forEach { pack ->
         relocate(pack.key, "$prefix.${pack.value}")
     }

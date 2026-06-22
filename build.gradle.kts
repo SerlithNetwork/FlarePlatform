@@ -27,10 +27,6 @@ subprojects {
         }
     }
 
-    tasks.withType<AbstractArchiveTask>().configureEach {
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-    }
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = Charsets.UTF_8.name()
         options.release = 21
@@ -47,8 +43,8 @@ subprojects {
         }
 
         mapOf(
-            "dev.dejvokep.boostedyaml" to "boostedyaml",
-            "net.j4c0b3y.api.config" to "config",
+            "dev.dejvokep.boostedyaml." to "boostedyaml",
+            "net.j4c0b3y.api.config." to "config",
         ).forEach {
             relocate(it.key, "co.technove.flareplatform.libs.${it.value}")
         }
