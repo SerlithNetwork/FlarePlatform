@@ -141,13 +141,12 @@ public class FlareCommand {
 
     public static int executeReload(CommandContext<CommandSourceStack> ctx) {
         try {
-            platform.reloadConfig();
+            FlarePaperConfig.INSTANCE.load();
             ctx.getSource().getSender().sendMessage(FlarePaperConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
         } catch (Exception e) {
             ctx.getSource().getSender().sendMessage(FlarePaperConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
             platform.getSLF4JLogger().error(e.getMessage(), e);
         }
-        broadcastPrefixed(Component.text("Configuration has been reloaded.", MAIN_COLOR));
         return Command.SINGLE_SUCCESS;
     }
 
