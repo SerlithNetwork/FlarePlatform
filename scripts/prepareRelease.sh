@@ -43,7 +43,13 @@ echo "" >> $RELEASE_NOTES
 
 # Get checksums
 shopt -s nullglob
-for file in ("./flare-paper/build/libs/flare-paper-2.0.0.jar", "./flare-velocity/build/libs/flare-velocity-2.0.0.jar"); do
+
+FILES=(
+    "./flare-paper/build/libs/flare-paper-2.0.0.jar"
+    "./flare-velocity/build/libs/flare-velocity-2.0.0.jar"
+)
+
+for file in "${FILES[@]}"; do
     SHA256=$(sha256sum "$file" | awk '{ print $1 }')
     SHA512=$(sha512sum "$file" | awk '{ print $1 }')
     FILENAME=$(basename "$file")
