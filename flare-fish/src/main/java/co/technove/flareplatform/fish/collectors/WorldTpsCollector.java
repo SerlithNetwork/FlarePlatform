@@ -36,7 +36,7 @@ public class WorldTpsCollector extends LiveCollector {
             double mspt = Math.max(0.0, world.getAverageTickTime());
             CollectorData data = msptData.get(world.getKey());
             if (data == null) {
-                throw new IllegalStateException("A world was schedule for tracking with no mspt data attached");
+                throw new IllegalStateException("A world was scheduled for tracking with no mspt data collector attached");
             }
 
             this.report(data, Math.round(mspt * 100d) / 100d);
