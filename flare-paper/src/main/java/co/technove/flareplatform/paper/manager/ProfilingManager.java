@@ -8,9 +8,9 @@ import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
-import co.technove.flareplatform.common.collectors.ThreadCollector;
 import co.technove.flareplatform.common.scheduler.IScheduler;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
+import co.technove.flareplatform.paper.collectors.PaperThreadCollector;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
 import co.technove.flareplatform.paper.collectors.WorldCountCollector;
 import co.technove.flareplatform.paper.command.FlareCommand;
@@ -141,9 +141,9 @@ public class ProfilingManager {
             }
 
             if (!FlarePlatformPaper.IS_FOLIA) {
-                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new ThreadCollector(bukkitScheduler, foliaScheduler));
+                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
             } else {
-                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new ThreadCollector(bukkitScheduler, foliaScheduler));
+                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
             }
 
             currentFlare = builder.build();
