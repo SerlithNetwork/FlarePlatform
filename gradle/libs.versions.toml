@@ -4,6 +4,7 @@ guava = "33.5.0-jre" # Matches dependency from Velocity
 oshi = "6.9.0" # Matches dependency from Paper
 flare = "4.1.3"
 folia-api = "1.21.11-R0.1-SNAPSHOT"
+canvas-api = "26.2.build.+"
 velocity-api = "3.5.0-SNAPSHOT"
 shadow = "9.4.2"
 lombok = "9.5.0"
@@ -18,6 +19,7 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 oshi-core = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
 flare = { module = "net.serlith:Flare", version.ref = "flare" }
 folia-api = { module = "dev.folia:folia-api", version.ref = "folia-api" }
+canvas-api = { module = "io.canvasmc.canvas:canvas-api", version.ref = "canvas-api" }
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-api" }
 config-api-core = { module = "net.serlith.ConfigAPI:ConfigAPI-core", version.ref = "config-api" }
 config-api-adventure = { module = "net.serlith.ConfigAPI:ConfigAPI-adventure", version.ref = "config-api" }
