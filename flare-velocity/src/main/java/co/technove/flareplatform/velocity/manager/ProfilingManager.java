@@ -9,6 +9,7 @@ import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
 import co.technove.flareplatform.velocity.FlarePlatformVelocity;
+import co.technove.flareplatform.velocity.collectors.ProxyCountCollector;
 import co.technove.flareplatform.velocity.collectors.VelocityThreadCollector;
 import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
@@ -88,7 +89,7 @@ public class ProfilingManager {
                     platform.getServer().getVersion().getVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
-                .withCollectors(new GCEventCollector(), new StatCollector(), new VelocityThreadCollector())
+                .withCollectors(new GCEventCollector(), new StatCollector(), new VelocityThreadCollector(), new ProxyCountCollector())
                 .withClassIdentifier(platform.getPluginLookup()::getPluginForClass)
 
                 .withHardware(new FlareBuilder.HardwareBuilder()
