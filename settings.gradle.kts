@@ -11,3 +11,6 @@ include(
     "flare-paper",
     "flare-velocity"
 )
+
+include("flare-fish")
+include("flare-canvas")
