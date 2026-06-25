@@ -4,8 +4,7 @@ repositories {
 
 dependencies {
     compileOnly(projects.flareCommon)
-    // compileOnly(libs.canvas.api)
-    compileOnly(files("libs/canvas-api-26.2.local-SNAPSHOT.jar"))
+    compileOnly(libs.canvas.api)
 }
 
 extensions.configure<JavaPluginExtension> {
