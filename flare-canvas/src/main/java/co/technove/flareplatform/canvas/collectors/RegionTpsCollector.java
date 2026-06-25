@@ -67,7 +67,7 @@ public class RegionTpsCollector extends LiveCollector {
         });
         allRegions.sort(RegionUtils::compareRegionsMspt);
 
-        List<WorldRegionizer.ChunkRegion> regions = allRegions.subList(0, Math.min(10, allRegions.size() - 1));
+        List<WorldRegionizer.ChunkRegion> regions = allRegions.subList(0, Math.min(10, allRegions.size()));
         for (WorldRegionizer.ChunkRegion region : regions) {
             ChunkPos pos = RegionUtils.getChunkPos(region);
             if (pos == null) {

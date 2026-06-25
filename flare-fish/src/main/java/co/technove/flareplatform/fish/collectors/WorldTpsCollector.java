@@ -47,7 +47,7 @@ public class WorldTpsCollector extends LiveCollector {
         List<World> allWorlds = Bukkit.getWorlds();
         allWorlds.sort((a, b) -> (int) Math.round(b.getAverageTickTime() - a.getAverageTickTime()));
 
-        List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size() - 1));
+        List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size()));
         Map<NamespacedKey, CollectorData> msptData = new HashMap<>();
         for (World world : worlds) {
             NamespacedKey key = world.getKey();
