@@ -5,10 +5,13 @@ import co.technove.flare.FlareAuth;
 import co.technove.flare.FlareBuilder;
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
+import co.technove.flare.live.Collector;
+import co.technove.flareplatform.canvas.collectors.RegionTpsCollector;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
 import co.technove.flareplatform.common.collectors.StatCollector;
 import co.technove.flareplatform.common.scheduler.IScheduler;
+import co.technove.flareplatform.fish.collectors.WorldTpsCollector;
 import co.technove.flareplatform.paper.FlarePlatformPaper;
 import co.technove.flareplatform.paper.collectors.PaperThreadCollector;
 import co.technove.flareplatform.paper.collectors.TPSCollector;
@@ -25,8 +28,11 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
@@ -140,12 +146,16 @@ public class ProfilingManager {
                 foliaScheduler = new NoOpSchedulerImpl();
             }
 
-            if (!FlarePlatformPaper.IS_FOLIA) {
-                builder.withCollectors(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
-            } else {
-                builder.withCollectors(new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
+            List<Collector> baseCollectors = List.of(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
+            List<Collector> extraCollectors = new ArrayList<>();
+
+            if (FlarePlatformPaper.IS_PWT) {
+                extraCollectors.add(WorldTpsCollector.create());
+            } else if (FlarePlatformPaper.IS_CANVAS) {
+                extraCollectors.add(RegionTpsCollector.create());
             }
 
+            builder.withCollectors(Stream.concat(baseCollectors.stream(), extraCollectors.stream()).toArray(Collector[]::new));
             currentFlare = builder.build();
         } catch (IOException e) {
             platform.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);

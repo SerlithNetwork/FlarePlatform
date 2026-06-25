@@ -10,6 +10,8 @@ plugins {
 
 dependencies {
     implementation(projects.flareCommon)
+    implementation(projects.flareCanvas)
+    implementation(projects.flareFish)
     compileOnly(libs.folia.api)
     compileOnly(libs.jspecify)
     compileOnly(libs.oshi.core)

@@ -5,6 +5,7 @@ import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.manager.ProfilingManager;
+import co.technove.flareplatform.paper.utils.BrandUtils;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
@@ -32,6 +33,8 @@ public class FlarePlatformPaper extends JavaPlugin {
     private static final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
 
     public static final boolean IS_FOLIA = ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
+    public static final boolean IS_CANVAS = BrandUtils.isCanvas();
+    public static final boolean IS_PWT = BrandUtils.isParallelWorldTicking();
 
     private static boolean shouldRegister = true;
 
@@ -68,8 +71,8 @@ public class FlarePlatformPaper extends JavaPlugin {
         }
 
         try {
-            if (IS_FOLIA) {
-                this.getSLF4JLogger().info("You're running a Folia based platform. TPS information won't be reported.");
+            if (IS_FOLIA && !IS_CANVAS) {
+                this.getSLF4JLogger().info("You're running a Folia based platform, but not Canvas. TPS information per-region won't be reported.");
             }
             final List<String> warnings = FlareInitializer.initialize();
             if (!warnings.isEmpty()) {
