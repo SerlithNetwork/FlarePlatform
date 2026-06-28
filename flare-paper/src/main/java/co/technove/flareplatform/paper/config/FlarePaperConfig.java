@@ -61,8 +61,13 @@ public class FlarePaperConfig extends StaticConfig {
             "server.properties",
             "bukkit.yml",
             "spigot.yml",
+            "pufferfish.yml",
+            "purpur.yml",
+            "fish.yml",
             "config/paper-global.yml",
-            "config/paper-world-defaults.yml"
+            "config/paper-world-defaults.yml",
+            "config/canvas-server.yml",
+            "config/canvas-worlds.yml"
         );
 
         @Comment("Fields to ignore in the above configurations")

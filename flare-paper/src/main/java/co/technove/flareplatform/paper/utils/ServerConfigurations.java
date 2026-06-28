@@ -1,11 +1,12 @@
 package co.technove.flareplatform.paper.utils;
 
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
-import com.google.common.io.Files;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,19 +31,36 @@ public class ServerConfigurations {
             if (configFiles.containsKey(file)) {
                 continue;
             }
-            configFiles.put(file, getCleanCopy(file));
+
+            Path path = Path.of(file);
+            if (!Files.exists(path)) {
+                continue;
+            }
+
+            configFiles.put(file, getCleanCopy(path));
         }
 
         for (final World world : Bukkit.getWorlds()) {
             if (worldList.contains(world.getKey())) {
                 continue;
             }
-            final File worldDir = world.getWorldFolder();
-            final String paperWorldConfig = new File(worldDir, "paper-world.yml").getPath();
-            final String cleanConfig = getCleanCopy(paperWorldConfig);
+
+            final Path worldDir = world.getWorldPath();
+            final Path paperWorldConfig = worldDir.resolve("paper-world.yml");
+            final Path canvasPatchConfig = worldDir.resolve("canvas-patch.yml");
+
             worldList.add(world.getKey());
-            if (!cleanConfig.isEmpty()) {
-                configFiles.put(paperWorldConfig, cleanConfig);
+            if (Files.exists(paperWorldConfig)) {
+                final String cleanConfig = getCleanCopy(paperWorldConfig);
+                if (!cleanConfig.isEmpty()) {
+                    configFiles.put(paperWorldConfig.toString(), cleanConfig);
+                }
+            }
+            if (Files.exists(canvasPatchConfig)) {
+                final String cleanConfig = getCleanCopy(canvasPatchConfig);
+                if (!cleanConfig.isEmpty()) {
+                    configFiles.put(canvasPatchConfig.toString(), cleanConfig);
+                }
             }
         }
         return configFiles;
@@ -57,13 +75,11 @@ public class ServerConfigurations {
         return false;
     }
 
-    public static String getCleanCopy(String configName) throws IOException {
-        final File file = new File(configName);
-
-        switch (Files.getFileExtension(configName)) {
+    public static String getCleanCopy(Path configPath) throws IOException {
+        switch (com.google.common.io.Files.getFileExtension(configPath.getFileName().toString())) {
             case "properties": {
                 final Properties properties = new Properties();
-                try (final FileInputStream inputStream = new FileInputStream(file)) {
+                try (final InputStream inputStream = Files.newInputStream(configPath)) {
                     properties.load(inputStream);
                 }
                 for (final String hiddenConfig : properties.stringPropertyNames()) {
@@ -80,8 +96,8 @@ public class ServerConfigurations {
             }
             case "yml": {
                 final YamlConfiguration configuration = new YamlConfiguration();
-                try {
-                    configuration.load(file);
+                try (final BufferedReader reader = Files.newBufferedReader(configPath)) {
+                    configuration.load(reader);
                 } catch (final InvalidConfigurationException e) {
                     throw new IOException(e);
                 }
@@ -98,7 +114,7 @@ public class ServerConfigurations {
                 }
             }
             default:
-                throw new IllegalArgumentException("Bad file type " + configName);
+                throw new IllegalArgumentException("Bad file type " + configPath);
         }
     }
 
