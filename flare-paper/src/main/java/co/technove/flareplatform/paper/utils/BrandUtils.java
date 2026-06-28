@@ -41,19 +41,19 @@ public class BrandUtils {
     }
 
     public static boolean isCanvas() {
-        Class<?> regionClass;
+        Class<?> tickDataClass;
         Class<?> frameClass;
         try {
             Class.forName("io.canvasmc.canvas.GlobalConfiguration");
-            regionClass = Class.forName("io.canvasmc.canvas.region.WorldRegionizer$ChunkRegion");
-            frameClass = Class.forName("io.canvasmc.canvas.region.WorldRegionizer$ChunkRegion$Frame");
+            tickDataClass = Class.forName("io.canvasmc.canvas.region.RegionTickData");
+            frameClass = Class.forName("io.canvasmc.canvas.region.RegionTickData$Frame");
         } catch (ClassNotFoundException ignored) {
             return false;
         }
 
         try {
-            regionClass.getMethod("getTPS", frameClass);
-            regionClass.getMethod("getMSPT", frameClass);
+            tickDataClass.getMethod("getTPS", frameClass);
+            tickDataClass.getMethod("getMSPT", frameClass);
         } catch (NoSuchMethodException ignored) {
             return false;
         }
