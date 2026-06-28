@@ -45,21 +45,16 @@ public class ServerConfigurations {
                 continue;
             }
 
-            final Path worldDir = world.getWorldPath();
-            final Path paperWorldConfig = worldDir.resolve("paper-world.yml");
-            final Path canvasPatchConfig = worldDir.resolve("canvas-patch.yml");
-
             worldList.add(world.getKey());
-            if (Files.exists(paperWorldConfig)) {
-                final String cleanConfig = getCleanCopy(paperWorldConfig);
-                if (!cleanConfig.isEmpty()) {
-                    configFiles.put(paperWorldConfig.toString(), cleanConfig);
-                }
-            }
-            if (Files.exists(canvasPatchConfig)) {
-                final String cleanConfig = getCleanCopy(canvasPatchConfig);
-                if (!cleanConfig.isEmpty()) {
-                    configFiles.put(canvasPatchConfig.toString(), cleanConfig);
+            final Path worldDir = world.getWorldPath();
+
+            for (String configName : FlarePaperConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
+                final Path config = worldDir.resolve(configName);
+                if (Files.exists(config)) {
+                    final String cleanConfig = getCleanCopy(config);
+                    if (!cleanConfig.isEmpty()) {
+                        configFiles.put(config.toString(), cleanConfig);
+                    }
                 }
             }
         }

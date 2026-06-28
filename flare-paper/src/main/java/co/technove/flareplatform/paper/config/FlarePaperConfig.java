@@ -70,6 +70,11 @@ public class FlarePaperConfig extends StaticConfig {
             "config/canvas-worlds.yml"
         );
 
+        public static List<String> WORLD_CONFIGURATION_FILES = List.of(
+            "paper-world.yml",
+            "canvas-patch.yml"
+        );
+
         @Comment("Fields to ignore in the above configurations")
         public static List<String> HIDDEN_ENTRIES = List.of(
             "proxies.velocity.secret",
