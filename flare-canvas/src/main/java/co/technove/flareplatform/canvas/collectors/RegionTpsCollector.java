@@ -6,6 +6,7 @@ import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.canvas.utils.RegionUtils;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.types.ChunkPos;
+import io.canvasmc.canvas.region.RegionTickData;
 import io.canvasmc.canvas.region.WorldRegionizer;
 import org.bukkit.Bukkit;
 import java.lang.ref.WeakReference;
@@ -44,15 +45,16 @@ public class RegionTpsCollector extends LiveCollector {
                 continue;
             }
 
+            RegionTickData data = region.getTickData();
             CollectorData tpsCollector = tpsData.get(pos);
             if (tpsCollector != null) {
-                double tps = Math.clamp(region.getTPS(WorldRegionizer.ChunkRegion.Frame._5_SECONDS), 0.0, 20.0);
+                double tps = Math.clamp(data.getTPS(RegionTickData.Frame._5_SECONDS), 0.0, 20.0);
                 this.report(tpsCollector, Math.round(tps * 100d) / 100d);
             }
 
             CollectorData msptCollector = msptData.get(pos);
             if (msptCollector != null) {
-                double mspt = Math.max(0.0, region.getMSPT(WorldRegionizer.ChunkRegion.Frame._5_SECONDS));
+                double mspt = Math.max(0.0, data.getMSPT(RegionTickData.Frame._5_SECONDS));
                 this.report(msptCollector, Math.round(mspt * 100d) / 100d);
             }
         }

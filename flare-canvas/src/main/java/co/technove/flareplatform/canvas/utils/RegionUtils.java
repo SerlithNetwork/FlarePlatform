@@ -2,6 +2,7 @@ package co.technove.flareplatform.canvas.utils;
 
 import co.technove.flareplatform.common.types.ChunkPos;
 import co.technove.flareplatform.common.util.CoordinateUtils;
+import io.canvasmc.canvas.region.RegionTickData;
 import io.canvasmc.canvas.region.WorldRegionizer;
 import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
@@ -40,7 +41,9 @@ public class RegionUtils {
             return Integer.MIN_VALUE;
         }
 
-        return (int) Math.round(b.getMSPT(WorldRegionizer.ChunkRegion.Frame._5_SECONDS) - a.getMSPT(WorldRegionizer.ChunkRegion.Frame._5_SECONDS));
+        RegionTickData dataA = a.getTickData();
+        RegionTickData dataB = b.getTickData();
+        return (int) Math.round(dataB.getMSPT(RegionTickData.Frame._5_SECONDS) - dataA.getMSPT(RegionTickData.Frame._5_SECONDS));
     }
 
 }
