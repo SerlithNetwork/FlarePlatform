@@ -15,13 +15,14 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ServerConfigurations {
 
-    private static final List<World> worldList = new ArrayList<>();
+    private static final List<NamespacedKey> worldList = new ArrayList<>();
     private static final Map<String, String> configFiles = new HashMap<>();
 
     public static Map<String, String> getCleanCopies() throws IOException {
@@ -33,13 +34,13 @@ public class ServerConfigurations {
         }
 
         for (final World world : Bukkit.getWorlds()) {
-            if (worldList.contains(world)) {
+            if (worldList.contains(world.getKey())) {
                 continue;
             }
             final File worldDir = world.getWorldFolder();
             final String paperWorldConfig = new File(worldDir, "paper-world.yml").getPath();
             final String cleanConfig = getCleanCopy(paperWorldConfig);
-            worldList.add(world);
+            worldList.add(world.getKey());
             if (!cleanConfig.isEmpty()) {
                 configFiles.put(paperWorldConfig, cleanConfig);
             }
