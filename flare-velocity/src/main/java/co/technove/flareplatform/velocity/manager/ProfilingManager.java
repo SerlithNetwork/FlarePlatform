@@ -13,9 +13,11 @@ import co.technove.flareplatform.velocity.collectors.ProxyCountCollector;
 import co.technove.flareplatform.velocity.collectors.VelocityThreadCollector;
 import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
+import co.technove.flareplatform.velocity.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +82,7 @@ public class ProfilingManager {
                 .withAuth(FlareAuth.fromTokenAndUrl(FlareVelocityConfig.PROFILING.TOKEN,
                     FlareVelocityConfig.PROFILING.BACKEND_URL))
 
+                .withFiles(ServerConfigurations.getCleanCopies())
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",
                     platform.getServer().getVersion().getName() + " | " + platform.getServer().getVersion().getVendor())
@@ -113,9 +116,9 @@ public class ProfilingManager {
                 .withExceptionRunnable(FlareCommand::broadcastException);
 
             currentFlare = builder.build();
-        } catch (RuntimeException e) {
-            platform.getLogger().log(Level.WARNING, "Error building the Flare instance:", e);
-            throw new UserReportableException("Failed to build Flare, check logs for further details.");
+        } catch (IOException e) {
+            platform.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+            throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
         try {
             currentFlare.start();
