@@ -1,6 +1,7 @@
 package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
+import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
@@ -17,11 +18,15 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import dev.faststats.ErrorTracker;
+import dev.faststats.Metrics;
+import dev.faststats.velocity.VelocityContext;
 import lombok.Getter;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
@@ -34,6 +39,11 @@ public class FlarePlatformVelocity {
     @Getter
     private static @Nullable FlarePlatformVelocity instance;
     private static boolean shouldRegister = true;
+
+    private static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware()
+        .ignoreError(IllegalStateException.class, "No AllocTracer symbols found.*")
+        .ignoreError(IOException.class, "Error ocurred sending data.*")
+        .ignoreError(UserReportableException.class);
 
     @Getter
     private final PluginContainer container;
@@ -50,12 +60,14 @@ public class FlarePlatformVelocity {
     @Getter
     private final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
     private final ConfigHandler configHandler;
+    private final VelocityContext context;
 
     @Inject
     public FlarePlatformVelocity(
         PluginContainer container,
         Logger logger,
         ProxyServer server,
+        VelocityContext.Builder contextBuilder,
         @DataDirectory Path dataDirectory
     ) {
         this.container = container;
@@ -63,6 +75,11 @@ public class FlarePlatformVelocity {
         this.server = server;
         this.dataDirectory = dataDirectory;
         this.configHandler = new AdventureConfigHandler(this.logger, this.prefix);
+        this.context = contextBuilder
+            .token("f8f70898fad3dd1dffbee1ad9869ebcd")
+            .metrics(Metrics.Factory::create)
+            .errorTrackerService(ERROR_TRACKER)
+            .create();
         instance = this;
     }
 
@@ -100,6 +117,7 @@ public class FlarePlatformVelocity {
             this.getServer().getEventManager().unregisterListeners(this); // unregister everything
         }
 
+        this.context.ready();
     }
 
     @Subscribe
@@ -107,6 +125,7 @@ public class FlarePlatformVelocity {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
+        this.context.shutdown();
     }
 
     public PluginLookup getPluginLookup() {

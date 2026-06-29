@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CURRENT_TAG="flareplatform-2.0.0"
+CURRENT_TAG="flare-2.0"
 RELEASE_NOTES="RELEASE.md"
 
 # Branch name
@@ -38,33 +38,7 @@ echo "" >> $RELEASE_NOTES
   echo ""
   echo "$COMMIT_LOG"
   echo ""
-  echo "### 🔒 Checksums"
 } >> $RELEASE_NOTES
-
-# Get checksums
-shopt -s nullglob
-
-FILES=(
-    "./flare-paper/build/libs/flare-paper-2.0.0.jar"
-    "./flare-velocity/build/libs/flare-velocity-2.0.0.jar"
-)
-
-for file in "${FILES[@]}"; do
-    SHA256=$(sha256sum "$file" | awk '{ print $1 }')
-    SHA512=$(sha512sum "$file" | awk '{ print $1 }')
-    FILENAME=$(basename "$file")
-
-    {
-        echo "|           | $FILENAME |"
-        echo "| --------- | --------- |"
-        echo "| SHA256    | $SHA256   |"
-        echo "| SHA512    | $SHA512   |"
-    } >> $RELEASE_NOTES
-
-    echo "🔒Checksums calculated for $file:"
-    echo "   SHA256: $SHA256"
-    echo "   SHA512: $SHA512"
-done
 
 # Delete current release tag
 if git show-ref --tags $CURRENT_TAG --quiet; then

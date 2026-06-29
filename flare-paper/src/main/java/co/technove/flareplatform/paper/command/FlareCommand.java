@@ -32,7 +32,7 @@ public class FlareCommand {
         .append(Component.text("]", NamedTextColor.DARK_GRAY))
         .append(Component.text(" "))
         .build();
-    private static String PROFILING_URI = "";
+    public static String PROFILING_URI = "";
 
     public static LiteralCommandNode<CommandSourceStack> createCommand() {
         return Commands.literal("flarep")
@@ -162,7 +162,7 @@ public class FlareCommand {
         }
     }
 
-    private static void broadcastPrefixed(Component... lines) {
+    public static void broadcastPrefixed(Component... lines) {
         Stream.concat(
                 Bukkit.getOnlinePlayers().stream(), Stream.of(Bukkit.getConsoleSender()))
             .filter(s -> s.hasPermission("airplane.flare"))

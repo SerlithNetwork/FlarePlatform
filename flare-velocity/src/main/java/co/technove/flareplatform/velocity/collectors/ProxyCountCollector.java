@@ -9,8 +9,8 @@ import co.technove.flareplatform.velocity.FlarePlatformVelocity;
 
 public class ProxyCountCollector extends LiveCollector {
 
-    private static final CollectorData PLAYER_COUNT = new CollectorData("bultin:proxy:playercount", "Player Count", "The number of players currently connected to this proxy.", new SuffixFormatter(" Player", " Players"), CustomCategories.PLAYERS);
-    private static final CollectorData SERVER_COUNT = new CollectorData("builtin:proxy:servercount", "Server Count", "The number of servers this proxy manages", new SuffixFormatter(" Server", " Servers"), CustomCategories.SERVERS);
+    private static final CollectorData PLAYER_COUNT = new CollectorData("flare:proxy:playercount", "Player Count", "The number of players currently connected to this proxy.", new SuffixFormatter(" Player", " Players"), CustomCategories.PLAYERS);
+    private static final CollectorData SERVER_COUNT = new CollectorData("flare:proxy:servercount", "Server Count", "The number of servers this proxy manages", new SuffixFormatter(" Server", " Servers"), CustomCategories.SERVERS);
 
     public ProxyCountCollector() {
         super(PLAYER_COUNT, SERVER_COUNT);

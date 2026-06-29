@@ -1,15 +1,21 @@
 package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
+import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
 import co.technove.flareplatform.paper.manager.ProfilingManager;
+import co.technove.flareplatform.paper.utils.BrandUtils;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
+import dev.faststats.ErrorTracker;
+import dev.faststats.Metrics;
+import dev.faststats.bukkit.BukkitContext;
 import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import lombok.Getter;
@@ -32,6 +38,13 @@ public class FlarePlatformPaper extends JavaPlugin {
     private static final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
 
     public static final boolean IS_FOLIA = ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"));
+    public static final boolean IS_CANVAS = BrandUtils.isCanvas();
+    public static final boolean IS_PWT = BrandUtils.isParallelWorldTicking();
+
+    private static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware()
+        .ignoreError(IllegalStateException.class, "No AllocTracer symbols found.*")
+        .ignoreError(IOException.class, "Error ocurred sending data.*")
+        .ignoreError(UserReportableException.class);
 
     private static boolean shouldRegister = true;
 
@@ -40,6 +53,11 @@ public class FlarePlatformPaper extends JavaPlugin {
 
     @Setter
     private @Nullable PluginLookup pluginLookup;
+
+    private final BukkitContext context = new BukkitContext.Factory(this, "f8f70898fad3dd1dffbee1ad9869ebcd")
+        .metrics(Metrics.Factory::create)
+        .errorTrackerService(ERROR_TRACKER)
+        .create();
 
     @Override
     public void onLoad() {
@@ -68,8 +86,8 @@ public class FlarePlatformPaper extends JavaPlugin {
         }
 
         try {
-            if (IS_FOLIA) {
-                this.getSLF4JLogger().info("You're running a Folia based platform. TPS information won't be reported.");
+            if (IS_FOLIA && !IS_CANVAS) {
+                this.getSLF4JLogger().info("You're running a Folia based platform, but not Canvas 26.2+. TPS information per-region won't be reported.");
             }
             final List<String> warnings = FlareInitializer.initialize();
             if (!warnings.isEmpty()) {
@@ -87,6 +105,7 @@ public class FlarePlatformPaper extends JavaPlugin {
             unregisterAll(this);
         }
 
+        this.context.ready();
     }
 
     @Override
@@ -94,6 +113,7 @@ public class FlarePlatformPaper extends JavaPlugin {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
+        this.context.shutdown();
     }
 
     public PluginLookup getPluginLookup() {

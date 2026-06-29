@@ -55,14 +55,28 @@ public class FlarePaperConfig extends StaticConfig {
 
         @Comment({
             "Configuration files to include on the profiler",
-            "paper-world.yml files are included automatically for every world"
+            "These are configurations that will be looked in the server directory"
         })
         public static List<String> CONFIGURATION_FILES = List.of(
             "server.properties",
             "bukkit.yml",
             "spigot.yml",
+            "pufferfish.yml",
+            "purpur.yml",
+            "fish.yml",
             "config/paper-global.yml",
-            "config/paper-world-defaults.yml"
+            "config/paper-world-defaults.yml",
+            "config/canvas-server.yml",
+            "config/canvas-worlds.yml"
+        );
+
+        @Comment({
+            "World configuration files to include on the profiler",
+            "These are configurations that will be looked inside every world directory"
+        })
+        public static List<String> WORLD_CONFIGURATION_FILES = List.of(
+            "paper-world.yml",
+            "canvas-patch.yml"
         );
 
         @Comment("Fields to ignore in the above configurations")

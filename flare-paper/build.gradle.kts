@@ -10,6 +10,9 @@ plugins {
 
 dependencies {
     implementation(projects.flareCommon)
+    implementation(projects.flareCanvas)
+    implementation(projects.flareFish)
+    implementation(libs.faststats.bukkit)
     compileOnly(libs.folia.api)
     compileOnly(libs.jspecify)
     compileOnly(libs.oshi.core)

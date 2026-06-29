@@ -30,7 +30,7 @@ public class FlareCommand {
         .append(Component.text("]", NamedTextColor.DARK_GRAY))
         .append(Component.text(" "))
         .build();
-    private static String PROFILING_URI = "";
+    public static String PROFILING_URI = "";
 
     public static BrigadierCommand createBrigadierCommand() {
         LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("vflarep")
@@ -181,7 +181,7 @@ public class FlareCommand {
         }
     }
 
-    private static void broadcastPrefixed(Component... lines) {
+    public static void broadcastPrefixed(Component... lines) {
         Stream.concat(
                 PLATFORM.getServer().getAllPlayers().stream(), Stream.of(PLATFORM.getServer().getConsoleCommandSource()))
             .filter(s -> s.hasPermission("airplane.flare.profiler"))
