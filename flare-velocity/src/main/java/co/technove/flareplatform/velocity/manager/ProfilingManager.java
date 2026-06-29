@@ -20,6 +20,7 @@ import com.velocitypowered.api.scheduler.Scheduler;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.jspecify.annotations.Nullable;
@@ -45,7 +46,15 @@ public class ProfilingManager {
 
     public static synchronized String getProfilingUri() {
         Preconditions.checkState(currentFlare != null, "Flare cannot be null!");
-        return currentFlare.getURI().map(URI::toString).orElse("Flare is not running");
+        return currentFlare.getURI()
+            .map(URI::toString)
+            .map(s -> {
+                if (!FlareVelocityConfig.PROFILING.FRONTEND_URL.isBlank()) {
+                    return s.replace(FlareVelocityConfig.PROFILING.BACKEND_URL.toString(), FlareVelocityConfig.PROFILING.FRONTEND_URL);
+                }
+                return s;
+            })
+            .orElse("Flare is not running");
     }
 
     public static Duration getTimeRan() {
