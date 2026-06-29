@@ -7,3 +7,12 @@ dependencies {
     compileOnly(libs.oshi.core)
     compileOnly(libs.guava)
 }
+
+tasks {
+    jar {
+        archiveClassifier.set("dev")
+    }
+    shadowJar {
+        archiveClassifier.set("")
+    }
+}
