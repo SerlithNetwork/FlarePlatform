@@ -105,10 +105,8 @@ public class ProfilingManager {
                 .withFiles(ServerConfigurations.getCleanCopies())
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",
-                    platform.getServer().getVersion().getName() + " | " + platform.getServer().getVersion().getVendor())
-                .withVersion("Bukkit Version",
-                    platform.getServer().getVersion().getName() + " " + platform.getServer().getVersion().getVersion())
-                .withVersion("Minecraft Version",
+                    platform.getServer().getVersion().getName() + " | " + platform.getServer().getVersion().getVersion())
+                .withVersion("Velocity Version",
                     platform.getServer().getVersion().getVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
