@@ -87,7 +87,7 @@ public class FlarePlatformPaper extends JavaPlugin {
 
         try {
             if (IS_FOLIA && !IS_CANVAS) {
-                this.getSLF4JLogger().info("You're running a Folia based platform, but not Canvas. TPS information per-region won't be reported.");
+                this.getSLF4JLogger().info("You're running a Folia based platform, but not Canvas 26.2. TPS information per-region won't be reported.");
             }
             final List<String> warnings = FlareInitializer.initialize();
             if (!warnings.isEmpty()) {
