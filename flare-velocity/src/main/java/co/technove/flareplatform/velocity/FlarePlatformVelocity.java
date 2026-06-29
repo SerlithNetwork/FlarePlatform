@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import dev.faststats.Metrics;
+import dev.faststats.velocity.VelocityContext;
 import lombok.Getter;
 import net.j4c0b3y.api.config.ConfigHandler;
 import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
@@ -50,12 +52,14 @@ public class FlarePlatformVelocity {
     @Getter
     private final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
     private final ConfigHandler configHandler;
+    private final VelocityContext context;
 
     @Inject
     public FlarePlatformVelocity(
         PluginContainer container,
         Logger logger,
         ProxyServer server,
+        VelocityContext.Builder contextBuilder,
         @DataDirectory Path dataDirectory
     ) {
         this.container = container;
@@ -63,6 +67,10 @@ public class FlarePlatformVelocity {
         this.server = server;
         this.dataDirectory = dataDirectory;
         this.configHandler = new AdventureConfigHandler(this.logger, this.prefix);
+        this.context = contextBuilder
+            .token("f8f70898fad3dd1dffbee1ad9869ebcd")
+            .metrics(Metrics.Factory::create)
+            .create();
         instance = this;
     }
 
@@ -100,6 +108,7 @@ public class FlarePlatformVelocity {
             this.getServer().getEventManager().unregisterListeners(this); // unregister everything
         }
 
+        this.context.ready();
     }
 
     @Subscribe
@@ -107,6 +116,7 @@ public class FlarePlatformVelocity {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
+        this.context.shutdown();
     }
 
     public PluginLookup getPluginLookup() {

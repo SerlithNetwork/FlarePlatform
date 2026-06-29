@@ -10,6 +10,7 @@ plugins {
 dependencies {
     implementation(projects.flareCommon)
     implementation(libs.oshi.core)
+    implementation(libs.faststats.velocity)
     compileOnly(libs.jspecify)
     compileOnly(libs.velocity.api)
 }

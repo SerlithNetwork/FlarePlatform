@@ -9,6 +9,8 @@ import co.technove.flareplatform.paper.utils.BrandUtils;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
+import dev.faststats.Metrics;
+import dev.faststats.bukkit.BukkitContext;
 import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
@@ -43,6 +45,10 @@ public class FlarePlatformPaper extends JavaPlugin {
 
     @Setter
     private @Nullable PluginLookup pluginLookup;
+
+    private final BukkitContext context = new BukkitContext.Factory(this, "f8f70898fad3dd1dffbee1ad9869ebcd")
+        .metrics(Metrics.Factory::create)
+        .create();
 
     @Override
     public void onLoad() {
@@ -90,6 +96,7 @@ public class FlarePlatformPaper extends JavaPlugin {
             unregisterAll(this);
         }
 
+        this.context.ready();
     }
 
     @Override
@@ -97,6 +104,7 @@ public class FlarePlatformPaper extends JavaPlugin {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
+        this.context.shutdown();
     }
 
     public PluginLookup getPluginLookup() {
