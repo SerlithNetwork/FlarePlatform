@@ -23,16 +23,20 @@ import co.technove.flareplatform.paper.scheduler.FoliaSchedulerImpl;
 import co.technove.flareplatform.paper.scheduler.NoOpSchedulerImpl;
 import co.technove.flareplatform.paper.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Stream;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
@@ -47,11 +51,17 @@ import oshi.software.os.OperatingSystem;
 public class ProfilingManager {
 
     private static final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();
-    private static final AsyncScheduler scheduler = platform.getServer().getAsyncScheduler();
-    public @Nullable
-    static ScheduledTask currentTask;
-    private @Nullable
-    static Flare currentFlare;
+    private static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, r -> {
+        Thread t = new Thread(r);
+        t.setName("Flare Profiling Manager Thread");
+        return t;
+    });
+
+    private static final TextColor EXCEPTION_COLOR = TextColor.color(218, 144, 147);
+    private static final TextColor HEX = TextColor.color(227, 234, 234);
+
+    public static @Nullable ScheduledFuture<?> currentTask;
+    private static @Nullable Flare currentFlare;
 
     public static synchronized boolean isProfiling() {
         return currentFlare != null && currentFlare.isRunning();
@@ -82,7 +92,7 @@ public class ProfilingManager {
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null; // errored out
         }
-        if (isProfiling()) {
+        if (ProfilingManager.isProfiling()) {
             return false;
         }
         if (Bukkit.isPrimaryThread()) {
@@ -132,7 +142,23 @@ public class ProfilingManager {
                     .setBitness(os.getBitness())
                 )
 
-                .withExceptionRunnable(FlareCommand::broadcastException);
+                .withExceptionRunnable(() -> {
+                    try {
+                        if (currentTask != null) {
+                            currentTask.cancel(true);
+                        }
+                    } catch (Throwable t) {
+                        platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+                    } finally {
+                        currentTask = null;
+                    }
+
+                    String profilingUri = FlareCommand.PROFILING_URI;
+                    FlareCommand.broadcastPrefixed(
+                        Component.text("An exception happened and profiling has stopped", EXCEPTION_COLOR),
+                        Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
+                    );
+                });
 
             IScheduler bukkitScheduler, foliaScheduler;
             try {
@@ -172,11 +198,8 @@ public class ProfilingManager {
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = scheduler.runDelayed(platform,
-            task -> ProfilingManager.stop(),
-            15L,
-            TimeUnit.MINUTES);
-        platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        currentTask = scheduler.schedule(ProfilingManager::stop, 15, TimeUnit.MINUTES);
+        // platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -203,7 +226,7 @@ public class ProfilingManager {
 
         try {
             if (currentTask != null) {
-                currentTask.cancel();
+                currentTask.cancel(true);
             }
         } catch (Throwable t) {
             platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);

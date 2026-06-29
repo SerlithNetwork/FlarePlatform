@@ -15,14 +15,17 @@ import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
 import co.technove.flareplatform.velocity.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
-import com.velocitypowered.api.scheduler.ScheduledTask;
-import com.velocitypowered.api.scheduler.Scheduler;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextColor;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -35,9 +38,16 @@ import oshi.software.os.OperatingSystem;
 public class ProfilingManager {
 
     private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();
-    private static final Scheduler scheduler = platform.getServer().getScheduler();
+    private static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, r -> {
+        Thread t = new Thread(r);
+        t.setName("Flare Profiling Manager Thread");
+        return t;
+    });
 
-    public static @Nullable ScheduledTask currentTask;
+    private static final TextColor EXCEPTION_COLOR = TextColor.color(218, 144, 147);
+    private static final TextColor HEX = TextColor.color(227, 234, 234);
+
+    public static @Nullable ScheduledFuture<?> currentTask;
     private static @Nullable Flare currentFlare;
 
     public static synchronized boolean isProfiling() {
@@ -69,7 +79,7 @@ public class ProfilingManager {
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null; // errored out
         }
-        if (isProfiling()) {
+        if (ProfilingManager.isProfiling()) {
             return false;
         }
 
@@ -122,7 +132,23 @@ public class ProfilingManager {
                     .setBitness(os.getBitness())
                 )
 
-                .withExceptionRunnable(FlareCommand::broadcastException);
+                .withExceptionRunnable(() -> {
+                    try {
+                        if (currentTask != null) {
+                            currentTask.cancel(true);
+                        }
+                    } catch (Throwable t) {
+                        platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+                    } finally {
+                        currentTask = null;
+                    }
+
+                    String profilingUri = FlareCommand.PROFILING_URI;
+                    FlareCommand.broadcastPrefixed(
+                        Component.text("An exception happened and profiling has stopped", EXCEPTION_COLOR),
+                        Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
+                    );
+                });
 
             currentFlare = builder.build();
         } catch (IOException e) {
@@ -136,9 +162,8 @@ public class ProfilingManager {
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
-        currentTask = scheduler.buildTask(platform,
-            task -> ProfilingManager.stop()).delay(15L, TimeUnit.MINUTES).schedule();
-        platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        currentTask = scheduler.schedule(ProfilingManager::stop, 15, TimeUnit.MINUTES);
+        // platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -160,7 +185,7 @@ public class ProfilingManager {
 
         try {
             if (currentTask != null) {
-                currentTask.cancel();
+                currentTask.cancel(true);
             }
         } catch (Throwable t) {
             platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
