@@ -1,6 +1,7 @@
 package co.technove.flareplatform.paper;
 
 import co.technove.flare.FlareInitializer;
+import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.paper.command.FlareCommand;
 import co.technove.flareplatform.paper.config.FlarePaperConfig;
@@ -9,10 +10,12 @@ import co.technove.flareplatform.paper.utils.BrandUtils;
 import co.technove.flareplatform.paper.utils.PluginLookup;
 import co.technove.flareplatform.paper.utils.ServerListener;
 import com.google.common.base.Preconditions;
+import dev.faststats.ErrorTracker;
 import dev.faststats.Metrics;
 import dev.faststats.bukkit.BukkitContext;
 import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import lombok.Getter;
@@ -38,6 +41,11 @@ public class FlarePlatformPaper extends JavaPlugin {
     public static final boolean IS_CANVAS = BrandUtils.isCanvas();
     public static final boolean IS_PWT = BrandUtils.isParallelWorldTicking();
 
+    private static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware()
+        .ignoreError(IllegalStateException.class, "No AllocTracer symbols found.*")
+        .ignoreError(IOException.class, "Error ocurred sending data.*")
+        .ignoreError(UserReportableException.class);
+
     private static boolean shouldRegister = true;
 
     @Getter
@@ -48,6 +56,7 @@ public class FlarePlatformPaper extends JavaPlugin {
 
     private final BukkitContext context = new BukkitContext.Factory(this, "f8f70898fad3dd1dffbee1ad9869ebcd")
         .metrics(Metrics.Factory::create)
+        .errorTrackerService(ERROR_TRACKER)
         .create();
 
     @Override

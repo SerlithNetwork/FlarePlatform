@@ -1,6 +1,7 @@
 package co.technove.flareplatform.velocity;
 
 import co.technove.flare.FlareInitializer;
+import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.InitializationException;
 import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
@@ -17,11 +18,13 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import dev.faststats.ErrorTracker;
 import dev.faststats.Metrics;
 import dev.faststats.velocity.VelocityContext;
 import lombok.Getter;
@@ -36,6 +39,11 @@ public class FlarePlatformVelocity {
     @Getter
     private static @Nullable FlarePlatformVelocity instance;
     private static boolean shouldRegister = true;
+
+    private static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware()
+        .ignoreError(IllegalStateException.class, "No AllocTracer symbols found.*")
+        .ignoreError(IOException.class, "Error ocurred sending data.*")
+        .ignoreError(UserReportableException.class);
 
     @Getter
     private final PluginContainer container;
@@ -70,6 +78,7 @@ public class FlarePlatformVelocity {
         this.context = contextBuilder
             .token("f8f70898fad3dd1dffbee1ad9869ebcd")
             .metrics(Metrics.Factory::create)
+            .errorTrackerService(ERROR_TRACKER)
             .create();
         instance = this;
     }
