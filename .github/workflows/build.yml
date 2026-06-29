@@ -3,15 +3,10 @@ name: Build All
 on:
     workflow_dispatch:
 
-env:
-    REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository }}
-    BUILD_NUMBER: ${{ github.run_number }}
-
 jobs:
     build:
         runs-on: ubuntu-latest
-
+        if: "!contains(github.event.commits[0].message, '[ci skip]')"
         permissions:
             contents: read
             packages: write
@@ -19,6 +14,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v5
+              with:
+                fetch-depth: 0
 
             - uses: actions/setup-java@v4
               with:
@@ -48,6 +45,7 @@ jobs:
                 path: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
+                  ./flare-common/build/libs/flare-common-2.0.0.jar
 
             - name: Release Flare
               uses: softprops/action-gh-release@master
@@ -57,6 +55,7 @@ jobs:
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
+                  ./flare-common/build/libs/flare-common-2.0.0.jar
                 body_path: "./RELEASE.md"
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 target_commitish: "${{ github.sha }}"
