@@ -8,8 +8,7 @@ jobs:
         runs-on: ubuntu-latest
         if: "!contains(github.event.commits[0].message, '[ci skip]')"
         permissions:
-            contents: read
-            packages: write
+            contents: write
 
         steps:
             - name: Checkout repository
