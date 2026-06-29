@@ -44,6 +44,7 @@ public class ProfilingManager {
         return t;
     });
 
+    private static final TextColor MAIN_COLOR = TextColor.color(106, 126, 218);
     private static final TextColor EXCEPTION_COLOR = TextColor.color(218, 144, 147);
     private static final TextColor HEX = TextColor.color(227, 234, 234);
 
@@ -175,7 +176,11 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        platform.getLogger().log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
+        String profilingUri = ProfilingManager.getProfilingUri();
+        FlareCommand.broadcastPrefixed(
+            Component.text("Profiling has been stopped.", MAIN_COLOR),
+            Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
+        );
         try {
             currentFlare.stop();
         } catch (IllegalStateException e) {
