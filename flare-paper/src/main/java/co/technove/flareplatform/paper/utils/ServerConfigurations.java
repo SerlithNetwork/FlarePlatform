@@ -7,58 +7,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ServerConfigurations {
 
-    private static final List<NamespacedKey> worldList = new ArrayList<>();
-    private static final Map<String, String> configFiles = new HashMap<>();
-
     public static Map<String, String> getCleanCopies() throws IOException {
+        Map<String, String> files = new HashMap<>(FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES.size());
         for (final String file : FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
-            if (configFiles.containsKey(file)) {
-                continue;
-            }
-
             Path path = Path.of(file);
-            if (!Files.exists(path)) {
-                continue;
+            if (Files.exists(path)) {
+                files.put(file, ServerConfigurations.getCleanCopy(path));
             }
-
-            configFiles.put(file, getCleanCopy(path));
         }
-
         for (final World world : Bukkit.getWorlds()) {
-            if (worldList.contains(world.getKey())) {
-                continue;
-            }
-
-            worldList.add(world.getKey());
-            final Path worldDir = world.getWorldPath();
-
+            final Path worldPath = world.getWorldPath();
             for (String configName : FlarePaperConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
-                final Path config = worldDir.resolve(configName);
+                final Path config = worldPath.resolve(configName);
                 if (Files.exists(config)) {
-                    final String cleanConfig = getCleanCopy(config);
+                    final String cleanConfig = ServerConfigurations.getCleanCopy(config);
                     if (!cleanConfig.isEmpty()) {
-                        configFiles.put(config.toString(), cleanConfig);
+                        files.put(config.toString(), cleanConfig);
                     }
                 }
             }
         }
-        return configFiles;
+        return files;
     }
 
     public static boolean matchesRegex(String key) {
@@ -78,7 +60,7 @@ public class ServerConfigurations {
                     properties.load(inputStream);
                 }
                 for (final String hiddenConfig : properties.stringPropertyNames()) {
-                    if (matchesRegex(hiddenConfig)) {
+                    if (ServerConfigurations.matchesRegex(hiddenConfig)) {
                         properties.remove(hiddenConfig);
                     }
                 }
@@ -98,7 +80,7 @@ public class ServerConfigurations {
                 }
                 configuration.options().setHeader(null);
                 for (final String key : configuration.getKeys(true)) {
-                    if (matchesRegex(key)) {
+                    if (ServerConfigurations.matchesRegex(key)) {
                         configuration.set(key, null);
                     }
                 }
