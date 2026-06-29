@@ -59,13 +59,13 @@ public class ServerConfigurations {
             }
             case "toml": {
                 Toml configuration = new Toml();
-                Map<String, Object> map = configuration.toMap();
                 try (final BufferedReader reader = Files.newBufferedReader(configPath)) {
                     configuration.read(reader);
                 } catch (final IllegalStateException e) {
                     throw new IOException(e);
                 }
 
+                Map<String, Object> map = configuration.toMap();
                 for (final Map.Entry<String, Object> entry : configuration.entrySet()) {
                     if (ServerConfigurations.matchesRegex(entry.getKey())) {
                         map.put(entry.getKey(), "");
