@@ -46,7 +46,6 @@ jobs:
                 path: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
-                  ./flare-common/build/libs/flare-common-2.0.0.jar
 
             - name: Release Flare
               uses: softprops/action-gh-release@master
@@ -56,7 +55,6 @@ jobs:
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.0.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.0.jar
-                  ./flare-common/build/libs/flare-common-2.0.0.jar
                 body_path: "./RELEASE.md"
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 target_commitish: "${{ github.sha }}"
