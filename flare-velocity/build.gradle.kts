@@ -46,6 +46,8 @@ fun ShadowJar.configureRelocation() {
     mapOf(
         "oshi" to "oshi",
         "co.technove.flare." to "flare",
+        "dev.faststats" to "faststats",
+        "org.bstats" to "bstats",
     ).forEach { pack ->
         relocate(pack.key, "$prefix.${pack.value}")
     }
