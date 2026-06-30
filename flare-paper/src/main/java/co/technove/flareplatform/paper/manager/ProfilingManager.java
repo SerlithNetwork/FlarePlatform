@@ -73,8 +73,8 @@ public class ProfilingManager {
         return currentFlare.getURI()
             .map(URI::toString)
             .map(s -> {
-                if (!FlarePaperConfig.PROFILING.FRONTEND_URL.isBlank()) {
-                    return s.replace(FlarePaperConfig.PROFILING.BACKEND_URL.toString(), FlarePaperConfig.PROFILING.FRONTEND_URL);
+                if (!FlarePaperConfig.PROFILING.VIEWER_URL.isBlank()) {
+                    return s.replace(FlarePaperConfig.PROFILING.BACKEND_URL.toString(), FlarePaperConfig.PROFILING.VIEWER_URL);
                 }
                 return s;
             })

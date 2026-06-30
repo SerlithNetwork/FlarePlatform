@@ -60,8 +60,8 @@ public class ProfilingManager {
         return currentFlare.getURI()
             .map(URI::toString)
             .map(s -> {
-                if (!FlareVelocityConfig.PROFILING.FRONTEND_URL.isBlank()) {
-                    return s.replace(FlareVelocityConfig.PROFILING.BACKEND_URL.toString(), FlareVelocityConfig.PROFILING.FRONTEND_URL);
+                if (!FlareVelocityConfig.PROFILING.VIEWER_URL.isBlank()) {
+                    return s.replace(FlareVelocityConfig.PROFILING.BACKEND_URL.toString(), FlareVelocityConfig.PROFILING.VIEWER_URL);
                 }
                 return s;
             })

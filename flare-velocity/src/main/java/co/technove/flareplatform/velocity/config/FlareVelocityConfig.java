@@ -42,11 +42,12 @@ public class FlareVelocityConfig extends StaticConfig {
         })
         public static URI BACKEND_URL = URI.create("https://flare.airplane.gg");
 
+        @Hidden
         @Comment({
             "If provided, it will replace the backend URI before handling it to you",
             "Useful if your backend and frontend do not share the same path"
         })
-        public static String FRONTEND_URL = "";
+        public static String VIEWER_URL = "";
 
     }
 
