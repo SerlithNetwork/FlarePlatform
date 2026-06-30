@@ -60,7 +60,8 @@ public class FlarePlatformVelocity {
     @Getter
     private final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
     private final ConfigHandler configHandler;
-    private final VelocityContext context;
+    private final VelocityContext faststatsContext;
+    private final org.bstats.velocity.Metrics.Factory bstatsFactory;
 
     @Inject
     public FlarePlatformVelocity(
@@ -68,6 +69,7 @@ public class FlarePlatformVelocity {
         Logger logger,
         ProxyServer server,
         VelocityContext.Builder contextBuilder,
+        org.bstats.velocity.Metrics.Factory metricsFactory,
         @DataDirectory Path dataDirectory
     ) {
         this.container = container;
@@ -75,11 +77,12 @@ public class FlarePlatformVelocity {
         this.server = server;
         this.dataDirectory = dataDirectory;
         this.configHandler = new AdventureConfigHandler(this.logger, this.prefix);
-        this.context = contextBuilder
+        this.faststatsContext = contextBuilder
             .token("f8f70898fad3dd1dffbee1ad9869ebcd")
             .metrics(Metrics.Factory::create)
             .errorTrackerService(ERROR_TRACKER)
             .create();
+        this.bstatsFactory = metricsFactory;
         instance = this;
     }
 
@@ -117,7 +120,8 @@ public class FlarePlatformVelocity {
             this.getServer().getEventManager().unregisterListeners(this); // unregister everything
         }
 
-        this.context.ready();
+        this.faststatsContext.ready();
+        this.bstatsFactory.make(this, 32294);
     }
 
     @Subscribe
@@ -125,7 +129,7 @@ public class FlarePlatformVelocity {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
-        this.context.shutdown();
+        this.faststatsContext.shutdown();
     }
 
     public PluginLookup getPluginLookup() {

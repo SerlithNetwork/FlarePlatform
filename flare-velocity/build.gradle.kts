@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.flareCommon)
     implementation(libs.oshi.core)
     implementation(libs.faststats.velocity)
+    implementation(libs.bstats.velocity)
     compileOnly(libs.jspecify)
     compileOnly(libs.velocity.api)
 }

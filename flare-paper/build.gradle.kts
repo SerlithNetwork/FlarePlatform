@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.flareCanvas)
     implementation(projects.flareFish)
     implementation(libs.faststats.bukkit)
+    implementation(libs.bstats.bukkit)
     compileOnly(libs.folia.api)
     compileOnly(libs.jspecify)
     compileOnly(libs.oshi.core)

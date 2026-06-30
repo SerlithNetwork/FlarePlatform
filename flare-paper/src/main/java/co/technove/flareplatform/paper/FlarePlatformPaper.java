@@ -54,7 +54,7 @@ public class FlarePlatformPaper extends JavaPlugin {
     @Setter
     private @Nullable PluginLookup pluginLookup;
 
-    private final BukkitContext context = new BukkitContext.Factory(this, "f8f70898fad3dd1dffbee1ad9869ebcd")
+    private final BukkitContext faststatsContext = new BukkitContext.Factory(this, "f8f70898fad3dd1dffbee1ad9869ebcd")
         .metrics(Metrics.Factory::create)
         .errorTrackerService(ERROR_TRACKER)
         .create();
@@ -105,7 +105,8 @@ public class FlarePlatformPaper extends JavaPlugin {
             unregisterAll(this);
         }
 
-        this.context.ready();
+        this.faststatsContext.ready();
+        new org.bstats.bukkit.Metrics(this, 32293);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class FlarePlatformPaper extends JavaPlugin {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
-        this.context.shutdown();
+        this.faststatsContext.shutdown();
     }
 
     public PluginLookup getPluginLookup() {
