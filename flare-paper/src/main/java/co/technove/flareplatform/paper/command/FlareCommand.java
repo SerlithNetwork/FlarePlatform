@@ -117,11 +117,20 @@ public class FlareCommand {
     }
 
     public static int executeStop(CommandContext<CommandSourceStack> ctx) {
+        CommandSender sender = ctx.getSource().getSender();
+        sendPrefixed(sender, Component.text("Stopping flare...", NamedTextColor.DARK_GRAY));
         platform.getServer().getAsyncScheduler().runNow(platform, task -> {
-            if (ProfilingManager.stop()) {
+            try {
+                if (!ProfilingManager.stop()) {
+                    sendPrefixed(sender,
+                        Component.text("Profiling has already been stopped.", HEX)
+                    );
+                }
+            } catch (IllegalStateException e) {
+                throw e;
+            } catch (Exception ignore) { // I can't use UserReportableException apparently
                 broadcastPrefixed(
-                    Component.text("Profiling has been stopped.", MAIN_COLOR),
-                    Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
+                    Component.text("Failed to submit the last batch of data, the profiler will still be available", NamedTextColor.RED)
                 );
             }
         });
