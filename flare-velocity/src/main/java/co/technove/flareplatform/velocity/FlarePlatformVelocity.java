@@ -108,8 +108,8 @@ public class FlarePlatformVelocity {
             }
             // register commands
             CommandManager commandManager = this.getServer().getCommandManager();
-            CommandMeta commandMeta = commandManager.metaBuilder("vflareprofiler")
-                .aliases("vflare", "vprofiler")
+            CommandMeta commandMeta = commandManager.metaBuilder("flarevelocity")
+                .aliases("flareproxy")
                 .plugin(this)
                 .build();
             BrigadierCommand command = FlareCommand.createBrigadierCommand();

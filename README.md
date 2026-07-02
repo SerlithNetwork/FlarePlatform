@@ -88,7 +88,7 @@ Additionally, it is advised not to delete the below section of the config file, 
     - "seed-*"
 ```
 
-Finally, you can run `/flare` or `/vflare` in-game or in-console to start profiling or keep configuring other aspects of the plugin to your liking!
+Finally, you can run `/flare` or `/flarev` in-game or in-console to start profiling or keep configuring other aspects of the plugin to your liking!
 
 ## License
 [MIT](https://github.com/SerlithNetwork/FlarePlatform/blob/HEAD/LICENSE)

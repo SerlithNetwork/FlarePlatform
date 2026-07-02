@@ -33,7 +33,7 @@ public class FlareCommand {
     public static String PROFILING_URI = "";
 
     public static BrigadierCommand createBrigadierCommand() {
-        LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("vflarep")
+        LiteralCommandNode<CommandSource> flareCommand = BrigadierCommand.literalArgumentBuilder("flarev")
             .requires(css -> css.hasPermission("airplane.flare"))
             .then(BrigadierCommand.literalArgumentBuilder("profiler")
                 .then(BrigadierCommand.literalArgumentBuilder("start")
@@ -100,7 +100,7 @@ public class FlareCommand {
                                 Component.text("Flare has been started!", MAIN_COLOR),
                                 Component.text("It will run in the background for 15 minutes", NamedTextColor.GRAY),
                                 Component.text("or until manually stopped using:", NamedTextColor.GRAY),
-                                Component.text("  ").append(Component.text("/vflarep profiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("vflarep profiler stop"))),
+                                Component.text("  ").append(Component.text("/flarev profiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("flarev profiler stop"))),
                                 Component.text("Follow its progress here:", NamedTextColor.GRAY),
                                 Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
                             );
@@ -108,7 +108,7 @@ public class FlareCommand {
                             broadcastPrefixed(
                                 Component.text("Can't start a new profiler while another profiler is already active!", NamedTextColor.RED),
                                 Component.text("Please stop it using: ", NamedTextColor.RED).append(Component.text(
-                                    "/vflareprofiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("vflareprofiler stop"))),
+                                    "/flarev profiler stop", NamedTextColor.WHITE).clickEvent(ClickEvent.runCommand("flarev profiler stop"))),
                                 Component.text("before starting a new instance.", NamedTextColor.RED),
                                 Component.text("You can follow the current profiler's progress here:", NamedTextColor.GRAY),
                                 Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
