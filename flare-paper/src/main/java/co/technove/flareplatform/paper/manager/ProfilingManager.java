@@ -6,6 +6,7 @@ import co.technove.flare.FlareBuilder;
 import co.technove.flare.exceptions.UserReportableException;
 import co.technove.flare.internal.profiling.ProfileType;
 import co.technove.flare.live.Collector;
+import co.technove.flareplatform.canvas.collectors.WorldRegionCountCollector;
 import co.technove.flareplatform.canvas.collectors.RegionTpsCollector;
 import co.technove.flareplatform.common.CustomCategories;
 import co.technove.flareplatform.common.collectors.GCEventCollector;
@@ -180,6 +181,7 @@ public class ProfilingManager {
                 extraCollectors.add(WorldTpsCollector.create());
             } else if (FlarePlatformPaper.IS_CANVAS) {
                 extraCollectors.add(RegionTpsCollector.create());
+                extraCollectors.add(new WorldRegionCountCollector());
             }
 
             builder.withCollectors(Stream.concat(baseCollectors.stream(), extraCollectors.stream()).toArray(Collector[]::new));
