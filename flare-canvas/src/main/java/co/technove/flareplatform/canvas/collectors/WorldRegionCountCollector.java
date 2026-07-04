@@ -5,6 +5,7 @@ import co.technove.flare.live.LiveCollector;
 import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.common.CustomCategories;
 import io.canvasmc.canvas.region.WorldRegionizer;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -16,13 +17,13 @@ import java.util.Map;
 
 public class WorldRegionCountCollector extends LiveCollector {
 
-    private final Map<World, CollectorData> worldCollectors;
+    private final Map<Key, CollectorData> worldCollectors;
 
     public WorldRegionCountCollector() {
         this(createCollectors());
     }
 
-    public WorldRegionCountCollector(Map<World, CollectorData> worldCollectors) {
+    public WorldRegionCountCollector(Map<Key, CollectorData> worldCollectors) {
         super(worldCollectors.values().toArray(CollectorData[]::new));
         this.worldCollectors = worldCollectors;
         this.interval = Duration.ofSeconds(5);
@@ -41,15 +42,15 @@ public class WorldRegionCountCollector extends LiveCollector {
     }
 
     public CollectorData collectorForWorld(World world) {
-        return worldCollectors.get(world);
+        return worldCollectors.get(world.key());
     }
 
-    private static Map<World, CollectorData> createCollectors() {
-        Map<World, CollectorData> collectors = new HashMap<>();
+    private static Map<Key, CollectorData> createCollectors() {
+        Map<Key, CollectorData> collectors = new HashMap<>();
 
         for (World world : Bukkit.getWorlds()) {
-            collectors.put(world, new CollectorData(
-                "flare:world:[" + world.key().asMinimalString() + "]:regioncount",
+            collectors.put(world.key(), new CollectorData(
+                "flare:extra:world[" + world.key().asMinimalString() + "]:regioncount",
                 "Region Count",
                 "The number of regions in this world.",
                 new SuffixFormatter(" Region", " Regions"),
