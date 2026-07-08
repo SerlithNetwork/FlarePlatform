@@ -7,13 +7,10 @@ dependencies {
     compileOnly(libs.canvas.api)
 }
 
+java.disableAutoTargetJvm()
+
 extensions.configure<JavaPluginExtension> {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
-}
-
-// dirty hack
-configurations.compileClasspath {
-    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
 }
