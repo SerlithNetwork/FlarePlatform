@@ -66,10 +66,20 @@ public class RegionTpsCollector extends LiveCollector {
         List<WorldRegionizer.ChunkRegion> regions = allRegions.subList(0, Math.min(10, allRegions.size()));
         for (WorldRegionizer.ChunkRegion region : regions) {
             long id = region.getId();
-            String tpsId = String.format("flare:region[%d]:tps", id);
-            String msptId = String.format("flare:region[%d]:mspt", id);
-            tpsData.put(id, new CollectorData(tpsId, "TPS", "Ticks per second, or how fast the region updates. For a smooth server this should be a constant 20TPS.", SuffixFormatter.of("TPS"), CustomCategories.PERF));
-            msptData.put(id, new CollectorData(msptId, "MSPT", "Milliseconds per tick, which can show how well this region is performing. This value should always be under 50mspt.", SuffixFormatter.of("mspt"), CustomCategories.PERF));
+            String tpsId = String.format("flare:perf:region[%d]:tps", id);
+            String msptId = String.format("flare:perf:region[%d]:mspt", id);
+            tpsData.put(id, new CollectorData(
+                tpsId,
+                "TPS",
+                "Ticks per second, or how fast the region updates. For a smooth server this should be a constant 20TPS.",
+                SuffixFormatter.of("TPS"), CustomCategories.PERF)
+            );
+            msptData.put(id, new CollectorData(
+                msptId,
+                "MSPT",
+                "Milliseconds per tick, which can show how well this region is performing. This value should always be under 50mspt.",
+                SuffixFormatter.of("mspt"), CustomCategories.PERF)
+            );
         }
 
         return new RegionTpsCollector(regions, tpsData, msptData);

@@ -4,6 +4,7 @@ import co.technove.flareplatform.common.types.ChunkPos;
 import co.technove.flareplatform.common.util.CoordinateUtils;
 import io.canvasmc.canvas.region.RegionTickData;
 import io.canvasmc.canvas.region.WorldRegionizer;
+import org.bukkit.World;
 import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,16 @@ public class RegionUtils {
         RegionTickData dataA = a.getTickData();
         RegionTickData dataB = b.getTickData();
         return (int) Math.round(dataB.getMSPT(RegionTickData.Frame._5_SECONDS) - dataA.getMSPT(RegionTickData.Frame._5_SECONDS));
+    }
+
+    public static List<WorldRegionizer.ChunkRegion> getRegionsIn(final World world) {
+        final List<WorldRegionizer.ChunkRegion> regions = new ArrayList<>();
+        world.getRegionizer().computeForAllChunkRegions(regions::add);
+        return regions;
+    }
+
+    public static int countRegionsIn(final World world) {
+        return RegionUtils.getRegionsIn(world).size();
     }
 
 }

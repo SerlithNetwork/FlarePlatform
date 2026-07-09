@@ -181,7 +181,7 @@ public class ProfilingManager {
                 extraCollectors.add(WorldTpsCollector.create());
             } else if (FlarePlatformPaper.IS_CANVAS) {
                 extraCollectors.add(RegionTpsCollector.create());
-                extraCollectors.add(new WorldRegionCountCollector());
+                extraCollectors.add(WorldRegionCountCollector.create());
             }
 
             builder.withCollectors(Stream.concat(baseCollectors.stream(), extraCollectors.stream()).toArray(Collector[]::new));
