@@ -171,7 +171,7 @@ public class FlareCommand {
 
     public static void broadcastPrefixed(Component... lines) {
         Stream.concat(
-                Bukkit.getOnlinePlayers().stream(), Stream.of(Bukkit.getConsoleSender()))
+                Bukkit.getOnlinePlayers().stream().map(CommandSender.class::cast), Stream.of(Bukkit.getConsoleSender()))
             .filter(s -> s.hasPermission("airplane.flare"))
             .forEach(s -> {
                 for (Component line : lines) {
