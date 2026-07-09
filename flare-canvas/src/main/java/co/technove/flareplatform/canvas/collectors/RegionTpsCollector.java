@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 public class RegionTpsCollector extends LiveCollector {
 
+    // Getting regions is synchronized, and there might be a lot of regions
     private final List<WeakReference<WorldRegionizer.ChunkRegion>> regions;
     private final Map<Long, CollectorData> tpsData;
     private final Map<Long, CollectorData> msptData;
