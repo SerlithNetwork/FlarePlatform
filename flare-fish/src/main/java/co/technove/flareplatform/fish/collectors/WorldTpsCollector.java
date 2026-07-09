@@ -25,7 +25,7 @@ public class WorldTpsCollector extends LiveCollector {
     @Override
     public void run() {
         for (World world : Bukkit.getWorlds()) {
-            final CollectorData data = msptData.get(world.getKey());
+            final CollectorData data = msptData.get(world.key());
             if (data == null) {
                 continue;
             }
