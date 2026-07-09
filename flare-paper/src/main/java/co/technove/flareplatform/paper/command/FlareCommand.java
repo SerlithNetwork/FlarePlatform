@@ -39,6 +39,7 @@ public class FlareCommand {
             .requires(css -> css.getSender().hasPermission("airplane.flare"))
             .then(Commands.literal("profiler")
                 .then(Commands.literal("start")
+                    .requires(source -> !ProfilingManager.isProfiling())
                     .then(Commands.literal("--cpu")
                         .executes(ctx -> {
                             FlareCommand.execute(ctx, ProfileType.CPU);
@@ -75,6 +76,7 @@ public class FlareCommand {
                     })
                 )
                 .then(Commands.literal("stop")
+                    .requires(source -> ProfilingManager.isProfiling())
                     .executes(FlareCommand::executeStop))
                 .then(Commands.literal("status")
                     .executes(FlareCommand::executeStatus))
@@ -121,11 +123,7 @@ public class FlareCommand {
         sendPrefixed(sender, Component.text("Stopping flare...", NamedTextColor.DARK_GRAY));
         platform.getServer().getAsyncScheduler().runNow(platform, task -> {
             try {
-                if (!ProfilingManager.stop()) {
-                    sendPrefixed(sender,
-                        Component.text("Profiling has already been stopped.", HEX)
-                    );
-                }
+                ProfilingManager.stop();
             } catch (IllegalStateException e) {
                 throw e;
             } catch (Exception ignore) { // I can't use UserReportableException apparently

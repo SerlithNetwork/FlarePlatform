@@ -141,12 +141,7 @@ public class ProfilingManager {
                     } finally {
                         currentTask = null;
                     }
-
-                    String profilingUri = FlareCommand.PROFILING_URI;
-                    FlareCommand.broadcastPrefixed(
-                        Component.text("An exception happened and profiling has stopped", EXCEPTION_COLOR),
-                        Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
-                    );
+                    FlareCommand.broadcastException();
                 });
 
             currentFlare = builder.build();

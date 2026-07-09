@@ -154,12 +154,7 @@ public class ProfilingManager {
                     } finally {
                         currentTask = null;
                     }
-
-                    String profilingUri = FlareCommand.PROFILING_URI;
-                    FlareCommand.broadcastPrefixed(
-                        Component.text("An exception happened and profiling has stopped", EXCEPTION_COLOR),
-                        Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
-                    );
+                    FlareCommand.broadcastException();
                 });
 
             IScheduler bukkitScheduler, foliaScheduler;
@@ -221,6 +216,9 @@ public class ProfilingManager {
         );
         try {
             currentFlare.stop();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(platform, task -> player.updateCommands(), null);
+            }
         } catch (IllegalStateException e) {
             platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
