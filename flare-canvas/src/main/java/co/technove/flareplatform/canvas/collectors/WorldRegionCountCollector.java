@@ -44,7 +44,7 @@ public class WorldRegionCountCollector extends LiveCollector {
         Map<Key, CollectorData> regionsData = new HashMap<>();
         for (World world : worlds) {
             Key key = world.key();
-            String regionsId = String.format("flare:count:world[%s]:regions", key.asMinimalString());
+            String regionsId = String.format("flare:count:world[%s]:regions", key.asString());
             regionsData.put(key, new CollectorData(
                 regionsId,
                 "Region Count",
