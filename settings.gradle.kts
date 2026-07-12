@@ -14,3 +14,14 @@ include(
 
 include("flare-fish")
 include("flare-canvas")
+
+gradle.lifecycle.beforeProject {
+    val majorVersion = providers.gradleProperty("major_version").get().trim()
+    val build = providers.environmentVariable("BUILD_NUMBER").orNull?.trim()?.toInt()
+    val versionString = if (build == null) {
+        "$majorVersion.local"
+    } else {
+        "$majorVersion.$build"
+    }
+    version = versionString
+}
