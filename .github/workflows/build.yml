@@ -50,7 +50,7 @@ jobs:
             - name: Release Flare
               uses: softprops/action-gh-release@master
               with:
-                name: "✈️ Flare Flatform (Build ${{ env.BUILD_NUMBER }})"
+                name: "✈️ Flare Platform (Build ${{ env.BUILD_NUMBER }})"
                 tag_name: "flare-2.0"
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.${{ env.BUILD_NUMBER }}.jar
