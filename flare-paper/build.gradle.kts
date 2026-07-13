@@ -30,7 +30,7 @@ dependencies {
 runPaper.folia.registerTask() // run folia
 
 paperPluginYaml {
-    apiVersion = "1.21.6"
+    apiVersion = "1.21.8"
     name = "Flare"
     main = "co.technove.flareplatform.paper.FlarePlatformPaper"
     loader = "co.technove.flareplatform.paper.FlarePlatformPaperLoader"
