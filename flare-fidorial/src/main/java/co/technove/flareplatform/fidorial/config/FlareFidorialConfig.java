@@ -68,7 +68,7 @@ public class FlareFidorialConfig extends StaticConfig {
             "These are configurations that will be looked inside every world directory"
         })
         public static List<String> WORLD_CONFIGURATION_FILES = List.of(
-            "fidorial-world.yml"
+            "fidorial-world.yaml"
         );
 
         @Comment("Fields to ignore in the above configurations")
