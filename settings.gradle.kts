@@ -14,6 +14,7 @@ include(
 
 include("flare-fish")
 include("flare-canvas")
+include("flare-fidorial")
 
 gradle.lifecycle.beforeProject {
     val majorVersion = providers.gradleProperty("major_version").get().trim()

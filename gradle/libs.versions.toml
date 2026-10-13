@@ -6,6 +6,7 @@ flare = "4.1.5"
 folia-api = "1.21.11-R0.1-SNAPSHOT"
 canvas-api = "26.2.build.+"
 velocity-api = "3.5.0-SNAPSHOT"
+fidorial-api = "0.1.0-SNAPSHOT"
 shadow = "9.5.1"
 lombok = "9.5.0"
 run-task = "3.0.2"
@@ -23,6 +24,7 @@ flare = { module = "net.serlith:Flare", version.ref = "flare" }
 folia-api = { module = "dev.folia:folia-api", version.ref = "folia-api" }
 canvas-api = { module = "io.canvasmc.canvas:canvas-api", version.ref = "canvas-api" }
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-api" }
+fidorial-api = { module = "fr.fidorial:fidorial-api", version.ref = "fidorial-api" }
 config-api-core = { module = "net.serlith.ConfigAPI:ConfigAPI-core", version.ref = "config-api" }
 config-api-adventure = { module = "net.serlith.ConfigAPI:ConfigAPI-adventure", version.ref = "config-api" }
 faststats-bukkit = { module = "dev.faststats.metrics:bukkit", version.ref = "faststats" }

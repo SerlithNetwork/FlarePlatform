@@ -19,7 +19,7 @@ subprojects {
         mavenCentral()
         maven(paperMavenPublicUrl)
         maven("https://jitpack.io")
-        maven(("https://repo.faststats.dev/releases"))
+        maven("https://repo.faststats.dev/releases")
     }
 
     extensions.configure<JavaPluginExtension> {

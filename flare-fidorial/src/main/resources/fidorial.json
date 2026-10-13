@@ -1,0 +1,20 @@
+{
+    "id": "flare",
+    "name": "Flare",
+    "version": "1.0.0",
+    "main": "co.technove.flareplatform.fidorial.FlarePlatformFidorial",
+    "authors": [
+        "PaulBGD",
+        "SerlithNetwork",
+        "Euphyllia"
+    ],
+    "depends": [],
+    "defaultPermission": "op",
+    "permissions": {
+        "airplane.flare": {
+            "description": "Allows to use the /flarep command",
+            "operator": "TRUE",
+            "regular": "FALSE"
+        }
+    }
+}
