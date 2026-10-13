@@ -14,18 +14,18 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
               with:
                 fetch-depth: 0
 
-            - uses: actions/setup-java@v4
+            - uses: actions/setup-java@v6
               with:
                 distribution: temurin
                 java-version: 25
                 cache: 'gradle'
 
             - name: Setup Gradle
-              uses: gradle/actions/setup-gradle@v4
+              uses: gradle/actions/setup-gradle@v6
 
             - name: Build Flare
               run: ./gradlew build
@@ -46,6 +46,7 @@ jobs:
                 path: |
                   ./flare-paper/build/libs/flare-paper-2.0.${{ env.BUILD_NUMBER }}.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.${{ env.BUILD_NUMBER }}.jar
+                  ./flare-fidorial/build/libs/flare-fidorial-2.0.${{ env.BUILD_NUMBER }}.jar
 
             - name: Release Flare
               uses: softprops/action-gh-release@master
@@ -55,6 +56,7 @@ jobs:
                 files: |
                   ./flare-paper/build/libs/flare-paper-2.0.${{ env.BUILD_NUMBER }}.jar
                   ./flare-velocity/build/libs/flare-velocity-2.0.${{ env.BUILD_NUMBER }}.jar
+                  ./flare-fidorial/build/libs/flare-fidorial-2.0.${{ env.BUILD_NUMBER }}.jar
                 body_path: "./RELEASE.md"
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 target_commitish: "${{ github.sha }}"
