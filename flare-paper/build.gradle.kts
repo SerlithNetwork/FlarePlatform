@@ -10,6 +10,7 @@ import java.security.MessageDigest
 import kotlin.system.measureNanoTime
 
 plugins {
+    id("co.technove.flareplatform.gradle.build-conventions")
     alias(libs.plugins.run.paper)
     alias(libs.plugins.resource.factory.paper)
     alias(libs.plugins.blossom)
@@ -45,11 +46,7 @@ tasks {
     runServer {
         minecraftVersion("1.21.11")
     }
-    jar {
-        archiveClassifier.set("dev")
-    }
     shadowJar {
-        archiveClassifier.set("")
         manifest {
             attributes(
                 "paperweight-mappings-namespace" to "mojang",
@@ -57,7 +54,7 @@ tasks {
         }
         configureRelocation()
     }
-    withType(AbstractRun::class).configureEach {
+    withType<AbstractRun>().configureEach {
         jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
     }
 }

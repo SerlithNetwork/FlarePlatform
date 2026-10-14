@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.regex.Pattern
 
 plugins {
+    id("co.technove.flareplatform.gradle.build-conventions")
     alias(libs.plugins.lombok)
     alias(libs.plugins.blossom)
 }
@@ -22,14 +23,8 @@ tasks.withType<JavaCompile>().configureEach {
     options.release = 25
 }
 
-tasks {
-    jar {
-        archiveClassifier.set("dev")
-    }
-    shadowJar {
-        archiveClassifier.set("")
-        configureRelocation()
-    }
+tasks.withType<ShadowJar>().configureEach {
+    configureRelocation()
 }
 
 sourceSets.main {

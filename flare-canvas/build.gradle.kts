@@ -1,3 +1,7 @@
+plugins {
+    id("co.technove.flareplatform.gradle.build-conventions")
+}
+
 repositories {
     maven("https://maven.canvasmc.io/releases")
 }

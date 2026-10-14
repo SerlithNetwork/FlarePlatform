@@ -1,3 +1,7 @@
+plugins {
+    id("co.technove.flareplatform.gradle.build-conventions")
+}
+
 dependencies {
     api(libs.config.api.core)
     api(libs.config.api.adventure)
@@ -6,13 +10,4 @@ dependencies {
     compileOnly(libs.jspecify)
     compileOnly(libs.oshi.core)
     compileOnly(libs.guava)
-}
-
-tasks {
-    jar {
-        archiveClassifier.set("dev")
-    }
-    shadowJar {
-        archiveClassifier.set("")
-    }
 }

@@ -1,7 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import xyz.jpenilla.runtask.task.AbstractRun
 import java.util.regex.Pattern
 
 plugins {
+    id("co.technove.flareplatform.gradle.build-conventions")
     alias(libs.plugins.run.velocity)
     alias(libs.plugins.resource.factory.velocity)
     alias(libs.plugins.lombok)
@@ -27,16 +29,12 @@ velocityPluginJson {
 
 tasks {
     runVelocity {
-        velocityVersion(libs.versions.velocity.api.get())
-    }
-    jar {
-        archiveClassifier.set("dev")
+        version.set(libs.versions.velocity.api)
     }
     shadowJar {
-        archiveClassifier.set("")
         configureRelocation()
     }
-    withType(xyz.jpenilla.runtask.task.AbstractRun::class).configureEach {
+    withType<AbstractRun>().configureEach {
         jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints")
     }
 }
