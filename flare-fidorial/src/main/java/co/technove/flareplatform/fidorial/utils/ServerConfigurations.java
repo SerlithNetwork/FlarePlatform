@@ -35,9 +35,8 @@ public final class ServerConfigurations {
                 files.put(file, getCleanCopy(path));
             }
         }
-        /* TBD
         for (final World world : platform.context().server().worlds()) {
-            final Path worldPath = world.directory();
+            final Path worldPath = world.paths().directory();
             for (final String configName : FlareFidorialConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
                 final Path config = worldPath.resolve(configName);
                 if (Files.exists(config)) {
@@ -48,7 +47,6 @@ public final class ServerConfigurations {
                 }
             }
         }
-         */
         return files;
     }
 
@@ -71,7 +69,7 @@ public final class ServerConfigurations {
                 .build()
                 .load();
             removeHidden(root, "");
-            if (root.childrenMap().size() == 1) {
+            if (root.childrenMap().isEmpty()) {
                 return "";
             }
 

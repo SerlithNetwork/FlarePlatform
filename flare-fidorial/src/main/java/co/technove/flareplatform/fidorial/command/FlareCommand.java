@@ -39,7 +39,7 @@ public final class FlareCommand {
     }
 
     public static LiteralCommandNode<CommandSource> createCommand() {
-        return Commands.literal("flarep")
+        return Commands.literal("flaref")
             .requires(source -> source.sender().hasPermission(PERMISSION))
             .then(Commands.literal("profiler")
                 .then(Commands.literal("start")
