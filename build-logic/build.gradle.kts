@@ -14,4 +14,6 @@ kotlin {
 dependencies {
     implementation(gradleApi())
     implementation(libs.shadow)
+    implementation(libs.gson)
+    implementation(libs.run.paper)
 }

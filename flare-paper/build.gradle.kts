@@ -1,3 +1,4 @@
+import co.technove.flareplatform.gradle.github.githubReleases
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml.PluginLoadOrder
 import xyz.jpenilla.runpaper.task.RunServer
@@ -11,7 +12,7 @@ import kotlin.system.measureNanoTime
 
 plugins {
     id("co.technove.flareplatform.gradle.build-conventions")
-    alias(libs.plugins.run.paper)
+    id("xyz.jpenilla.run-paper")
     alias(libs.plugins.resource.factory.paper)
     alias(libs.plugins.blossom)
     alias(libs.plugins.lombok)
@@ -74,6 +75,20 @@ tasks.register<RunServer>("runCanvas") {
     pluginJars.from(tasks.shadowJar.flatMap { it.archiveFile })
     displayName.set("Canvas")
     serverJar(downloadCanvasJar.flatMap { it.outputJar })
+}
+
+val downloadsService = githubReleases(
+    repository = "Biquaternions/Fish",
+    assetPattern = "fish-paperclip-*.jar",
+    tagFormat = "ver-26.3",
+    displayName = "Fish"
+)
+
+tasks.register<RunServer>("runFish") {
+    downloadsApiService.set(downloadsService)
+    version.set("26.3")
+    pluginJars.from(tasks.shadowJar.flatMap { it.archiveFile })
+    displayName.set("Fish")
 }
 
 sourceSets.main {

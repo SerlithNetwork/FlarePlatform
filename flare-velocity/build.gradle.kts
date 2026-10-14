@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 plugins {
     id("co.technove.flareplatform.gradle.build-conventions")
-    alias(libs.plugins.run.velocity)
+    id("xyz.jpenilla.run-velocity")
     alias(libs.plugins.resource.factory.velocity)
     alias(libs.plugins.lombok)
 }
