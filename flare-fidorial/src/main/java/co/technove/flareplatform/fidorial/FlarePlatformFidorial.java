@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -81,7 +82,7 @@ public class FlarePlatformFidorial implements Plugin {
                 context().logger().warn("Warnings while initializing Flare: {}", String.join(", ", warnings));
             }
 
-            context().server().commands().register(context().meta(), FlareCommand.createCommand());
+            context().server().commands().register(context().meta(), FlareCommand.createCommand(), Set.of("flare"));
             refreshCommands();
 
             setPluginLookup(new PluginLookup(context().server()));

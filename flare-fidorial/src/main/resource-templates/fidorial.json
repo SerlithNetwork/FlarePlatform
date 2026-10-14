@@ -12,7 +12,7 @@
     "defaultPermission": "op",
     "permissions": {
         "airplane.flare": {
-            "description": "Allows to use the /flarep command",
+            "description": "Allows the use of Flare profiling commands",
             "operator": "TRUE",
             "regular": "FALSE"
         }
