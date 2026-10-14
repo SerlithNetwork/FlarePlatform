@@ -1,5 +1,6 @@
 package co.technove.flareplatform.paper.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +15,7 @@ public class BrandUtils {
         boolean enabled;
         try {
             Method methodEnabled = Server.class.getMethod("isParallelWorldTickingEnabled");
-            enabled = (boolean) methodEnabled.invoke(null);
+            enabled = (boolean) methodEnabled.invoke(Bukkit.getServer());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return false;
         }
