@@ -3,6 +3,7 @@ import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.lombok)
+    alias(libs.plugins.blossom)
 }
 
 repositories {
@@ -28,6 +29,12 @@ tasks {
     shadowJar {
         archiveClassifier.set("")
         configureRelocation()
+    }
+}
+
+sourceSets.main {
+    blossom.resources {
+        property("version", project.version.toString())
     }
 }
 

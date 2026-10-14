@@ -1,7 +1,7 @@
 {
     "id": "flare",
     "name": "Flare",
-    "version": "1.0.0",
+    "version": "{{ version }}",
     "main": "co.technove.flareplatform.fidorial.FlarePlatformFidorial",
     "authors": [
         "PaulBGD",
