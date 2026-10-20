@@ -35,7 +35,7 @@ public final class ServerConfigurations {
                 files.put(file, getCleanCopy(path));
             }
         }
-        for (final World world : platform.context().server().worlds()) {
+        for (final World world : platform.context().server().worlds().all()) {
             final Path worldPath = world.paths().directory();
             for (final String configName : FlareFidorialConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
                 final Path config = worldPath.resolve(configName);

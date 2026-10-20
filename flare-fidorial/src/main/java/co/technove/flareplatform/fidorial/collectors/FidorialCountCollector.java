@@ -23,7 +23,7 @@ public class FidorialCountCollector extends LiveCollector {
 
     @Override
     public void run() {
-        this.report(PLAYER_COUNT, server.onlinePlayers().size());
+        this.report(PLAYER_COUNT, server.players().online().size());
         this.report(REGION_COUNT, server.scheduler().tpsSnapshots().size());
     }
 }

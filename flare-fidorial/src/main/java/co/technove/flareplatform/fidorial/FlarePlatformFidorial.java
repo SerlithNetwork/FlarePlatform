@@ -7,7 +7,7 @@ import co.technove.flareplatform.fidorial.config.FlareFidorialConfig;
 import co.technove.flareplatform.fidorial.manager.ProfilingManager;
 import co.technove.flareplatform.fidorial.utils.PluginLookup;
 import com.google.common.base.Preconditions;
-import fr.fidorial.entity.Player;
+import fr.fidorial.entity.player.Player;
 import fr.fidorial.plugin.Plugin;
 import fr.fidorial.plugin.PluginContext;
 import fr.fidorial.plugin.PluginMeta;
@@ -72,6 +72,14 @@ public class FlarePlatformFidorial implements Plugin {
             shouldRegister = false;
         }
 
+        // check fidorial version - workaround until `supported-versions` gets added to `fidorial.json`
+        final String requiredVersion = "26.4-snapshot-4";
+        final String currentVersion = context().server().minecraftVersion();
+        if (!currentVersion.equalsIgnoreCase(requiredVersion)) {
+            context().logger().warn("FlarePlatform only supports builds for Minecraft {} (current: {}), will not enable!", requiredVersion, currentVersion);
+            shouldRegister = false;
+        }
+
         if (!shouldRegister) {
             return;
         }
@@ -81,10 +89,7 @@ public class FlarePlatformFidorial implements Plugin {
             if (!warnings.isEmpty()) {
                 context().logger().warn("Warnings while initializing Flare: {}", String.join(", ", warnings));
             }
-
             context().server().commands().register(context().meta(), FlareCommand.createCommand(), Set.of("flare"));
-            refreshCommands();
-
             setPluginLookup(new PluginLookup(context().server()));
         } catch (final InitializationException e) {
             context().logger().error("Failed to initialize Flare", e);
@@ -99,7 +104,7 @@ public class FlarePlatformFidorial implements Plugin {
     }
 
     public void refreshCommands() {
-        for (final Player player : context().server().onlinePlayers()) {
+        for (final Player player : context().server().players().online()) {
             player.refreshCommands();
         }
     }

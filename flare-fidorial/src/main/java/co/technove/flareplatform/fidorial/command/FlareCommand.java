@@ -12,7 +12,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import fr.fidorial.command.CommandSender;
 import fr.fidorial.command.CommandSource;
 import fr.fidorial.command.Commands;
-import fr.fidorial.entity.Player;
+import fr.fidorial.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -148,7 +148,7 @@ public final class FlareCommand {
 
     public static void broadcastPrefixed(final Component... lines) {
         final FlarePlatformFidorial platform = platform();
-        for (final Player player : platform.context().server().onlinePlayers()) {
+        for (final Player player : platform.context().server().players().online()) {
             if (player.hasPermission(PERMISSION)) {
                 sendPrefixed(player, lines);
             }
