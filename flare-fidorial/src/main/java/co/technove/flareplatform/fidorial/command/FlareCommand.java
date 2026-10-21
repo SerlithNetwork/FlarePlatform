@@ -21,7 +21,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 
 public final class FlareCommand {
 
-    public static final String PERMISSION = "airplane.flare";
+    private static final String PERMISSION = "airplane.flare";
 
     private static final TextColor HEX = TextColor.color(227, 234, 234);
     private static final TextColor MAIN_COLOR = TextColor.color(106, 126, 218);
@@ -83,8 +83,8 @@ public final class FlareCommand {
                         Component.text("Flare has been started!", MAIN_COLOR),
                         Component.text("It will run in the background for 15 minutes", NamedTextColor.GRAY),
                         Component.text("or until manually stopped using:", NamedTextColor.GRAY),
-                        Component.text("  ").append(Component.text("/flarep profiler stop", NamedTextColor.WHITE)
-                            .clickEvent(ClickEvent.runCommand("/flarep profiler stop"))),
+                        Component.text("  ").append(Component.text("/flaref profiler stop", NamedTextColor.WHITE)
+                            .clickEvent(ClickEvent.runCommand("flaref profiler stop"))),
                         Component.text("Follow its progress here:", NamedTextColor.GRAY),
                         Component.text(PROFILING_URI, HEX).clickEvent(ClickEvent.openUrl(PROFILING_URI))
                     );
@@ -123,12 +123,12 @@ public final class FlareCommand {
     }
 
     private static int executeReload(final CommandContext<CommandSource> ctx) {
-        final CommandSender sender = ctx.getSource().sender();
+        final CommandSource source = ctx.getSource();
         try {
             FlareFidorialConfig.INSTANCE.load();
-            sender.sendMessage(FlareFidorialConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
+            source.sendMessage(FlareFidorialConfig.MESSAGES.PLUGIN_RELOAD_SUCCESS.getComponent());
         } catch (final Exception e) {
-            sender.sendMessage(FlareFidorialConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
+            source.sendMessage(FlareFidorialConfig.MESSAGES.PLUGIN_RELOAD_FAILED.getComponent());
             platform().context().logger().error(e.getMessage(), e);
         }
         return Command.SINGLE_SUCCESS;

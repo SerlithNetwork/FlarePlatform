@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorldRegionCountCollector extends LiveCollector {
+public final class WorldRegionCountCollector extends LiveCollector {
 
     private final Map<Key, CollectorData> worldCollectors;
 
-    private WorldRegionCountCollector(Map<Key, CollectorData> worldCollectors) {
+    private WorldRegionCountCollector(final Map<Key, CollectorData> worldCollectors) {
         super(worldCollectors.values().toArray(CollectorData[]::new));
         this.worldCollectors = worldCollectors;
         this.interval = Duration.ofSeconds(5);
@@ -26,7 +26,7 @@ public class WorldRegionCountCollector extends LiveCollector {
 
     @Override
     public void run() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             final CollectorData collector = this.worldCollectors.get(world.key());
             if (collector == null) {
                 continue;
@@ -37,14 +37,14 @@ public class WorldRegionCountCollector extends LiveCollector {
     }
 
     public static WorldRegionCountCollector create() {
-        List<World> allWorlds = Bukkit.getWorlds();
+        final List<World> allWorlds = Bukkit.getWorlds();
         allWorlds.sort((a, b) -> RegionUtils.countRegionsIn(b) - RegionUtils.countRegionsIn(a));
 
-        List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size()));
-        Map<Key, CollectorData> regionsData = new HashMap<>();
-        for (World world : worlds) {
-            Key key = world.key();
-            String regionsId = String.format("flare:count:world[%s]:regions", key.asString());
+        final List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size()));
+        final Map<Key, CollectorData> regionsData = new HashMap<>();
+        for (final World world : worlds) {
+            final Key key = world.key();
+            final String regionsId = String.format("flare:count:world[%s]:regions", key.asString());
             regionsData.put(key, new CollectorData(
                 regionsId,
                 "Region Count",
@@ -56,5 +56,4 @@ public class WorldRegionCountCollector extends LiveCollector {
 
         return new WorldRegionCountCollector(regionsData);
     }
-
 }

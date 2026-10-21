@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 @StaticConfig.Header({
     "Flare main configuration file"
 })
-public class FlarePaperConfig extends StaticConfig {
+public final class FlarePaperConfig extends StaticConfig {
 
     @Ignore
     public static FlarePaperConfig INSTANCE;
 
-    public FlarePaperConfig(Path directory, ConfigHandler handler) {
+    public FlarePaperConfig(final Path directory, final ConfigHandler handler) {
         super(directory.resolve("config.yml"), handler);
         INSTANCE = this;
     }
@@ -114,5 +114,4 @@ public class FlarePaperConfig extends StaticConfig {
             .map(s -> Pattern.compile(s.replace(".", "\\.").replace("*", ".*")))
             .toList();
     }
-
 }

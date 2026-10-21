@@ -1,66 +1,69 @@
 package co.technove.flareplatform.fidorial.utils;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.fidorial.Server;
 import fr.fidorial.plugin.PluginMeta;
 
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class PluginLookup {
+public final class PluginLookup {
+    private final Cache<String, String> cache = CacheBuilder.newBuilder()
+        .expireAfterAccess(Duration.ofMinutes(1))
+        .maximumSize(1024)
+        .build();
 
-    private static final String LOADER_PREFIX = "fidorial-plugin:";
+    private final Map<ClassLoader, String> pluginByLoader;
 
-    private final Map<String, String> cache = new ConcurrentHashMap<>();
-    private final Server server;
-
-    public PluginLookup(Server server) {
-        this.server = server;
+    public PluginLookup(final Server server) {
+        final Map<ClassLoader, String> pluginByLoader = new HashMap<>();
+        for (final PluginMeta meta : server.plugins().loaded()) {
+            server.plugins().plugin(meta.id())
+                .ifPresent(plugin -> pluginByLoader.put(plugin.getClass().getClassLoader(), meta.name()));
+        }
+        this.pluginByLoader = Map.copyOf(pluginByLoader);
     }
 
     public Optional<String> getPluginForClass(final String name) {
-        if (name.endsWith(".so")
-            || name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("jdk.")
-            || name.startsWith("sun.") || name.startsWith("com.sun.")
-            || name.startsWith("io.netty.") || name.startsWith("org.slf4j.")
-            || name.startsWith("co.technove.")
-            || name.startsWith("fr.fidorial.")
-            || name.startsWith("fr.euphyllia.fidorial.")
+        final int lambda = name.indexOf("$$Lambda");
+        final String owner = lambda == -1 ? name : name.substring(0, lambda);
+
+        if (owner.endsWith(".so")
+            || owner.startsWith("java.") || owner.startsWith("javax.") || owner.startsWith("jdk.")
+            || owner.startsWith("sun.") || owner.startsWith("com.sun.")
+            || owner.startsWith("io.netty.") || owner.startsWith("org.slf4j.")
+            || owner.startsWith("co.technove.")
+            || owner.startsWith("fr.fidorial.")
+            || owner.startsWith("fr.euphyllia.fidorial.server.")
         ) {
             return Optional.empty();
         }
 
-        final String existing = this.cache.get(name);
+        final String existing = this.cache.getIfPresent(owner);
         if (existing != null) {
             return existing.isEmpty() ? Optional.empty() : Optional.of(existing);
         }
 
-        final Class<?> loadedClass;
-        try {
-            loadedClass = Class.forName(name);
-        } catch (ClassNotFoundException | LinkageError e) {
-            this.cache.put(name, "");
-            return Optional.empty();
-        }
-
-        ClassLoader loader = loadedClass.getClassLoader();
         String pluginName = "";
-        if (loader != null && loader.getName() != null && loader.getName().startsWith(LOADER_PREFIX)) {
-            String jarName = loader.getName().substring(LOADER_PREFIX.length());
-            pluginName = resolvePluginName(jarName);
+        for (final Map.Entry<ClassLoader, String> entry : this.pluginByLoader.entrySet()) {
+            if (definedBy(owner, entry.getKey())) {
+                pluginName = entry.getValue();
+                break;
+            }
         }
 
-        this.cache.put(name, pluginName);
+        this.cache.put(owner, pluginName);
         return pluginName.isEmpty() ? Optional.empty() : Optional.of(pluginName);
     }
 
-    private String resolvePluginName(String jarName) {
-        String base = jarName.endsWith(".jar") ? jarName.substring(0, jarName.length() - 4) : jarName;
-        for (PluginMeta meta : server.plugins().loaded()) {
-            if (base.toLowerCase().contains(meta.id().toLowerCase())) {
-                return meta.name();
-            }
+    private static boolean definedBy(final String name, final ClassLoader loader) {
+        try {
+            return Class.forName(name, true, loader).getClassLoader() == loader;
+        } catch (final ClassNotFoundException | LinkageError _) {
+            return false;
         }
-        return base;
     }
 }

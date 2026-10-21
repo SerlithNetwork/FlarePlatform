@@ -24,7 +24,7 @@ public final class TpsRollingAverage {
     private final BigDecimal[] samples;
     private final long[] times;
 
-    public TpsRollingAverage(int size) {
+    public TpsRollingAverage(final int size) {
         this.size = size;
         this.time = size * SEC_IN_NANO;
         this.total = new BigDecimal(TPS).multiply(new BigDecimal(SEC_IN_NANO)).multiply(new BigDecimal(size));
@@ -36,7 +36,7 @@ public final class TpsRollingAverage {
         }
     }
 
-    public void add(BigDecimal x, long t, BigDecimal total) {
+    public void add(final BigDecimal x, final long t, final BigDecimal total) {
         this.time -= this.times[this.index];
         this.total = this.total.subtract(this.samples[this.index].multiply(new BigDecimal(this.times[this.index])));
         this.samples[this.index] = x;
@@ -55,7 +55,7 @@ public final class TpsRollingAverage {
     @SuppressWarnings("DuplicatedCode")
     public double getMin() {
         BigDecimal min = null;
-        for (BigDecimal sample : this.samples) {
+        for (final BigDecimal sample : this.samples) {
             if (min == null || sample.compareTo(min) < 0) {
                 min = sample;
             }
@@ -66,7 +66,7 @@ public final class TpsRollingAverage {
     @SuppressWarnings("DuplicatedCode")
     public double getMax() {
         BigDecimal max = null;
-        for (BigDecimal sample : this.samples) {
+        for (final BigDecimal sample : this.samples) {
             if (max == null || sample.compareTo(max) > 0) {
                 max = sample;
             }
@@ -74,20 +74,19 @@ public final class TpsRollingAverage {
         return max == null ? 0 : max.doubleValue();
     }
 
-    public double getPercentile(double percentile) {
+    public double getPercentile(final double percentile) {
         if (percentile < 0 || percentile > 1) {
             throw new IllegalArgumentException("Invalid percentile: " + percentile);
         }
 
-        BigDecimal[] sortedSamples;
+        final BigDecimal[] sortedSamples;
         if (this.samples.length == 0) {
             return 0;
         }
         sortedSamples = this.samples.clone();
         Arrays.sort(sortedSamples);
 
-        int rank = (int) Math.ceil(percentile * (sortedSamples.length - 1));
+        final int rank = (int) Math.ceil(percentile * (sortedSamples.length - 1));
         return sortedSamples[rank].doubleValue();
     }
-
 }

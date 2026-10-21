@@ -18,19 +18,19 @@ import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class ServerConfigurations {
+public final class ServerConfigurations {
 
     public static Map<String, String> getCleanCopies() throws IOException {
-        Map<String, String> files = new HashMap<>(FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES.size());
+        final Map<String, String> files = new HashMap<>(FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES.size());
         for (final String file : FlarePaperConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
-            Path path = Path.of(file);
+            final Path path = Path.of(file);
             if (Files.exists(path)) {
                 files.put(file, ServerConfigurations.getCleanCopy(path));
             }
         }
         for (final World world : Bukkit.getWorlds()) {
             final Path worldPath = world.getWorldPath();
-            for (String configName : FlarePaperConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
+            for (final String configName : FlarePaperConfig.CONFIGURATIONS.WORLD_CONFIGURATION_FILES) {
                 final Path config = worldPath.resolve(configName);
                 if (Files.exists(config)) {
                     final String cleanConfig = ServerConfigurations.getCleanCopy(config);
@@ -43,7 +43,7 @@ public class ServerConfigurations {
         return files;
     }
 
-    public static boolean matchesRegex(String key) {
+    public static boolean matchesRegex(final String key) {
         for (final Pattern pattern : FlarePaperConfig.CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS) {
             if (pattern.matcher(key).matches()) {
                 return true;
@@ -52,7 +52,7 @@ public class ServerConfigurations {
         return false;
     }
 
-    public static String getCleanCopy(Path configPath) throws IOException {
+    public static String getCleanCopy(final Path configPath) throws IOException {
         switch (com.google.common.io.Files.getFileExtension(configPath.getFileName().toString())) {
             case "properties": {
                 final Properties properties = new Properties();
@@ -94,5 +94,4 @@ public class ServerConfigurations {
                 return Files.readString(configPath);
         }
     }
-
 }

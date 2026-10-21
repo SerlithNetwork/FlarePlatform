@@ -34,10 +34,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jspecify.annotations.Nullable;
 
-public class FlarePlatformVelocity {
+public final class FlarePlatformVelocity {
 
     @Getter
     private static @Nullable FlarePlatformVelocity instance;
+
     private static boolean shouldRegister = true;
 
     private static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware()
@@ -47,10 +48,13 @@ public class FlarePlatformVelocity {
 
     @Getter
     private final PluginContainer container;
+
     @Getter
     private final Logger logger;
+
     @Getter
     private final ProxyServer server;
+
     @Getter
     private final Path dataDirectory;
 
@@ -59,18 +63,19 @@ public class FlarePlatformVelocity {
 
     @Getter
     private final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
+
     private final ConfigHandler configHandler;
     private final VelocityContext faststatsContext;
     private final org.bstats.velocity.Metrics.Factory bstatsFactory;
 
     @Inject
     public FlarePlatformVelocity(
-        PluginContainer container,
-        Logger logger,
-        ProxyServer server,
-        VelocityContext.Builder contextBuilder,
-        org.bstats.velocity.Metrics.Factory metricsFactory,
-        @DataDirectory Path dataDirectory
+        final PluginContainer container,
+        final Logger logger,
+        final ProxyServer server,
+        final VelocityContext.Builder contextBuilder,
+        final org.bstats.velocity.Metrics.Factory metricsFactory,
+        final @DataDirectory Path dataDirectory
     ) {
         this.container = container;
         this.logger = logger;
@@ -87,7 +92,7 @@ public class FlarePlatformVelocity {
     }
 
     @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
+    public void onProxyInitialization(final ProxyInitializeEvent ignored) {
         new FlareVelocityConfig(dataDirectory, this.configHandler).load();
 
         // detect unsupported platforms
@@ -107,15 +112,15 @@ public class FlarePlatformVelocity {
                 this.logger.log(Level.WARNING, "Warnings while initializing Flare: " + String.join(", ", warnings));
             }
             // register commands
-            CommandManager commandManager = this.getServer().getCommandManager();
-            CommandMeta commandMeta = commandManager.metaBuilder("flarevelocity")
+            final CommandManager commandManager = this.getServer().getCommandManager();
+            final CommandMeta commandMeta = commandManager.metaBuilder("flarevelocity")
                 .aliases("flareproxy")
                 .plugin(this)
                 .build();
-            BrigadierCommand command = FlareCommand.createBrigadierCommand();
+            final BrigadierCommand command = FlareCommand.createBrigadierCommand();
             commandManager.register(commandMeta, command);
             lookup = new PluginLookup(this.getServer());
-        } catch (InitializationException e) {
+        } catch (final InitializationException e) {
             this.logger.log(Level.SEVERE, "Failed to initialize Flare", e);
             this.getServer().getEventManager().unregisterListeners(this); // unregister everything
         }
@@ -125,7 +130,7 @@ public class FlarePlatformVelocity {
     }
 
     @Subscribe
-    public void onProxyShutdown(ProxyShutdownEvent event) {
+    public void onProxyShutdown(final ProxyShutdownEvent ignored) {
         if (ProfilingManager.isProfiling()) {
             ProfilingManager.stop();
         }
@@ -136,5 +141,4 @@ public class FlarePlatformVelocity {
         Preconditions.checkState(lookup != null, "Plugin lookup cannot be null!");
         return lookup;
     }
-
 }

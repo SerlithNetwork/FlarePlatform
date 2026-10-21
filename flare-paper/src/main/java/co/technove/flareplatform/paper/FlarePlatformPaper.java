@@ -25,15 +25,17 @@ import net.j4c0b3y.api.config.platform.adventure.AdventureConfigHandler;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
 import static org.bukkit.event.HandlerList.unregisterAll;
 
-public class FlarePlatformPaper extends JavaPlugin {
+public final class FlarePlatformPaper extends JavaPlugin {
 
     @Getter
-    private static FlarePlatformPaper instance;
+    private static @Nullable FlarePlatformPaper instance;
+
     @Getter
     private static final Component prefix = MiniMessage.miniMessage().deserialize("<gradient:#1A46FF:#63ABFF:#1A46FF>Flare ✈</gradient> <gray>•</gray> ");
 
@@ -115,6 +117,12 @@ public class FlarePlatformPaper extends JavaPlugin {
             ProfilingManager.stop();
         }
         this.faststatsContext.shutdown();
+    }
+
+    public void refreshCommands() {
+        for (final Player player : this.getServer().getOnlinePlayers()) {
+            player.getScheduler().run(this, ignored -> player.updateCommands(), null);
+        }
     }
 
     public PluginLookup getPluginLookup() {

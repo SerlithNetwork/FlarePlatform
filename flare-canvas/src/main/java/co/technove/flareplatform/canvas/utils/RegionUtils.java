@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RegionUtils {
+public final class RegionUtils {
     private RegionUtils() {
     }
 
@@ -31,7 +31,7 @@ public class RegionUtils {
         return new ChunkPos(centerChunkX, centerChunkZ);
     }
 
-    public static int compareRegionsMspt(WorldRegionizer.ChunkRegion a, WorldRegionizer.ChunkRegion b) {
+    public static int compareRegionsMspt(final WorldRegionizer.ChunkRegion a, final WorldRegionizer.ChunkRegion b) {
         final long[] chunksA = a.getOwnedPackedChunkPositions();
         if (chunksA.length == 0) {
             return Integer.MIN_VALUE;
@@ -42,8 +42,8 @@ public class RegionUtils {
             return Integer.MIN_VALUE;
         }
 
-        RegionTickData dataA = a.getTickData();
-        RegionTickData dataB = b.getTickData();
+        final RegionTickData dataA = a.getTickData();
+        final RegionTickData dataB = b.getTickData();
         return (int) Math.round(dataB.getMSPT(RegionTickData.Frame._5_SECONDS) - dataA.getMSPT(RegionTickData.Frame._5_SECONDS));
     }
 
@@ -56,5 +56,4 @@ public class RegionUtils {
     public static int countRegionsIn(final World world) {
         return RegionUtils.getRegionsIn(world).size();
     }
-
 }

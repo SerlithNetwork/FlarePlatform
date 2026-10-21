@@ -13,7 +13,7 @@ import java.util.Queue;
  *
  * @author aikar (PaperMC) <a href="https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0021-Further-improve-server-tick-loop.patch">...</a>
  */
-public class RollingAverage {
+public final class RollingAverage {
 
     private static final BigDecimal[] EMPTY_DECIMAL = new BigDecimal[0];
 
@@ -21,12 +21,12 @@ public class RollingAverage {
     private final int windowSize;
     private BigDecimal total = BigDecimal.ZERO;
 
-    public RollingAverage(int windowSize) {
+    public RollingAverage(final int windowSize) {
         this.windowSize = windowSize;
         this.samples = new ArrayDeque<>(this.windowSize + 1);
     }
 
-    public void add(BigDecimal num) {
+    public void add(final BigDecimal num) {
         synchronized (this) {
             this.total = this.total.add(num);
             this.samples.add(num);
@@ -49,7 +49,7 @@ public class RollingAverage {
     public double getMin() {
         synchronized (this) {
             BigDecimal min = null;
-            for (BigDecimal sample : this.samples) {
+            for (final BigDecimal sample : this.samples) {
                 if (min == null || sample.compareTo(min) < 0) {
                     min = sample;
                 }
@@ -62,7 +62,7 @@ public class RollingAverage {
     public double getMax() {
         synchronized (this) {
             BigDecimal max = null;
-            for (BigDecimal sample : this.samples) {
+            for (final BigDecimal sample : this.samples) {
                 if (max == null || sample.compareTo(max) > 0) {
                     max = sample;
                 }
@@ -71,12 +71,12 @@ public class RollingAverage {
         }
     }
 
-    public double getPercentile(double percentile) {
+    public double getPercentile(final double percentile) {
         if (percentile < 0 || percentile > 1) {
             throw new IllegalArgumentException("Invalid percentile: " + percentile);
         }
 
-        BigDecimal[] sortedSamples;
+        final BigDecimal[] sortedSamples;
         synchronized (this) {
             if (this.samples.isEmpty()) {
                 return 0;
@@ -85,8 +85,7 @@ public class RollingAverage {
         }
         Arrays.sort(sortedSamples);
 
-        int rank = (int) Math.ceil(percentile * (sortedSamples.length - 1));
+        final int rank = (int) Math.ceil(percentile * (sortedSamples.length - 1));
         return sortedSamples[rank].doubleValue();
     }
-
 }

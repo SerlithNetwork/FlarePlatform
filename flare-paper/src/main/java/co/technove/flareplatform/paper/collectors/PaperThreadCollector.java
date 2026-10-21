@@ -6,7 +6,7 @@ import co.technove.flare.live.formatter.SuffixFormatter;
 import co.technove.flareplatform.common.collectors.ThreadCollector;
 import co.technove.flareplatform.common.scheduler.IScheduler;
 
-public class PaperThreadCollector extends ThreadCollector {
+public final class PaperThreadCollector extends ThreadCollector {
 
     private static final CollectorData SCHEDULER_THREADS = new CollectorData("builtin:thread:schedulercount", "CraftScheduler Threads", "Number of CraftScheduler threads", new SuffixFormatter("CraftScheduler Thread", "CraftScheduler Threads"), GraphCategory.SYSTEM);
     private static final CollectorData FOLIA_SCHEDULER_THREADS = new CollectorData("builtin:thread:foliaschedulercount", "Folia Async Scheduler Threads", "Number of Folia Async Scheduler threads", new SuffixFormatter("Folia Async Scheduler Thread", "Folia Async Scheduler Threads"), GraphCategory.SYSTEM);

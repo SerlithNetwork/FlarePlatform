@@ -20,12 +20,14 @@ extensions.configure<JavaPluginExtension> {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
+    disableAutoTargetJvm() // all platforms API dependencies depend on Java 25+ but we need to keep compat with older versions
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = Charsets.UTF_8.name()
     options.release = 21
     options.isFork = true
+    options.compilerArgs.add("-Xlint:deprecation")
 }
 
 tasks.withType<ProcessResources>().configureEach {

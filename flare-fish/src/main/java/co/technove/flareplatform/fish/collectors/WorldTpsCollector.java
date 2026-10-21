@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorldTpsCollector extends LiveCollector {
+public final class WorldTpsCollector extends LiveCollector {
 
     private final Map<Key, CollectorData> msptData;
 
-    private WorldTpsCollector(Map<Key, CollectorData> msptData) {
+    private WorldTpsCollector(final Map<Key, CollectorData> msptData) {
         super(msptData.values().toArray(CollectorData[]::new));
         this.msptData = msptData;
         this.interval = Duration.ofSeconds(5);
@@ -24,26 +24,26 @@ public class WorldTpsCollector extends LiveCollector {
 
     @Override
     public void run() {
-        for (World world : Bukkit.getWorlds()) {
+        for (final World world : Bukkit.getWorlds()) {
             final CollectorData data = msptData.get(world.key());
             if (data == null) {
                 continue;
             }
 
-            double mspt = Math.max(0.0, world.getAverageTickTime());
+            final double mspt = Math.max(0.0, world.getAverageTickTime());
             this.report(data, Math.round(mspt * 100d) / 100d);
         }
     }
 
     public static WorldTpsCollector create() {
-        List<World> allWorlds = Bukkit.getWorlds();
+        final List<World> allWorlds = Bukkit.getWorlds();
         allWorlds.sort((a, b) -> (int) Math.round(b.getAverageTickTime() - a.getAverageTickTime()));
 
-        List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size()));
-        Map<Key, CollectorData> msptData = new HashMap<>();
-        for (World world : worlds) {
-            Key key = world.key();
-            String msptId = String.format("flare:perf:world[%s]:mspt", key.asString());
+        final List<World> worlds = allWorlds.subList(0, Math.min(10, allWorlds.size()));
+        final Map<Key, CollectorData> msptData = new HashMap<>();
+        for (final World world : worlds) {
+            final Key key = world.key();
+            final String msptId = String.format("flare:perf:world[%s]:mspt", key.asString());
             msptData.put(key, new CollectorData(
                 msptId,
                 "MSPT",
@@ -54,5 +54,4 @@ public class WorldTpsCollector extends LiveCollector {
 
         return new WorldTpsCollector(msptData);
     }
-
 }

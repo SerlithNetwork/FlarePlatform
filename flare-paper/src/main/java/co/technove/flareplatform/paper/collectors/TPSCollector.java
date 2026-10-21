@@ -8,7 +8,7 @@ import co.technove.flareplatform.paper.utils.ServerListener;
 
 import java.time.Duration;
 
-public class TPSCollector extends LiveCollector {
+public final class TPSCollector extends LiveCollector {
     private static final CollectorData TPS = new CollectorData("airplane:tps", "TPS", "Ticks per second, or how fast the server updates. For a smooth server this should be a constant 20TPS.", SuffixFormatter.of("TPS"), CustomCategories.PERF);
     private static final CollectorData MSPT = new CollectorData("airplane:mspt", "MSPT", "Milliseconds per tick, which can show how well your server is performing. This value should always be under 50mspt.", SuffixFormatter.of("mspt"), CustomCategories.PERF);
 
@@ -19,8 +19,8 @@ public class TPSCollector extends LiveCollector {
 
     @Override
     public void run() {
-        double tps = Math.clamp(ServerListener.TPS_AVERAGE.getAverage(), 0.0, 20.0);
-        double mspt = Math.max(0.0, ServerListener.MSPT_AVERAGE.getAverage());
+        final double tps = Math.clamp(ServerListener.TPS_AVERAGE.getAverage(), 0.0, 20.0);
+        final double mspt = Math.max(0.0, ServerListener.MSPT_AVERAGE.getAverage());
         this.report(TPS, Math.round(tps * 100d) / 100d);
         this.report(MSPT, Math.round(mspt * 100d) / 100d);
     }

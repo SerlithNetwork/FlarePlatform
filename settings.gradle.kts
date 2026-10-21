@@ -13,12 +13,12 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
     "flare-common",
     "flare-paper",
-    "flare-velocity"
+    "flare-velocity",
+    "flare-fidorial"
 )
 
 include("flare-fish")
 include("flare-canvas")
-include("flare-fidorial")
 
 gradle.lifecycle.beforeProject {
     val majorVersion = providers.gradleProperty("major_version").get().trim()

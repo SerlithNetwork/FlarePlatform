@@ -20,7 +20,7 @@ public abstract class ThreadCollector extends LiveCollector {
 
     private final ThreadMXBean threadMXBean;
 
-    public ThreadCollector(CollectorData... additionalData) {
+    public ThreadCollector(final CollectorData... additionalData) {
         super(Stream.concat(
             Stream.of(
                 NATIVE_THREADS,

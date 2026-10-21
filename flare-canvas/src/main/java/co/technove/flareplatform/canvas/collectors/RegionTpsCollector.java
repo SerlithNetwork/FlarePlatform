@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class RegionTpsCollector extends LiveCollector {
+public final class RegionTpsCollector extends LiveCollector {
 
     // Getting regions is synchronized, and there might be a lot of regions
     private final List<WeakReference<WorldRegionizer.ChunkRegion>> regions;
     private final Map<Long, CollectorData> tpsData;
     private final Map<Long, CollectorData> msptData;
 
-    private RegionTpsCollector(List<WorldRegionizer.ChunkRegion> regions, Map<Long, CollectorData> tpsData, Map<Long, CollectorData> msptData) {
+    private RegionTpsCollector(final List<WorldRegionizer.ChunkRegion> regions, final Map<Long, CollectorData> tpsData, final Map<Long, CollectorData> msptData) {
         super(Stream.concat(tpsData.values().stream(), msptData.values().stream()).toArray(CollectorData[]::new));
         this.regions = regions.stream().map(WeakReference::new).toList();
         this.tpsData = tpsData;
@@ -33,42 +33,40 @@ public class RegionTpsCollector extends LiveCollector {
 
     @Override
     public void run() {
-        for (WeakReference<WorldRegionizer.ChunkRegion> regionReference : this.regions) {
-            WorldRegionizer.ChunkRegion region = regionReference.get();
+        for (final WeakReference<WorldRegionizer.ChunkRegion> regionReference : this.regions) {
+            final WorldRegionizer.ChunkRegion region = regionReference.get();
             if (region == null) {
                 continue;
             }
 
-            long id = region.getId();
-            RegionTickData data = region.getTickData();
-            CollectorData tpsCollector = tpsData.get(id);
+            final long id = region.getId();
+            final RegionTickData data = region.getTickData();
+            final CollectorData tpsCollector = tpsData.get(id);
             if (tpsCollector != null) {
-                double tps = Math.clamp(data.getTPS(RegionTickData.Frame._5_SECONDS), 0.0, 20.0);
+                final double tps = Math.clamp(data.getTPS(RegionTickData.Frame._5_SECONDS), 0.0, 20.0);
                 this.report(tpsCollector, Math.round(tps * 100d) / 100d);
             }
 
-            CollectorData msptCollector = msptData.get(id);
+            final CollectorData msptCollector = msptData.get(id);
             if (msptCollector != null) {
-                double mspt = Math.max(0.0, data.getMSPT(RegionTickData.Frame._5_SECONDS));
+                final double mspt = Math.max(0.0, data.getMSPT(RegionTickData.Frame._5_SECONDS));
                 this.report(msptCollector, Math.round(mspt * 100d) / 100d);
             }
         }
     }
 
     public static RegionTpsCollector create() {
-        List<WorldRegionizer.ChunkRegion> allRegions = new ArrayList<>();
-        Map<Long, CollectorData> tpsData = new HashMap<>();
-        Map<Long, CollectorData> msptData = new HashMap<>();
-        Bukkit.getWorlds().forEach(world -> {
-            world.getRegionizer().computeForAllChunkRegions(allRegions::add);
-        });
+        final List<WorldRegionizer.ChunkRegion> allRegions = new ArrayList<>();
+        final Map<Long, CollectorData> tpsData = new HashMap<>();
+        final Map<Long, CollectorData> msptData = new HashMap<>();
+        Bukkit.getWorlds().forEach(world -> world.getRegionizer().computeForAllChunkRegions(allRegions::add));
         allRegions.sort(RegionUtils::compareRegionsMspt);
 
-        List<WorldRegionizer.ChunkRegion> regions = allRegions.subList(0, Math.min(10, allRegions.size()));
-        for (WorldRegionizer.ChunkRegion region : regions) {
-            long id = region.getId();
-            String tpsId = String.format("flare:perf:region[%d]:tps", id);
-            String msptId = String.format("flare:perf:region[%d]:mspt", id);
+        final List<WorldRegionizer.ChunkRegion> regions = allRegions.subList(0, Math.min(10, allRegions.size()));
+        for (final WorldRegionizer.ChunkRegion region : regions) {
+            final long id = region.getId();
+            final String tpsId = String.format("flare:perf:region[%d]:tps", id);
+            final String msptId = String.format("flare:perf:region[%d]:mspt", id);
             tpsData.put(id, new CollectorData(
                 tpsId,
                 "TPS",
@@ -85,7 +83,4 @@ public class RegionTpsCollector extends LiveCollector {
 
         return new RegionTpsCollector(regions, tpsData, msptData);
     }
-
-
-
 }

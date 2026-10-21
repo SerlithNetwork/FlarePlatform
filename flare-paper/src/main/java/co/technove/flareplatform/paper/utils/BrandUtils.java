@@ -6,7 +6,7 @@ import org.bukkit.World;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class BrandUtils {
+public final class BrandUtils {
     private BrandUtils() {
     }
 
@@ -14,9 +14,9 @@ public class BrandUtils {
 
         boolean enabled;
         try {
-            Method methodEnabled = Server.class.getMethod("isParallelWorldTickingEnabled");
+            final Method methodEnabled = Server.class.getMethod("isParallelWorldTickingEnabled");
             enabled = (boolean) methodEnabled.invoke(Bukkit.getServer());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
             return false;
         }
 
@@ -27,7 +27,7 @@ public class BrandUtils {
         try {
             World.class.getMethod("getAverageTickTime");
             return true;
-        } catch (NoSuchMethodException ignored) {
+        } catch (final NoSuchMethodException ignored) {
             return false;
         }
     }
@@ -36,30 +36,29 @@ public class BrandUtils {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             return true;
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             return false;
         }
     }
 
     public static boolean isCanvas() {
-        Class<?> tickDataClass;
-        Class<?> frameClass;
+        final Class<?> tickDataClass;
+        final Class<?> frameClass;
         try {
             Class.forName("io.canvasmc.canvas.GlobalConfiguration");
             tickDataClass = Class.forName("io.canvasmc.canvas.region.RegionTickData");
             frameClass = Class.forName("io.canvasmc.canvas.region.RegionTickData$Frame");
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             return false;
         }
 
         try {
             tickDataClass.getMethod("getTPS", frameClass);
             tickDataClass.getMethod("getMSPT", frameClass);
-        } catch (NoSuchMethodException ignored) {
+        } catch (final NoSuchMethodException ignored) {
             return false;
         }
 
         return true;
     }
-
 }

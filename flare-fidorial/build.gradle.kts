@@ -24,6 +24,7 @@ dependencies {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    // explicitly opt-in to 25 as fidorial didn't exist for Java <25
     options.release = 25
 }
 

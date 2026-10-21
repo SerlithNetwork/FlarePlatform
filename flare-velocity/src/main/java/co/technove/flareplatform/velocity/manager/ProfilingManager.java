@@ -15,6 +15,7 @@ import co.technove.flareplatform.velocity.command.FlareCommand;
 import co.technove.flareplatform.velocity.config.FlareVelocityConfig;
 import co.technove.flareplatform.velocity.utils.ServerConfigurations;
 import com.google.common.base.Preconditions;
+import com.velocitypowered.api.proxy.ProxyServer;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -35,11 +36,10 @@ import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
 // yuck
-public class ProfilingManager {
+public final class ProfilingManager {
 
-    private static final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();
     private static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, r -> {
-        Thread t = new Thread(r);
+        final Thread t = new Thread(r);
         t.setName("Flare Profiling Manager Thread");
         return t;
     });
@@ -69,14 +69,24 @@ public class ProfilingManager {
     }
 
     public static Duration getTimeRan() {
-        Flare flare = currentFlare; // copy reference so no need to sync
+        final Flare flare = currentFlare; // copy reference so no need to sync
         if (flare == null) {
             return Duration.ofMillis(0);
         }
         return flare.getCurrentDuration();
     }
 
-    public static synchronized boolean start(ProfileType profileType) throws UserReportableException {
+    private static FlarePlatformVelocity platform() {
+        final FlarePlatformVelocity platform = FlarePlatformVelocity.getInstance();
+        Preconditions.checkState(platform != null, "Plugin has not been initialized!");
+        return platform;
+    }
+
+    private static ProxyServer server() {
+        return platform().getServer();
+    }
+
+    public static synchronized boolean start(final ProfileType profileType) throws UserReportableException {
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null; // errored out
         }
@@ -85,18 +95,18 @@ public class ProfilingManager {
         }
 
         try {
-            OperatingSystem os = new SystemInfo().getOperatingSystem();
+            final OperatingSystem os = new SystemInfo().getOperatingSystem();
 
-            SystemInfo systemInfo = new SystemInfo();
-            HardwareAbstractionLayer hardware = systemInfo.getHardware();
+            final SystemInfo systemInfo = new SystemInfo();
+            final HardwareAbstractionLayer hardware = systemInfo.getHardware();
 
-            CentralProcessor processor = hardware.getProcessor();
-            CentralProcessor.ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
+            final CentralProcessor processor = hardware.getProcessor();
+            final CentralProcessor.ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
 
-            GlobalMemory memory = hardware.getMemory();
-            VirtualMemory virtualMemory = memory.getVirtualMemory();
+            final GlobalMemory memory = hardware.getMemory();
+            final VirtualMemory virtualMemory = memory.getVirtualMemory();
 
-            FlareBuilder builder = new FlareBuilder()
+            final FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
                 .withAuth(FlareAuth.fromTokenAndUrl(FlareVelocityConfig.PROFILING.TOKEN,
@@ -105,13 +115,13 @@ public class ProfilingManager {
                 .withFiles(ServerConfigurations.getCleanCopies())
                 // dirty hacks for our flare viewer
                 .withVersion("Primary Version",
-                    platform.getServer().getVersion().getName() + " | " + platform.getServer().getVersion().getVersion())
+                    server().getVersion().getName() + " | " + server().getVersion().getVersion())
                 .withVersion("Velocity Version",
-                    platform.getServer().getVersion().getVersion())
+                    server().getVersion().getVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
-                .withCollectors(new GCEventCollector(), new StatCollector(), new VelocityThreadCollector(), new ProxyCountCollector())
-                .withClassIdentifier(platform.getPluginLookup()::getPluginForClass)
+                .withCollectors(new GCEventCollector(), new StatCollector(), new VelocityThreadCollector(), new ProxyCountCollector(server()))
+                .withClassIdentifier(platform().getPluginLookup()::getPluginForClass)
 
                 .withHardware(new FlareBuilder.HardwareBuilder()
                     .setCoreCount(processor.getPhysicalProcessorCount())
@@ -136,8 +146,8 @@ public class ProfilingManager {
                         if (currentTask != null) {
                             currentTask.cancel(true);
                         }
-                    } catch (Throwable t) {
-                        platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+                    } catch (final Throwable t) {
+                        platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
                     } finally {
                         currentTask = null;
                     }
@@ -145,19 +155,19 @@ public class ProfilingManager {
                 });
 
             currentFlare = builder.build();
-        } catch (IOException e) {
-            platform.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+        } catch (final IOException e) {
+            platform().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
             throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
         try {
             currentFlare.start();
-        } catch (IllegalStateException e) {
-            platform.getLogger().log(Level.WARNING, "Error starting Flare:", e);
+        } catch (final IllegalStateException e) {
+            platform().getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
         currentTask = scheduler.schedule(ProfilingManager::stop, 15, TimeUnit.MINUTES);
-        // platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        // platform().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
     }
 
@@ -169,15 +179,15 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        String profilingUri = ProfilingManager.getProfilingUri();
+        final String profilingUri = ProfilingManager.getProfilingUri();
         FlareCommand.broadcastPrefixed(
             Component.text("Profiling has been stopped.", MAIN_COLOR),
             Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
         );
         try {
             currentFlare.stop();
-        } catch (IllegalStateException e) {
-            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+        } catch (final IllegalStateException e) {
+            platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
@@ -185,12 +195,11 @@ public class ProfilingManager {
             if (currentTask != null) {
                 currentTask.cancel(true);
             }
-        } catch (Throwable t) {
-            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+        } catch (final Throwable t) {
+            platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
 
         return true;
     }
-
 }

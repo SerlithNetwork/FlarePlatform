@@ -10,7 +10,7 @@ import java.time.Duration;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
-public class StatCollector extends LiveCollector {
+public final class StatCollector extends LiveCollector {
 
     private static final CollectorData CPU = new CollectorData("builtin:stat:cpu", "CPU Load", "The total amount of CPU usage across all cores.", DataFormatter.PERCENT, GraphCategory.SYSTEM);
     private static final CollectorData CPU_PROCESS = new CollectorData("builtin:stat:cpu_process", "Process CPU", "The amount of CPU being used by this process.", DataFormatter.PERCENT, GraphCategory.SYSTEM);
@@ -30,7 +30,7 @@ public class StatCollector extends LiveCollector {
 
     @Override
     public void run() {
-        Runtime runtime = Runtime.getRuntime();
+        final Runtime runtime = Runtime.getRuntime();
 
         this.report(CPU, this.processor.getSystemLoadAverage(1)[0] / 100); // percentage
         this.report(CPU_PROCESS, this.bean.getProcessCpuLoad());

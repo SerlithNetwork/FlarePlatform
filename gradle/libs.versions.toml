@@ -1,20 +1,20 @@
 [versions]
-jspecify = "1.0.0"
-guava = "33.5.0-jre" # Matches dependency from Velocity
+jspecify = "1.0.1"
+guava = "33.6.0-jre" # Matches the lowest version chosen between all platforms
 gson = "2.14.0"
-oshi = "6.9.0" # Matches dependency from Paper
+oshi = "6.9.0" # Matches the lowest version chosen between all platforms
 flare = "4.1.5"
-folia-api = "1.21.11-R0.1-SNAPSHOT"
-canvas-api = "26.2.build.+"
-velocity-api = "3.5.0-SNAPSHOT"
-fidorial-api = "26.4-snapshot-+" # snapshot-4 and above
+folia-api = "26.3.build.+"
+canvas-api = "26.3.build.+"
+velocity-api = "4.3.0"
+fidorial-api = "26.4-snapshot-5-build.+" # snapshot-5 and above
 shadow = "9.6.1"
-lombok = "9.8.0"
+lombok = "9.8.2"
 run-task = "3.1.0"
 blossom = "2.2.0"
 resource-factory = "1.4.0"
 config-api = "1.2.11"
-faststats = "0.27.1"
+faststats = "0.30.2"
 bstats = "3.2.1"
 
 [libraries]

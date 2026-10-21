@@ -11,6 +11,7 @@ import fr.fidorial.entity.player.Player;
 import fr.fidorial.plugin.Plugin;
 import fr.fidorial.plugin.PluginContext;
 import fr.fidorial.plugin.PluginMeta;
+import fr.fidorial.version.MinecraftVersion;
 import lombok.Getter;
 import lombok.Setter;
 import net.j4c0b3y.api.config.ConfigHandler;
@@ -25,7 +26,7 @@ import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public class FlarePlatformFidorial implements Plugin {
+public final class FlarePlatformFidorial implements Plugin {
 
     @Getter
     private @Nullable static FlarePlatformFidorial instance;
@@ -72,22 +73,13 @@ public class FlarePlatformFidorial implements Plugin {
             shouldRegister = false;
         }
 
-        // check fidorial version - workaround until `supported-versions` gets added to `fidorial.json`
-        final String requiredVersion = "26.4-snapshot-4";
-        final String currentVersion = context().server().minecraftVersion();
-
-        final int firstDash = currentVersion.indexOf('-');
-        final String suffix = firstDash == -1 ? "" : currentVersion.substring(firstDash + 1);
-
-        final boolean supported = !currentVersion.startsWith("26.2")
-            && !currentVersion.startsWith("26.3")
-            && (!suffix.toLowerCase(Locale.ROOT).startsWith("snapshot-")
-            || Integer.parseInt(currentVersion.substring(currentVersion.lastIndexOf('-') + 1)) >= 4);
-
-        if (!supported) {
+        // check Minecraft version - workaround until `supported-versions` gets added to `fidorial.json`
+        final MinecraftVersion required = MinecraftVersion.parse("26.4-snapshot-5");
+        final MinecraftVersion current = context().server().buildSpecification().minecraftVersion();
+        if (current.compareTo(required) < 0) {
             context().logger().warn(
                 "FlarePlatform requires Minecraft {} or newer (current: {}), will not enable!",
-                requiredVersion, currentVersion
+                required.name(), current.name()
             );
             shouldRegister = false;
         }
@@ -117,7 +109,7 @@ public class FlarePlatformFidorial implements Plugin {
 
     public void refreshCommands() {
         for (final Player player : context().server().players().online()) {
-            player.refreshCommands();
+            player.execute(player::refreshCommands);
         }
     }
 

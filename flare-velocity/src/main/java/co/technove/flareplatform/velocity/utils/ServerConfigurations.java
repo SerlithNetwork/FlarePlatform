@@ -16,12 +16,12 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ServerConfigurations {
+public final class ServerConfigurations {
 
     public static Map<String, String> getCleanCopies() throws IOException {
-        Map<String, String> files = new HashMap<>(FlareVelocityConfig.CONFIGURATIONS.CONFIGURATION_FILES.size());
+        final Map<String, String> files = new HashMap<>(FlareVelocityConfig.CONFIGURATIONS.CONFIGURATION_FILES.size());
         for (final String file : FlareVelocityConfig.CONFIGURATIONS.CONFIGURATION_FILES) {
-            Path path = Path.of(file);
+            final Path path = Path.of(file);
             if (Files.exists(path)) {
                 files.put(file, ServerConfigurations.getCleanCopy(path));
             }
@@ -29,7 +29,7 @@ public class ServerConfigurations {
         return files;
     }
 
-    public static boolean matchesRegex(String key) {
+    public static boolean matchesRegex(final String key) {
         for (final Pattern pattern : FlareVelocityConfig.CONFIGURATIONS.HIDDEN_ENTRIES_PATTERNS) {
             if (pattern.matcher(key).matches()) {
                 return true;
@@ -38,7 +38,7 @@ public class ServerConfigurations {
         return false;
     }
 
-    public static String getCleanCopy(Path configPath) throws IOException {
+    public static String getCleanCopy(final Path configPath) throws IOException {
         switch (com.google.common.io.Files.getFileExtension(configPath.getFileName().toString())) {
             case "properties": {
                 final Properties properties = new Properties();
@@ -58,14 +58,14 @@ public class ServerConfigurations {
                     .collect(Collectors.joining("\n"));
             }
             case "toml": {
-                Toml configuration = new Toml();
+                final Toml configuration = new Toml();
                 try (final BufferedReader reader = Files.newBufferedReader(configPath)) {
                     configuration.read(reader);
                 } catch (final IllegalStateException e) {
                     throw new IOException(e);
                 }
 
-                Map<String, Object> map = configuration.toMap();
+                final Map<String, Object> map = configuration.toMap();
                 for (final Map.Entry<String, Object> entry : configuration.entrySet()) {
                     if (ServerConfigurations.matchesRegex(entry.getKey())) {
                         map.put(entry.getKey(), "");
@@ -74,7 +74,7 @@ public class ServerConfigurations {
                 if (map.size() <= 1) {
                     return "";
                 } else {
-                    TomlWriter writer = new TomlWriter();
+                    final TomlWriter writer = new TomlWriter();
                     return writer.write(map);
                 }
             }
@@ -82,5 +82,4 @@ public class ServerConfigurations {
                 return Files.readString(configPath);
         }
     }
-
 }

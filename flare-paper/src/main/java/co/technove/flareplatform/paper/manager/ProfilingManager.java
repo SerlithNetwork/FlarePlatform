@@ -34,12 +34,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.stream.Stream;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -49,11 +47,10 @@ import oshi.hardware.VirtualMemory;
 import oshi.software.os.OperatingSystem;
 
 // yuck
-public class ProfilingManager {
+public final class ProfilingManager {
 
-    private static final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();
     private static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, r -> {
-        Thread t = new Thread(r);
+        final Thread t = new Thread(r);
         t.setName("Flare Profiling Manager Thread");
         return t;
     });
@@ -83,14 +80,20 @@ public class ProfilingManager {
     }
 
     public static Duration getTimeRan() {
-        Flare flare = currentFlare; // copy reference so no need to sync
+        final Flare flare = currentFlare; // copy reference so no need to sync
         if (flare == null) {
             return Duration.ofMillis(0);
         }
         return flare.getCurrentDuration();
     }
 
-    public static synchronized boolean start(ProfileType profileType) throws UserReportableException {
+    private static FlarePlatformPaper platform() {
+        final FlarePlatformPaper platform = FlarePlatformPaper.getInstance();
+        Preconditions.checkState(platform != null, "Plugin has not been initialized!");
+        return platform;
+    }
+
+    public static synchronized boolean start(final ProfileType profileType) throws UserReportableException {
         if (currentFlare != null && !currentFlare.isRunning()) {
             currentFlare = null; // errored out
         }
@@ -102,18 +105,18 @@ public class ProfilingManager {
         }
 
         try {
-            OperatingSystem os = new SystemInfo().getOperatingSystem();
+            final OperatingSystem os = new SystemInfo().getOperatingSystem();
 
-            SystemInfo systemInfo = new SystemInfo();
-            HardwareAbstractionLayer hardware = systemInfo.getHardware();
+            final SystemInfo systemInfo = new SystemInfo();
+            final HardwareAbstractionLayer hardware = systemInfo.getHardware();
 
-            CentralProcessor processor = hardware.getProcessor();
-            CentralProcessor.ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
+            final CentralProcessor processor = hardware.getProcessor();
+            final CentralProcessor.ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
 
-            GlobalMemory memory = hardware.getMemory();
-            VirtualMemory virtualMemory = memory.getVirtualMemory();
+            final GlobalMemory memory = hardware.getMemory();
+            final VirtualMemory virtualMemory = memory.getVirtualMemory();
 
-            FlareBuilder builder = new FlareBuilder()
+            final FlareBuilder builder = new FlareBuilder()
                 .withProfileType(profileType)
                 .withMemoryProfiling(true)
                 .withAuth(FlareAuth.fromTokenAndUrl(FlarePaperConfig.PROFILING.TOKEN, FlarePaperConfig.PROFILING.BACKEND_URL))
@@ -124,7 +127,7 @@ public class ProfilingManager {
                 .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
 
                 .withGraphCategories(CustomCategories.PERF)
-                .withClassIdentifier(platform.getPluginLookup()::getPluginForClass)
+                .withClassIdentifier(platform().getPluginLookup()::getPluginForClass)
 
                 .withHardware(new FlareBuilder.HardwareBuilder()
                     .setCoreCount(processor.getPhysicalProcessorCount())
@@ -149,56 +152,57 @@ public class ProfilingManager {
                         if (currentTask != null) {
                             currentTask.cancel(true);
                         }
-                    } catch (Throwable t) {
-                        platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+                    } catch (final Throwable t) {
+                        platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
                     } finally {
                         currentTask = null;
                     }
                     FlareCommand.broadcastException();
                 });
 
-            IScheduler bukkitScheduler, foliaScheduler;
-            try {
-                bukkitScheduler = new BukkitSchedulerImpl();
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                bukkitScheduler = new NoOpSchedulerImpl();
-            }
-            try {
-                foliaScheduler = new FoliaSchedulerImpl();
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                foliaScheduler = new NoOpSchedulerImpl();
-            }
-
-            List<Collector> baseCollectors = List.of(new TPSCollector(), new GCEventCollector(), new StatCollector(), new WorldCountCollector(), new PaperThreadCollector(bukkitScheduler, foliaScheduler));
-            List<Collector> extraCollectors = new ArrayList<>();
-
-            if (FlarePlatformPaper.IS_PWT) {
-                extraCollectors.add(WorldTpsCollector.create());
-            } else if (FlarePlatformPaper.IS_CANVAS) {
-                extraCollectors.add(RegionTpsCollector.create());
-                extraCollectors.add(WorldRegionCountCollector.create());
-            }
-
-            builder.withCollectors(Stream.concat(baseCollectors.stream(), extraCollectors.stream()).toArray(Collector[]::new));
+            builder.withCollectors(collectors().toArray(Collector[]::new));
             currentFlare = builder.build();
-        } catch (IOException e) {
-            platform.getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
+        } catch (final IOException e) {
+            platform().getLogger().log(Level.WARNING, "Failed to read configuration files:", e);
             throw new UserReportableException("Failed to load configuration files, check logs for further details.");
         }
 
         try {
             currentFlare.start();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(platform, task -> player.updateCommands(), null);
-            }
-        } catch (IllegalStateException e) {
-            platform.getLogger().log(Level.WARNING, "Error starting Flare:", e);
+            platform().refreshCommands();
+        } catch (final IllegalStateException e) {
+            platform().getLogger().log(Level.WARNING, "Error starting Flare:", e);
             throw new UserReportableException("Failed to start Flare, check logs for further details.");
         }
 
         currentTask = scheduler.schedule(ProfilingManager::stop, 15, TimeUnit.MINUTES);
-        // platform.getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
+        // platform().getLogger().log(Level.INFO, "Flare has been started: " + getProfilingUri());
         return true;
+    }
+
+    private static List<Collector> collectors() {
+        IScheduler bukkitScheduler, foliaScheduler;
+        try {
+            bukkitScheduler = new BukkitSchedulerImpl();
+        } catch (final NoSuchFieldException | IllegalAccessException ignored) {
+            bukkitScheduler = new NoOpSchedulerImpl();
+        }
+        try {
+            foliaScheduler = new FoliaSchedulerImpl();
+        } catch (final NoSuchFieldException | IllegalAccessException ignored) {
+            foliaScheduler = new NoOpSchedulerImpl();
+        }
+
+        final List<Collector> collectors = new ArrayList<>(List.of(
+            new TPSCollector(), new GCEventCollector(), new StatCollector(),
+            new WorldCountCollector(platform()), new PaperThreadCollector(bukkitScheduler, foliaScheduler)));
+        if (FlarePlatformPaper.IS_PWT) {
+            collectors.add(WorldTpsCollector.create());
+        } else if (FlarePlatformPaper.IS_CANVAS) {
+            collectors.add(RegionTpsCollector.create());
+            collectors.add(WorldRegionCountCollector.create());
+        }
+        return collectors;
     }
 
     public static synchronized boolean stop() {
@@ -209,18 +213,16 @@ public class ProfilingManager {
             currentFlare = null;
             return true;
         }
-        String profilingUri = ProfilingManager.getProfilingUri();
+        final String profilingUri = ProfilingManager.getProfilingUri();
         FlareCommand.broadcastPrefixed(
             Component.text("Profiling has been stopped.", MAIN_COLOR),
             Component.text(profilingUri, HEX).clickEvent(ClickEvent.openUrl(profilingUri))
         );
         try {
             currentFlare.stop();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getScheduler().run(platform, task -> player.updateCommands(), null);
-            }
-        } catch (IllegalStateException e) {
-            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
+            platform().refreshCommands();
+        } catch (final IllegalStateException e) {
+            platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", e);
         }
         currentFlare = null;
 
@@ -228,12 +230,11 @@ public class ProfilingManager {
             if (currentTask != null) {
                 currentTask.cancel(true);
             }
-        } catch (Throwable t) {
-            platform.getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
+        } catch (final Throwable t) {
+            platform().getLogger().log(Level.WARNING, "Error occurred stopping Flare", t);
         }
         currentTask = null;
 
         return true;
     }
-
 }

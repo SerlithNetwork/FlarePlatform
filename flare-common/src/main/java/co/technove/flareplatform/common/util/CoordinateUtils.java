@@ -1,6 +1,6 @@
 package co.technove.flareplatform.common.util;
 
-public class CoordinateUtils {
+public final class CoordinateUtils {
     private CoordinateUtils() {
     }
 
@@ -22,5 +22,4 @@ public class CoordinateUtils {
 
         return Integer.compare(x1, x2);
     }
-
 }
