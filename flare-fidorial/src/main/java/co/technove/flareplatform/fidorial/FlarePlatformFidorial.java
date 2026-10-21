@@ -75,8 +75,20 @@ public class FlarePlatformFidorial implements Plugin {
         // check fidorial version - workaround until `supported-versions` gets added to `fidorial.json`
         final String requiredVersion = "26.4-snapshot-4";
         final String currentVersion = context().server().minecraftVersion();
-        if (!currentVersion.equalsIgnoreCase(requiredVersion)) {
-            context().logger().warn("FlarePlatform only supports builds for Minecraft {} (current: {}), will not enable!", requiredVersion, currentVersion);
+
+        final int firstDash = currentVersion.indexOf('-');
+        final String suffix = firstDash == -1 ? "" : currentVersion.substring(firstDash + 1);
+
+        final boolean supported = !currentVersion.startsWith("26.2")
+            && !currentVersion.startsWith("26.3")
+            && (!suffix.toLowerCase(Locale.ROOT).startsWith("snapshot-")
+            || Integer.parseInt(currentVersion.substring(currentVersion.lastIndexOf('-') + 1)) >= 4);
+
+        if (!supported) {
+            context().logger().warn(
+                "FlarePlatform requires Minecraft {} or newer (current: {}), will not enable!",
+                requiredVersion, currentVersion
+            );
             shouldRegister = false;
         }
 
